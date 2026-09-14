@@ -1,6 +1,6 @@
 {
   "id": "raspberry_pi_model_b",
-  "name": "Raspberry Pi (Model B form factor, 85x56mm)",
+  "name": "Raspberry Pi (Model B form factor)",
   "category": "controller",
   "entities": [
     {

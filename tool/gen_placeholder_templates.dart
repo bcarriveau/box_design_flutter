@@ -155,30 +155,6 @@ void main() {
     rectangleWithCornerHoles(width: 214.75, height: 171.32, holeInset: 12, holeDiameter: 4.0),
   );
 
-  writeTemplate(
-    'box_small_placeholder.json',
-    'box_small_placeholder',
-    'Small Enclosure (placeholder)',
-    'box',
-    rectangleWithCornerHoles(width: 150, height: 90, holeInset: 6, holeDiameter: 4),
-  );
-
-  writeTemplate(
-    'controller_generic_placeholder.json',
-    'controller_generic_placeholder',
-    'Generic Controller Board (placeholder)',
-    'controller',
-    rectangleWithCornerHoles(width: 172, height: 111, holeInset: 6, holeDiameter: 3.5),
-  );
-
-  writeTemplate(
-    'power_supply_generic_placeholder.json',
-    'power_supply_generic_placeholder',
-    'Generic Power Supply (placeholder)',
-    'powerSupply',
-    rectangleWithCornerHoles(width: 115, height: 50, holeInset: 5, holeDiameter: 4),
-  );
-
   // --- Genius Pixel (Experience Lights) -----------------------------------
   // Dimensions digitized from official vendor footprint diagrams
   // (store.experiencelights.com); notch/hole coordinates are direct edge
@@ -362,14 +338,6 @@ void main() {
     rectangleWithCornerHoles(width: 170, height: 105, holeInset: 6, holeDiameter: 3.5),
   );
 
-  writeTemplate(
-    'falcon_receiver_placeholder.json',
-    'falcon_receiver_placeholder',
-    'Falcon Receiver (placeholder)',
-    'receiver',
-    rectangleWithCornerHoles(width: 75, height: 50, holeInset: 5, holeDiameter: 3.0),
-  );
-
   // Falcon F16V4: outline and hole positions measured directly from a
   // user-supplied STL (16v4_Controller.stl) via mesh analysis -- the 4
   // mounting holes are exact (perfectly circular, identical Ø4.00mm, found
@@ -382,7 +350,7 @@ void main() {
   writeTemplate(
     'falcon_16v4_controller.json',
     'falcon_16v4_controller',
-    'Falcon F16V4 Controller (196x140mm bounding box)',
+    'Falcon F16V4 Controller',
     'controller',
     roundedRectWithHoles(
       width: 195.5,
@@ -407,7 +375,7 @@ void main() {
   writeTemplate(
     'falcon_16v3_controller.json',
     'falcon_16v3_controller',
-    'Falcon F16V3 Controller (196x140mm bounding box)',
+    'Falcon F16V3 Controller',
     'controller',
     roundedRectWithHoles(
       width: 195.5,
@@ -580,7 +548,7 @@ void main() {
   writeTemplate(
     'raspberry_pi_model_b.json',
     'raspberry_pi_model_b',
-    'Raspberry Pi (Model B form factor, 85x56mm)',
+    'Raspberry Pi (Model B form factor)',
     'controller',
     roundedRectWithHoles(
       width: 85.0,
@@ -596,14 +564,6 @@ void main() {
     ),
   );
 
-  writeTemplate(
-    'kulp_receiver_placeholder.json',
-    'kulp_receiver_placeholder',
-    'Kulp Receiver (placeholder)',
-    'receiver',
-    rectangleWithCornerHoles(width: 75, height: 50, holeInset: 5, holeDiameter: 3.0),
-  );
-
   // --- BUD Industries NBF-Series NEMA economy enclosures ------------------
   // Outer footprint (A x B) for each model taken directly from BUD's NBF
   // datasheet nominal-dimensions table. Corner mounting-hole inset/diameter
@@ -617,7 +577,7 @@ void main() {
   writeTemplate(
     'bud_nbf32022.json',
     'bud_nbf32022',
-    'BUD NBF-32022 NEMA Enclosure (350x250mm)',
+    'BUD NBF-32022 NEMA Enclosure',
     'box',
     rectangleWithCornerHoles(width: 350, height: 250, holeInset: 25, holeDiameter: 4.0),
   );
@@ -629,7 +589,7 @@ void main() {
   writeTemplate(
     'bud_nbf32016.json',
     'bud_nbf32016',
-    'BUD NBF-32016 NEMA Enclosure (304.5x203mm)',
+    'BUD NBF-32016 NEMA Enclosure',
     'box',
     roundedRectWithHoles(
       width: 304.50,
@@ -652,7 +612,7 @@ void main() {
   writeTemplate(
     'bud_nbf32226.json',
     'bud_nbf32226',
-    'BUD NBF-32226 NEMA Enclosure (400x300mm)',
+    'BUD NBF-32226 NEMA Enclosure',
     'box',
     roundedRectWithHoles(
       width: 400.0,
@@ -702,7 +662,7 @@ void main() {
   writeTemplate(
     'pb16_controller.json',
     'pb16_controller',
-    'PB_16v2 Controller (142.1x99.9mm)',
+    'PB_16v2 Controller',
     'controller',
     roundedRectWithHoles(
       width: 142.10,
@@ -791,6 +751,42 @@ void main() {
     rectangleWithCornerHoles(width: 159.0, height: 30.0, holeInset: 10.0, holeDiameter: 3.0),
   );
 
+  // LRS-600 (Case 292): outer 225 x 124 x 41mm from the official spec
+  // sheet DIMENSION line. Top holes resolved the same way as LRS-350's --
+  // a uniform 37.5mm inset from every edge (the drawing's two flanking
+  // "37.5" callouts agree with each other and with its explicit "150"
+  // hole-spacing label: 225 - 2*37.5 = 150) -- giving a 150 x 49mm hole
+  // rectangle. High confidence, like LRS-350's top pattern.
+  writeTemplate(
+    'meanwell_lrs600_top.json',
+    'meanwell_lrs600_top',
+    'Mean Well LRS-600 (top mount, 225x124mm)',
+    'powerSupply',
+    roundedRectWithHoles(
+      width: 225.0,
+      height: 124.0,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(37.5, 37.5),
+        Vec2(187.5, 37.5),
+        Vec2(37.5, 86.5),
+        Vec2(187.5, 86.5),
+      ],
+    ),
+  );
+
+  // LRS-600 side-mount footprint: outer size (length x case height) is
+  // exact, but the drawing's "8-M4(Both Sides)" side holes -- twice as
+  // many as LRS-350's side pattern -- couldn't be read with confidence.
+  // Placeholder holes only, like LRS-350's side mount.
+  writeTemplate(
+    'meanwell_lrs600_side_placeholder.json',
+    'meanwell_lrs600_side_placeholder',
+    'Mean Well LRS-600 (side mount, 225x41mm, placeholder holes)',
+    'powerSupply',
+    rectangleWithCornerHoles(width: 225.0, height: 41.0, holeInset: 12.0, holeDiameter: 4.0),
+  );
+
   // --- Misc / personal projects ---------------------------------------------
   // TICONN mounting plate: outline and hole positions measured directly
   // from a personal FreeCAD project's STL (mounting plate2-Body.stl) --
@@ -806,7 +802,7 @@ void main() {
   writeTemplate(
     'ticonn_mounting_plate.json',
     'ticonn_mounting_plate',
-    'TICONN Enclosure Mounting Plate (140.5x191.5mm)',
+    'TICONN Enclosure Mounting Plate',
     'box',
     roundedRectWithHoles(
       width: 140.5,
@@ -832,7 +828,7 @@ void main() {
   writeTemplate(
     'holidaycoro_hc2500.json',
     'holidaycoro_hc2500',
-    'Holiday Coro HC-2500 Mounting Plate (243.8x290.9mm)',
+    'Holiday Coro HC-2500 Mounting Plate',
     'box',
     roundedRectWithHoles(
       width: 243.84,
@@ -866,6 +862,115 @@ void main() {
         Vec2(83.820, 11.002),
         Vec2(160.020, 11.002),
         Vec2(236.220, 11.002),
+      ],
+    ),
+  );
+
+  // Falcon F48 V4 Mount: outline and its 4 counterbored mounting holes
+  // measured from a user-supplied STL (f48_V4_Mount_v1.stl) via mesh
+  // analysis. This is a thin (8mm) flat bracket, not a populated PCB --
+  // the drawing also has 4 small square corner cutouts and a large inner
+  // relief pocket that aren't reproduced here, per request. The 4 holes
+  // are stepped (Ø3.0mm through-hole widening to Ø6.0mm counterbore for a
+  // flush screw head) -- STL measured Ø6.0mm at the counterbore; set to
+  // 4.0mm per request. Their layout is a slightly irregular quadrilateral,
+  // not a plain rectangle -- two holes share an x-coordinate (the right
+  // side), the other two don't.
+  writeTemplate(
+    'falcon_f48_v4_mount.json',
+    'falcon_f48_v4_mount',
+    'Falcon F48 V4 Mount',
+    'controller',
+    roundedRectWithHoles(
+      width: 207.0,
+      height: 119.0,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(28.0, 12.08),
+        Vec2(180.0, 12.0),
+        Vec2(180.0, 113.0),
+        Vec2(40.0, 113.0),
+      ],
+    ),
+  );
+
+  // Falcon F48 V3 Mount: outline and its 4 mounting holes measured from a
+  // user-supplied STL (Falcon_F48_CG1500_Mount_v6.stl, originally built
+  // for the CG-1500 enclosure specifically, but used here as the general
+  // reference for the F48 V3 mount shape/holes rather than a CG-1500-only
+  // variant). Similar concept to the F48 V4 mount above (a thin flat
+  // bracket with primary mounting holes plus features skipped here), but
+  // a genuinely different hole style and layout, not just a copy -- each
+  // hole here is a Ø3.0mm through-hole in its own raised Ø7.0mm boss (STL
+  // measured Ø3.0mm; set to 4.0mm to match the sibling template). Also has
+  // 4 elongated (9.5 x 3.5mm) corner slots and a large inner relief pocket
+  // (173 x 104.6mm) that aren't reproduced, same as the V4 mount's
+  // omissions.
+  writeTemplate(
+    'falcon_f48_v3_mount.json',
+    'falcon_f48_v3_mount',
+    'Falcon F48 V3 Mount',
+    'controller',
+    roundedRectWithHoles(
+      width: 193.0,
+      height: 134.644,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(20.05, 9.644),
+        Vec2(172.05, 9.644),
+        Vec2(33.05, 111.144),
+        Vec2(160.05, 111.144),
+      ],
+    ),
+  );
+
+  // Falcon F16v4 Expansion addon board: outline and its 4 mounting holes
+  // measured from a user-supplied STL (Falcon_F16v4_Expansion_v1_v1.stl).
+  // Clean, confident data -- each hole is a Ø3.0mm through-hole in its own
+  // raised Ø6.0mm boss, at 4 positions forming an exact rectangle (127.0 x
+  // 51.0mm spacing; 127.0mm = precisely 5.0in). STL measured Ø3.0mm; set
+  // to 4.0mm to match the other bundled Falcon boards. A set of 4 corner
+  // cutouts, a large inner relief pocket, and engraved silkscreen text are
+  // on the real board but aren't reproduced here.
+  writeTemplate(
+    'falcon_f16v4_expansion.json',
+    'falcon_f16v4_expansion',
+    'Falcon F16v4 Expansion',
+    'controller',
+    roundedRectWithHoles(
+      width: 207.0,
+      height: 70.0,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(39.0, 13.0),
+        Vec2(39.0, 64.0),
+        Vec2(166.0, 13.0),
+        Vec2(166.0, 64.0),
+      ],
+    ),
+  );
+
+  // Falcon F16v3 Differential Receiver (standing/vertical mount variant):
+  // outline and its 4 mounting holes measured from a user-supplied STL
+  // (Falcon_F16v3_Diff_-_Standing.stl). Clean rectangle: 101.75 x 51.45mm
+  // hole spacing. The real holes are 4.0mm SQUARES, not round -- modeled
+  // here as Ø4.0mm circles to match this project's usual hole
+  // representation. Everything else in the mesh is engraved silkscreen
+  // text, not reproduced.
+  writeTemplate(
+    'falcon_f16v3_diff_receiver.json',
+    'falcon_f16v3_diff_receiver',
+    'Falcon F16v3 Differential Receiver',
+    'receiver',
+    roundedRectWithHoles(
+      width: 140.87,
+      height: 100.08,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(18.335, 83.779),
+        Vec2(120.085, 83.779),
+        Vec2(18.335, 32.329),
+        Vec2(120.085, 32.329),
       ],
     ),
   );

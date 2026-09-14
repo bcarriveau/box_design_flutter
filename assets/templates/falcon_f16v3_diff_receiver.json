@@ -1,7 +1,7 @@
 {
-  "id": "power_supply_generic_placeholder",
-  "name": "Generic Power Supply (placeholder)",
-  "category": "powerSupply",
+  "id": "falcon_f16v3_diff_receiver",
+  "name": "Falcon F16v3 Differential Receiver",
+  "category": "receiver",
   "entities": [
     {
       "type": "polyline",
@@ -13,18 +13,18 @@
           "bulge": 0.0
         },
         {
-          "x": 115.0,
+          "x": 140.87,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 115.0,
-          "y": 50.0,
+          "x": 140.87,
+          "y": 100.08,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 50.0,
+          "y": 100.08,
           "bulge": 0.0
         }
       ]
@@ -32,32 +32,32 @@
     {
       "type": "circle",
       "center": {
-        "x": 5.0,
-        "y": 5.0
+        "x": 18.335,
+        "y": 83.779
       },
       "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 110.0,
-        "y": 5.0
+        "x": 120.085,
+        "y": 83.779
       },
       "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 110.0,
-        "y": 45.0
+        "x": 18.335,
+        "y": 32.329
       },
       "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 5.0,
-        "y": 45.0
+        "x": 120.085,
+        "y": 32.329
       },
       "radius": 2.0
     }

@@ -1,7 +1,7 @@
 {
-  "id": "kulp_receiver_placeholder",
-  "name": "Kulp Receiver (placeholder)",
-  "category": "receiver",
+  "id": "falcon_f48_v3_mount",
+  "name": "Falcon F48 V3 Mount",
+  "category": "controller",
   "entities": [
     {
       "type": "polyline",
@@ -13,18 +13,18 @@
           "bulge": 0.0
         },
         {
-          "x": 75.0,
+          "x": 193.0,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 75.0,
-          "y": 50.0,
+          "x": 193.0,
+          "y": 134.644,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 50.0,
+          "y": 134.644,
           "bulge": 0.0
         }
       ]
@@ -32,34 +32,34 @@
     {
       "type": "circle",
       "center": {
-        "x": 5.0,
-        "y": 5.0
+        "x": 20.05,
+        "y": 9.644
       },
-      "radius": 1.5
+      "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 70.0,
-        "y": 5.0
+        "x": 172.05,
+        "y": 9.644
       },
-      "radius": 1.5
+      "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 70.0,
-        "y": 45.0
+        "x": 33.05,
+        "y": 111.144
       },
-      "radius": 1.5
+      "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 5.0,
-        "y": 45.0
+        "x": 160.05,
+        "y": 111.144
       },
-      "radius": 1.5
+      "radius": 2.0
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
-  "id": "box_small_placeholder",
-  "name": "Small Enclosure (placeholder)",
-  "category": "box",
+  "id": "falcon_f48_v4_mount",
+  "name": "Falcon F48 V4 Mount",
+  "category": "controller",
   "entities": [
     {
       "type": "polyline",
@@ -13,18 +13,18 @@
           "bulge": 0.0
         },
         {
-          "x": 150.0,
+          "x": 207.0,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 150.0,
-          "y": 90.0,
+          "x": 207.0,
+          "y": 119.0,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 90.0,
+          "y": 119.0,
           "bulge": 0.0
         }
       ]
@@ -32,32 +32,32 @@
     {
       "type": "circle",
       "center": {
-        "x": 6.0,
-        "y": 6.0
+        "x": 28.0,
+        "y": 12.08
       },
       "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 144.0,
-        "y": 6.0
+        "x": 180.0,
+        "y": 12.0
       },
       "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 144.0,
-        "y": 84.0
+        "x": 180.0,
+        "y": 113.0
       },
       "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 6.0,
-        "y": 84.0
+        "x": 40.0,
+        "y": 113.0
       },
       "radius": 2.0
     }

@@ -1,6 +1,6 @@
 {
   "id": "falcon_16v4_controller",
-  "name": "Falcon F16V4 Controller (196x140mm bounding box)",
+  "name": "Falcon F16V4 Controller",
   "category": "controller",
   "entities": [
     {

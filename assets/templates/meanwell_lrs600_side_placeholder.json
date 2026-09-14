@@ -1,7 +1,7 @@
 {
-  "id": "falcon_receiver_placeholder",
-  "name": "Falcon Receiver (placeholder)",
-  "category": "receiver",
+  "id": "meanwell_lrs600_side_placeholder",
+  "name": "Mean Well LRS-600 (side mount)",
+  "category": "powerSupply",
   "entities": [
     {
       "type": "polyline",
@@ -13,18 +13,18 @@
           "bulge": 0.0
         },
         {
-          "x": 75.0,
+          "x": 225.0,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 75.0,
-          "y": 50.0,
+          "x": 225.0,
+          "y": 41.0,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 50.0,
+          "y": 41.0,
           "bulge": 0.0
         }
       ]
@@ -32,34 +32,34 @@
     {
       "type": "circle",
       "center": {
-        "x": 5.0,
-        "y": 5.0
+        "x": 12.0,
+        "y": 12.0
       },
-      "radius": 1.5
+      "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 70.0,
-        "y": 5.0
+        "x": 213.0,
+        "y": 12.0
       },
-      "radius": 1.5
+      "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 70.0,
-        "y": 45.0
+        "x": 213.0,
+        "y": 29.0
       },
-      "radius": 1.5
+      "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 5.0,
-        "y": 45.0
+        "x": 12.0,
+        "y": 29.0
       },
-      "radius": 1.5
+      "radius": 2.0
     }
   ]
 }

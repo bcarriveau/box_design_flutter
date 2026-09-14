@@ -1,6 +1,6 @@
 {
   "id": "falcon_v2_receiver",
-  "name": "Falcon V2 Receiver (105.7x80mm bounding box)",
+  "name": "Falcon V2 Receiver",
   "category": "receiver",
   "entities": [
     {

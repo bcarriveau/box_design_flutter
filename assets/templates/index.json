@@ -4,18 +4,6 @@
     "file": "cg1500_placeholder.json"
   },
   {
-    "id": "box_small_placeholder",
-    "file": "box_small_placeholder.json"
-  },
-  {
-    "id": "controller_generic_placeholder",
-    "file": "controller_generic_placeholder.json"
-  },
-  {
-    "id": "power_supply_generic_placeholder",
-    "file": "power_supply_generic_placeholder.json"
-  },
-  {
     "id": "genius_gpx16_2023_controller",
     "file": "genius_gpx16_2023_controller.json"
   },
@@ -46,10 +34,6 @@
   {
     "id": "falcon_controller_placeholder",
     "file": "falcon_controller_placeholder.json"
-  },
-  {
-    "id": "falcon_receiver_placeholder",
-    "file": "falcon_receiver_placeholder.json"
   },
   {
     "id": "falcon_16v4_controller",
@@ -88,10 +72,6 @@
     "file": "raspberry_pi_model_b.json"
   },
   {
-    "id": "kulp_receiver_placeholder",
-    "file": "kulp_receiver_placeholder.json"
-  },
-  {
     "id": "bud_nbf32022",
     "file": "bud_nbf32022.json"
   },
@@ -128,11 +108,35 @@
     "file": "meanwell_lrs150_side_placeholder.json"
   },
   {
+    "id": "meanwell_lrs600_top",
+    "file": "meanwell_lrs600_top.json"
+  },
+  {
+    "id": "meanwell_lrs600_side_placeholder",
+    "file": "meanwell_lrs600_side_placeholder.json"
+  },
+  {
     "id": "ticonn_mounting_plate",
     "file": "ticonn_mounting_plate.json"
   },
   {
     "id": "holidaycoro_hc2500",
     "file": "holidaycoro_hc2500.json"
+  },
+  {
+    "id": "falcon_f48_v4_mount",
+    "file": "falcon_f48_v4_mount.json"
+  },
+  {
+    "id": "falcon_f48_v3_mount",
+    "file": "falcon_f48_v3_mount.json"
+  },
+  {
+    "id": "falcon_f16v4_expansion",
+    "file": "falcon_f16v4_expansion.json"
+  },
+  {
+    "id": "falcon_f16v3_diff_receiver",
+    "file": "falcon_f16v3_diff_receiver.json"
   }
 ]

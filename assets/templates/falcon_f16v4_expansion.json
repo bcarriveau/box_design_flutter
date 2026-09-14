@@ -1,6 +1,6 @@
 {
-  "id": "controller_generic_placeholder",
-  "name": "Generic Controller Board (placeholder)",
+  "id": "falcon_f16v4_expansion",
+  "name": "Falcon F16v4 Expansion",
   "category": "controller",
   "entities": [
     {
@@ -13,18 +13,18 @@
           "bulge": 0.0
         },
         {
-          "x": 172.0,
+          "x": 207.0,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 172.0,
-          "y": 111.0,
+          "x": 207.0,
+          "y": 70.0,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 111.0,
+          "y": 70.0,
           "bulge": 0.0
         }
       ]
@@ -32,34 +32,34 @@
     {
       "type": "circle",
       "center": {
-        "x": 6.0,
-        "y": 6.0
+        "x": 39.0,
+        "y": 13.0
       },
-      "radius": 1.75
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 39.0,
+        "y": 64.0
+      },
+      "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
         "x": 166.0,
-        "y": 6.0
+        "y": 13.0
       },
-      "radius": 1.75
+      "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
         "x": 166.0,
-        "y": 105.0
+        "y": 64.0
       },
-      "radius": 1.75
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 6.0,
-        "y": 105.0
-      },
-      "radius": 1.75
+      "radius": 2.0
     }
   ]
 }
