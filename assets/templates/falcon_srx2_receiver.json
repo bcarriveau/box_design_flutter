@@ -1,0 +1,65 @@
+{
+  "id": "falcon_srx2_receiver",
+  "name": "Falcon SRx2 Receiver (105.7x80mm bounding box)",
+  "category": "receiver",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 105.72,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 105.72,
+          "y": 80.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 80.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 12.86,
+        "y": 71.92
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 92.86,
+        "y": 71.92
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 12.88,
+        "y": 8.45
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 92.88,
+        "y": 8.45
+      },
+      "radius": 2.0
+    }
+  ]
+}

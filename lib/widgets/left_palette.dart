@@ -20,15 +20,7 @@ class LeftPalette extends StatefulWidget {
 }
 
 class _LeftPaletteState extends State<LeftPalette> {
-  final _repoUrlController = TextEditingController();
-  bool _fetching = false;
   TemplateCategory _importCategory = TemplateCategory.controller;
-
-  @override
-  void dispose() {
-    _repoUrlController.dispose();
-    super.dispose();
-  }
 
   Future<void> _importDxf() async {
     final picked = await pickFile(allowedExtensions: ['dxf'], dialogTitle: 'Import DXF Template');
@@ -40,24 +32,6 @@ class _LeftPaletteState extends State<LeftPalette> {
       utf8.decode(picked.bytes),
       _importCategory,
     );
-  }
-
-  Future<void> _fetchRemote() async {
-    final url = _repoUrlController.text.trim();
-    if (url.isEmpty) return;
-    setState(() => _fetching = true);
-    try {
-      final count = await widget.library.fetchRemoteTemplates(url);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fetched $count template(s)')));
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Fetch failed: $e')));
-      }
-    } finally {
-      if (mounted) setState(() => _fetching = false);
-    }
   }
 
   @override
@@ -101,20 +75,6 @@ class _LeftPaletteState extends State<LeftPalette> {
                   ),
                   const SizedBox(height: 8),
                   OutlinedButton(onPressed: _importDxf, child: const Text('Import DXF Template')),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: _repoUrlController,
-                    decoration: const InputDecoration(
-                      labelText: 'Template repo URL',
-                      isDense: true,
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  OutlinedButton(
-                    onPressed: _fetching ? null : _fetchRemote,
-                    child: Text(_fetching ? 'Fetching...' : 'Fetch Remote Templates'),
-                  ),
                 ],
               ),
             ),

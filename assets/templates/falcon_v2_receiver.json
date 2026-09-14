@@ -1,0 +1,65 @@
+{
+  "id": "falcon_v2_receiver",
+  "name": "Falcon V2 Receiver (105.7x80mm bounding box)",
+  "category": "receiver",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 105.72,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 105.72,
+          "y": 80.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 80.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 17.71,
+        "y": 68.6
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 93.46,
+        "y": 68.6
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 17.71,
+        "y": 11.6
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 93.46,
+        "y": 11.6
+      },
+      "radius": 2.0
+    }
+  ]
+}

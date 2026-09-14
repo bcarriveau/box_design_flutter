@@ -345,6 +345,146 @@ void main() {
     rectangleWithCornerHoles(width: 75, height: 50, holeInset: 5, holeDiameter: 3.0),
   );
 
+  // Falcon F16V4: outline and hole positions measured directly from a
+  // user-supplied STL (16v4_Controller.stl) via mesh analysis -- the 4
+  // mounting holes are exact (perfectly circular, identical Ø4.00mm, found
+  // with high confidence). The board's real perimeter is NOT a plain
+  // rectangle (it has notches/tabs the STL analysis didn't reconstruct);
+  // this uses its 195.5 x 139.52mm bounding box as a simplified rectangular
+  // outline instead. Hole placement is genuinely asymmetric on the right
+  // side (22.2mm vs 35.2mm inset from the right edge) -- that's real,
+  // not an approximation.
+  writeTemplate(
+    'falcon_16v4_controller.json',
+    'falcon_16v4_controller',
+    'Falcon F16V4 Controller (196x140mm bounding box)',
+    'controller',
+    roundedRectWithHoles(
+      width: 195.5,
+      height: 139.52,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(33.27, 125.16),
+        Vec2(173.27, 125.16),
+        Vec2(33.27, 23.16),
+        Vec2(160.27, 23.16),
+      ],
+    ),
+  );
+
+  // Falcon F16V3: same 195.5 x 139.52mm bounding box and non-rectangular
+  // real perimeter as the F16V4 (measured from a separate user-supplied
+  // STL, 16v3_Controller.stl) -- shares the F16V4's left column and
+  // bottom-right hole exactly, but its top-right hole sits at a different
+  // x, making V3's pattern a clean, nearly-symmetric rectangle (33.27mm vs
+  // 35.23mm inset) rather than V4's more asymmetric one. STL measured
+  // Ø4.00mm already; no adjustment needed.
+  writeTemplate(
+    'falcon_16v3_controller.json',
+    'falcon_16v3_controller',
+    'Falcon F16V3 Controller (196x140mm bounding box)',
+    'controller',
+    roundedRectWithHoles(
+      width: 195.5,
+      height: 139.52,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(33.27, 125.16),
+        Vec2(160.27, 125.16),
+        Vec2(33.27, 23.16),
+        Vec2(160.27, 23.16),
+      ],
+    ),
+  );
+
+  // Falcon V2 Receiver: outline and hole positions measured directly from a
+  // user-supplied STL (MW350_-_VM_-_v2_Smart_Receiver.stl) via mesh
+  // analysis. The STL's raw bounding box is 170mm wide, but that includes a
+  // flared antenna-connector housing that bulges out sideways over a
+  // narrow vertical band -- the actual board body (profiled above and
+  // below that band) is a consistent 105.72mm wide on both sides. Width
+  // here uses that squarer body measurement, not the flared bounding box.
+  // The 4 mounting-hole centers are exact (full board-thickness
+  // through-holes, perfectly circular) -- the STL measured them at
+  // Ø6.00mm, but the hole diameter here is set to 4.00mm per request. A
+  // second pair of stepped/countersunk holes near the left/right edges
+  // (Ø5.0mm widening to Ø7.05mm, not spanning the full thickness) was
+  // excluded -- almost certainly antenna/RF connector cutouts, not
+  // mounting holes. As with the F16V4, the real perimeter isn't a plain
+  // rectangle; this uses a simplified bounding-box rectangle instead. Hole
+  // placement is vertically symmetric but genuinely asymmetric
+  // horizontally (17.71mm vs 12.26mm inset from the left/right edges).
+  writeTemplate(
+    'falcon_v2_receiver.json',
+    'falcon_v2_receiver',
+    'Falcon V2 Receiver (105.7x80mm bounding box)',
+    'receiver',
+    roundedRectWithHoles(
+      width: 105.72,
+      height: 80.0,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(17.71, 68.6),
+        Vec2(93.46, 68.6),
+        Vec2(17.71, 11.6),
+        Vec2(93.46, 11.6),
+      ],
+    ),
+  );
+
+  // Falcon SRx2 Receiver: same board body (105.72 x 80mm, squarer-body
+  // width per the V2 Receiver comment above) as the V2 Receiver (measured
+  // from a separate user-supplied STL,
+  // MW350_-_VM_-_SRx2_Smart_Receiver.stl) and the same excluded pair of
+  // stepped/countersunk antenna-style holes -- but a genuinely different
+  // mounting-hole pattern: horizontally symmetric (12.86mm/12.88mm inset
+  // from both edges) and near-symmetric vertically (8.08mm top vs 8.45mm
+  // bottom). STL measured Ø6.00mm; set to 4.00mm to match the other Falcon
+  // boards.
+  writeTemplate(
+    'falcon_srx2_receiver.json',
+    'falcon_srx2_receiver',
+    'Falcon SRx2 Receiver (105.7x80mm bounding box)',
+    'receiver',
+    roundedRectWithHoles(
+      width: 105.72,
+      height: 80.0,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(12.86, 71.92),
+        Vec2(92.86, 71.92),
+        Vec2(12.88, 8.45),
+        Vec2(92.88, 8.45),
+      ],
+    ),
+  );
+
+  // Falcon SRx4 Receiver: same squarer-body measurement approach as V2/SRx2
+  // (see comment above) and the same excluded antenna-style hole pair, but
+  // this board's own squarer body is genuinely wider -- 145.72mm, not
+  // 105.72mm -- profiled the same way (top/bottom sections away from the
+  // antenna-housing flare, both sides agreeing precisely). With its own
+  // correct width, all 4 mounting holes sit comfortably inside the
+  // outline (roughly symmetric, ~9.36mm inset from each edge), unlike the
+  // mismatch that came from reusing V2/SRx2's narrower width.
+  writeTemplate(
+    'falcon_srx4_receiver.json',
+    'falcon_srx4_receiver',
+    'Falcon SRx4 Receiver (145.7x80mm bounding box)',
+    'receiver',
+    roundedRectWithHoles(
+      width: 145.72,
+      height: 80.0,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(9.36, 68.33),
+        Vec2(136.36, 68.57),
+        Vec2(9.38, 13.55),
+        Vec2(136.38, 13.73),
+      ],
+    ),
+  );
+
   // --- Kulp (KulpLights) ---------------------------------------------------
   // No Kulp-specific mechanical drawings are published. Kulp's BeagleBone-
   // based boards (K16/K32/K8 families) do conform to the official BeagleBone

@@ -1,0 +1,65 @@
+{
+  "id": "falcon_srx4_receiver",
+  "name": "Falcon SRx4 Receiver (145.7x80mm bounding box)",
+  "category": "receiver",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 145.72,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 145.72,
+          "y": 80.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 80.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 9.36,
+        "y": 68.33
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 136.36,
+        "y": 68.57
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 9.38,
+        "y": 13.55
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 136.38,
+        "y": 13.73
+      },
+      "radius": 2.0
+    }
+  ]
+}

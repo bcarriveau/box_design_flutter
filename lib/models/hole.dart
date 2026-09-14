@@ -6,7 +6,7 @@ import 'vec2.dart';
 
 enum HoleType { screw, zipTie }
 
-/// A screw hole or zip-tie slot placed directly in box (global) space —
+/// A screw hole or zip-tie hole pair placed directly in box (global) space —
 /// unlike [PlacedTemplate], holes are not reusable templates so they carry
 /// their own absolute geometry parameters rather than a local origin.
 class Hole {
@@ -18,8 +18,9 @@ class Hole {
   /// Diameter in mm, used when [type] is [HoleType.screw].
   final double diameter;
 
-  /// Overall end-to-end length/width in mm (including the rounded ends),
-  /// used when [type] is [HoleType.zipTie].
+  /// Overall end-to-end span in mm between the two hole centers' outer
+  /// edges, and the diameter of each hole, used when [type] is
+  /// [HoleType.zipTie].
   final double slotLength;
   final double slotWidth;
 
@@ -57,13 +58,14 @@ class Hole {
       return [DxfCircle(position, diameter / 2)];
     }
 
+    // Two round holes with solid material left between them -- the wire
+    // bundle lies across that bridge and a zip tie loops down through one
+    // hole, over the wires, and back up through the other.
     final r = slotWidth / 2;
     final hl = math.max(0.0, slotLength / 2 - r);
     final local = <DxfEntity>[
-      DxfLine(Vec2(-hl, r), Vec2(hl, r)),
-      DxfLine(Vec2(hl, -r), Vec2(-hl, -r)),
-      DxfArc(Vec2(hl, 0), r, -90, 90),
-      DxfArc(Vec2(-hl, 0), r, 90, 270),
+      DxfCircle(Vec2(-hl, 0), r),
+      DxfCircle(Vec2(hl, 0), r),
     ];
     return local
         .map((e) => e.transformed(delta: position, rotationDeg: rotationDeg))

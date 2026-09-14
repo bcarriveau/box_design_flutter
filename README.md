@@ -10,7 +10,6 @@ A Flutter (Web + Windows/Linux/macOS) rewrite of [box_design](https://github.com
 - **Controller / power-supply templates**: drag onto the box, move, rotate.
 - **Generic hole presets**: drag screw or zip-tie hole presets onto the box; edit size/position/rotation afterward.
 - **Import DXF**: bring in a real DXF as a new template (box, controller, or power-supply).
-- **Remote templates**: fetch a template library from a GitHub repo (`index.json` + per-template JSON files) — not wired to a default repo yet.
 - **Export**: DXF (minimal ASCII R12) and PDF (1:1 scale vector) of the assembled design.
 - **Save/Open**: project files as JSON.
 
@@ -21,7 +20,8 @@ Most bundled box/power-supply templates are clearly-labeled placeholders — swa
 - **BUD NBF-32016 and NBF-32226**: outer footprint and all 4 hole positions taken directly from BUD's own dimensioned drawings (hbnbf32016.pdf, hbnbf32226.pdf) — both have a hole pattern that's horizontally symmetric but vertically offset (closer to one edge than the other, presumably for latch clearance), reproduced exactly rather than approximated.
 - **BUD NBF-32022**: outer footprint and corner-hole size/inset taken from a dimensioned drawing of that specific model. The drawing's holes are actually slightly asymmetric (shifted by the lid latches) and it also has a 32-hole lid-gasket screw pattern around the perimeter — both simplified away to a symmetric 4-corner-hole outline like every other bundled template.
 - **Mean Well LRS-350 / LRS-150 (top mount)**: outer footprint from each unit's official spec sheet DIMENSION line. LRS-350's top hole pattern is confidently read (uniform 32.5mm inset from every edge); LRS-150's top/side hole positions weren't legible with confidence, so those two plus the LRS-350 side-mount template use generic placeholder holes — check the datasheet before fabrication if you're using the side mount or an LRS-150.
-- **Falcon controllers/receivers, Kulp receivers, and Genius receivers not listed above**: generic placeholders — no official dimensions are published for these; replace via Import once you have a real DXF or measurement.
+- **Falcon F16V3/F16V4, Falcon V2/SRx2/SRx4 Receivers**: hole centers measured directly from real STLs of each board — diameter is Ø4.00mm for all four (the three receivers' STLs actually measured Ø6.00mm; set to 4.00mm per request). Each outline is simplified to a bounding-box rectangle — the real perimeters have notches/tabs that aren't reproduced. The three receivers' STLs share the same 170x80mm *raw* bounding box, but that includes a flared antenna-connector housing that bulges out sideways over a narrow band; each board's actual squarer body was profiled separately (top/bottom sections away from that flare) rather than assumed identical — V2 and SRx2 are both 105.72x80mm, SRx4 is genuinely wider at 145.72x80mm. Each board's holes sit comfortably inside its own correct width.
+- **Falcon controllers/receivers not listed above, Kulp receivers, and Genius receivers not listed above**: generic placeholders — no official dimensions are published for these; replace via Import once you have a real DXF or measurement.
 
 Only BUD NBF sizes backed by an actual dimensioned drawing (32016, 32022, 32226) are bundled — sizes with no drawing on hand were left out rather than guessed.
 

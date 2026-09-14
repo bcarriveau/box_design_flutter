@@ -1,0 +1,65 @@
+{
+  "id": "falcon_16v4_controller",
+  "name": "Falcon F16V4 Controller (196x140mm bounding box)",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 195.5,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 195.5,
+          "y": 139.52,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 139.52,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 33.27,
+        "y": 125.16
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 173.27,
+        "y": 125.16
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 33.27,
+        "y": 23.16
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 160.27,
+        "y": 23.16
+      },
+      "radius": 2.0
+    }
+  ]
+}

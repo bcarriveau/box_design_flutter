@@ -12,7 +12,7 @@ void main() {
     expect(box.center.y, closeTo(20, 1e-9));
   });
 
-  test('zip-tie slot bounding box matches length x width, centered on position', () {
+  test('zip-tie hole pair bounding box matches spacing x diameter, centered on position', () {
     final hole = Hole(
       id: '2',
       type: HoleType.zipTie,
@@ -25,7 +25,7 @@ void main() {
     expect(box.height, closeTo(4, 0.05));
   });
 
-  test('zip-tie slot rotates 90 degrees, swapping the bounding box dimensions', () {
+  test('zip-tie hole pair rotates 90 degrees, swapping the bounding box dimensions', () {
     final hole = Hole(
       id: '3',
       type: HoleType.zipTie,

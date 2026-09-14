@@ -117,7 +117,7 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            placed != null ? (controller.library.byId(placed.templateId)?.name ?? placed.templateId) : (hole!.type == HoleType.screw ? 'Screw Hole' : 'Zip-Tie Slot'),
+            placed != null ? (controller.library.byId(placed.templateId)?.name ?? placed.templateId) : (hole!.type == HoleType.screw ? 'Screw Hole' : 'Zip-Tie Holes'),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
@@ -146,12 +146,12 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
           ],
           if (hole != null && hole.type == HoleType.zipTie) ...[
             const SizedBox(height: 12),
-            _numberField('Slot length (mm)', _lengthController, _lengthFocus, () {
+            _numberField('Hole spacing (mm)', _lengthController, _lengthFocus, () {
               final v = double.tryParse(_lengthController.text);
               if (v != null) controller.updateHole(hole.id, (h) => h.copyWith(slotLength: v));
             }),
             const SizedBox(height: 8),
-            _numberField('Slot width (mm)', _widthController, _widthFocus, () {
+            _numberField('Hole diameter (mm)', _widthController, _widthFocus, () {
               final v = double.tryParse(_widthController.text);
               if (v != null) controller.updateHole(hole.id, (h) => h.copyWith(slotWidth: v));
             }),
