@@ -7,6 +7,13 @@ import 'package:http/http.dart' as http;
 import '../dxf/dxf_parser.dart';
 import '../models/controller_template.dart';
 
+/// Raw-content base URL for this project's own bundled templates —
+/// `loadRemoteDefaults` fetches `index.json` + each listed template from
+/// here, so the app can pick up templates added to the repo after this
+/// build without an app update.
+const String defaultTemplateRepoUrl =
+    'https://raw.githubusercontent.com/computergeek1507/box_design_flutter/main/assets/templates';
+
 /// Holds every template available to the palette: bundled placeholders,
 /// user-imported DXF/JSON templates, and (optionally) ones fetched from a
 /// remote repo.
@@ -34,7 +41,7 @@ class TemplateLibrary extends ChangeNotifier {
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
     final assetPaths = manifest
         .listAssets()
-        .where((p) => p.startsWith('assets/templates/') && p.endsWith('.json'));
+        .where((p) => p.startsWith('assets/templates/') && p.endsWith('.json') && !p.endsWith('/index.json'));
     for (final path in assetPaths) {
       final raw = await rootBundle.loadString(path);
       final json = jsonDecode(raw) as Map<String, dynamic>;
@@ -65,14 +72,11 @@ class TemplateLibrary extends ChangeNotifier {
     return template;
   }
 
-  /// Fetches `<repoBaseUrl>/index.json` — a JSON list of
-  /// `{"id": ..., "name": ..., "file": ...}` entries — then GETs each
-  /// `<repoBaseUrl>/<file>` template JSON and adds it to the library.
-  ///
-  /// Real, working code with no default URL configured: point it at a
-  /// GitHub raw-content base URL (e.g.
-  /// `https://raw.githubusercontent.com/<user>/<repo>/main/templates`) once
-  /// such a template repo exists.
+  /// Fetches `<repoBaseUrl>/index.json` — a JSON list of `{"id": ...,
+  /// "file": ...}` entries (see `tool/gen_placeholder_templates.dart`'s
+  /// `writeIndex`) — then GETs each `<repoBaseUrl>/<file>` template JSON
+  /// and adds it to the library, replacing any bundled template with the
+  /// same id.
   Future<int> fetchRemoteTemplates(String repoBaseUrl) async {
     final base = repoBaseUrl.endsWith('/') ? repoBaseUrl.substring(0, repoBaseUrl.length - 1) : repoBaseUrl;
     final indexResponse = await http.get(Uri.parse('$base/index.json'));
@@ -92,6 +96,17 @@ class TemplateLibrary extends ChangeNotifier {
     }
     notifyListeners();
     return count;
+  }
+
+  /// Best-effort refresh from [defaultTemplateRepoUrl] — call after
+  /// [loadBuiltIns] so the app still works offline on the bundled set.
+  /// Any failure (offline, blocked, repo unreachable) is swallowed.
+  Future<void> loadRemoteDefaults() async {
+    try {
+      await fetchRemoteTemplates(defaultTemplateRepoUrl);
+    } catch (_) {
+      // Bundled templates already loaded; a remote refresh is optional.
+    }
   }
 
   void remove(String id) {

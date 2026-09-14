@@ -106,6 +106,8 @@ List<DxfEntity> rectangleWithCornerHoles({
   ];
 }
 
+final _indexEntries = <Map<String, String>>[];
+
 void writeTemplate(String fileName, String id, String name, String category, List<DxfEntity> entities) {
   final json = {
     'id': id,
@@ -116,18 +118,41 @@ void writeTemplate(String fileName, String id, String name, String category, Lis
   final file = File('assets/templates/$fileName');
   file.writeAsStringSync(const JsonEncoder.withIndent('  ').convert(json));
   stdout.writeln('Wrote ${file.path}');
+  _indexEntries.add({'id': id, 'file': fileName});
+}
+
+/// Writes assets/templates/index.json -- the manifest [TemplateLibrary.
+/// fetchRemoteTemplates] reads to discover this repo's templates over
+/// HTTP. Not a template itself: [TemplateLibrary.loadBuiltIns] explicitly
+/// skips this filename when scanning bundled assets.
+void writeIndex() {
+  final file = File('assets/templates/index.json');
+  file.writeAsStringSync(const JsonEncoder.withIndent('  ').convert(_indexEntries));
+  stdout.writeln('Wrote ${file.path} (${_indexEntries.length} entries)');
 }
 
 void main() {
   // All PLACEHOLDER geometry — replace by importing real DXFs over these
   // ids once available; everything downstream treats them like any other
   // template.
+  //
+  // CG-1500: no clean spec sheet available, only a dense front-panel
+  // drawing (dozens of small mounting holes, two knockouts, slots, hinges,
+  // a latch, cable-tie tabs) with no explicit overall width/height
+  // callout. Transcribing every hole isn't practical, so instead the
+  // outline is derived from the 4 outermost holes of that grid: leftmost/
+  // topmost at (0,0)in, rightmost/bottommost at (7.51,5.80)in -- a
+  // 190.75 x 147.32mm grid -- plus a 12mm margin added on every side to
+  // reach the enclosure wall, giving those same 4 corner holes a uniform
+  // 12mm inset. Hole diameter isn't legible in the drawing; 4mm assumed to
+  // match the other bundled placeholders. Still an estimate, not a
+  // measurement -- and every other hole in the real grid is omitted.
   writeTemplate(
     'cg1500_placeholder.json',
     'cg1500_placeholder',
-    'CG-1500 Enclosure (placeholder)',
+    'CG-1500 Enclosure (estimated, placeholder)',
     'box',
-    rectangleWithCornerHoles(width: 250, height: 150, holeInset: 8, holeDiameter: 4),
+    rectangleWithCornerHoles(width: 214.75, height: 171.32, holeInset: 12, holeDiameter: 4.0),
   );
 
   writeTemplate(
@@ -485,6 +510,31 @@ void main() {
     ),
   );
 
+  // Holiday Coro AlphaPix Flex Differential Receiver (PART #951-61 REV 1.5):
+  // outline (80.963 x 60.0mm), hole spacing (25.385mm), and vertical hole
+  // position (24.441mm up from the bottom) all read directly from a
+  // dimensioned vendor drawing -- confident. The drawing gives no offset
+  // from the left edge to the hole pair, only their spacing and the overall
+  // width, so horizontal placement here assumes the pair is centered
+  // left-right (a common convention, not confirmed). Hole diameter also
+  // isn't dimensioned in the drawing; 3.0mm assumed to match the other
+  // small receiver placeholders.
+  writeTemplate(
+    'holidaycoro_951_61_receiver.json',
+    'holidaycoro_951_61_receiver',
+    'Holiday Coro AlphaPix Flex Receiver 951-61 (81x60mm)',
+    'receiver',
+    roundedRectWithHoles(
+      width: 80.963,
+      height: 60.0,
+      holeDiameter: 3.0,
+      holeCenters: const [
+        Vec2(27.789, 24.441),
+        Vec2(53.174, 24.441),
+      ],
+    ),
+  );
+
   // --- Kulp (KulpLights) ---------------------------------------------------
   // No Kulp-specific mechanical drawings are published. Kulp's BeagleBone-
   // based boards (K16/K32/K8 families) do conform to the official BeagleBone
@@ -511,6 +561,33 @@ void main() {
       holeDiameter: 2.75,
       holeCenters: const [
         // Official Raspberry Pi HAT mounting-hole spec: 58 x 49mm spacing.
+        Vec2(3.5, 3.5),
+        Vec2(61.5, 3.5),
+        Vec2(3.5, 52.5),
+        Vec2(61.5, 52.5),
+      ],
+    ),
+  );
+
+  // Raspberry Pi (Model B form factor: 2B/3B/3B+/4B): outline and hole
+  // positions from a dimensioned drawing (SeenGreat wiki) that matches the
+  // well-documented official spec exactly -- 85 x 56mm board, 3mm corner
+  // radius, 4x holes on the standard 58 x 49mm pattern. Unlike the Kulp Pi
+  // HAT template above (which only covers the narrower 65mm-wide HAT
+  // footprint that stacks on top), this is the full Pi board itself,
+  // extending further right for the USB/Ethernet ports -- both share the
+  // same 4 mounting-hole positions since HATs stack on the same standoffs.
+  writeTemplate(
+    'raspberry_pi_model_b.json',
+    'raspberry_pi_model_b',
+    'Raspberry Pi (Model B form factor, 85x56mm)',
+    'controller',
+    roundedRectWithHoles(
+      width: 85.0,
+      height: 56.0,
+      cornerRadius: 3.0,
+      holeDiameter: 2.7,
+      holeCenters: const [
         Vec2(3.5, 3.5),
         Vec2(61.5, 3.5),
         Vec2(3.5, 52.5),
@@ -590,6 +667,56 @@ void main() {
     ),
   );
 
+  // --- PB_16 (Scott's own KiCad project) -----------------------------------
+  // Outline and hole positions read directly from the native KiCad source
+  // (Receiver_Out.kicad_pcb, Edge.Cuts layer + MountingHole_3.7mm
+  // footprints) rather than reverse-engineered from a mesh or drawing --
+  // exact, not approximated. 4x Ø3.7mm non-plated mounting holes, genuinely
+  // asymmetric on both axes (left/right inset differs by ~0.6mm, top/bottom
+  // by ~1.4mm) -- confirmed real from the source file.
+  writeTemplate(
+    'pb16_receiver_out.json',
+    'pb16_receiver_out',
+    'PB_16 Receiver Out SMD (59.3x71.4mm)',
+    'receiver',
+    roundedRectWithHoles(
+      width: 59.33,
+      height: 71.40,
+      holeDiameter: 3.7,
+      holeCenters: const [
+        Vec2(54.783, 60.422),
+        Vec2(3.983, 60.422),
+        Vec2(54.783, 9.622),
+        Vec2(3.983, 9.622),
+      ],
+    ),
+  );
+
+  // PB_16v2: same source approach as pb16_receiver_out above (native KiCad
+  // Edge.Cuts + MountingHole_3.7mm footprints from PB_16.kicad_pcb) -- the
+  // main 16-channel PocketBeagle-based controller board. Hole spacing lands
+  // on exact imperial values (127.0mm = 5.00in, 50.8mm = 2.00in), but
+  // placement is genuinely asymmetric on both axes -- notably 13.32mm from
+  // the bottom edge vs 35.77mm from the top, since the PocketBeagle SBC and
+  // its headers occupy the top portion of the board.
+  writeTemplate(
+    'pb16_controller.json',
+    'pb16_controller',
+    'PB_16v2 Controller (142.1x99.9mm)',
+    'controller',
+    roundedRectWithHoles(
+      width: 142.10,
+      height: 99.89,
+      holeDiameter: 3.7,
+      holeCenters: const [
+        Vec2(135.999, 64.122),
+        Vec2(8.999, 64.122),
+        Vec2(135.999, 13.322),
+        Vec2(8.999, 13.322),
+      ],
+    ),
+  );
+
   // --- Mean Well LRS enclosed power supplies -------------------------------
   // Outer footprint from each unit's official spec sheet DIMENSION line
   // (LRS-350-SPEC / LRS-150-SPEC, meanwell.com): 215x115x30mm and
@@ -663,4 +790,85 @@ void main() {
     'powerSupply',
     rectangleWithCornerHoles(width: 159.0, height: 30.0, holeInset: 10.0, holeDiameter: 3.0),
   );
+
+  // --- Misc / personal projects ---------------------------------------------
+  // TICONN mounting plate: outline and hole positions measured directly
+  // from a personal FreeCAD project's STL (mounting plate2-Body.stl) --
+  // real, not a published spec. Despite the "5.9x3.9in" TICONN enclosure
+  // this plate was built for, the plate's own footprint is 140.5 x
+  // 191.5mm, not 149.9 x 99.1mm; used as-is per request rather than
+  // reconciled to the enclosure's nominal size. Only the plate's 2 large
+  // Ø6.25mm mounting holes (symmetric, centered horizontally, 15.25mm
+  // inset from the top/bottom edges) are included here -- a separate
+  // cluster of 4 small Ø2.56mm holes for a specific bracket, plus several
+  // irregular rectangular cutouts/pockets elsewhere on the plate, were left
+  // out as not generically useful on a bundled template.
+  writeTemplate(
+    'ticonn_mounting_plate.json',
+    'ticonn_mounting_plate',
+    'TICONN Enclosure Mounting Plate (140.5x191.5mm)',
+    'box',
+    roundedRectWithHoles(
+      width: 140.5,
+      height: 191.5,
+      holeDiameter: 6.25,
+      holeCenters: const [
+        Vec2(70.25, 15.25),
+        Vec2(70.25, 176.25),
+      ],
+    ),
+  );
+
+  // Holiday Coro HC-2500: outline and all 27 mounting-boss locations read
+  // directly from a real vendor DXF (629-MountingLocationsDrawing.dxf,
+  // HC-2500_MOUNTING_PLATE + HC-2500_BOSSES layers) -- exact, not
+  // estimated. The DXF's plate-outline layer also has ~130 other shapes
+  // (connector/component cutouts) that aren't reproduced here, and its
+  // real perimeter has notches this simplifies away to a 243.84 x
+  // 290.87mm bounding-box rectangle. Boss diameter (Ø2.78mm) is inferred
+  // from each boss's identical marker-square size in the drawing, not an
+  // explicit dimension -- treat it as approximate even though the 27
+  // positions themselves are exact.
+  writeTemplate(
+    'holidaycoro_hc2500.json',
+    'holidaycoro_hc2500',
+    'Holiday Coro HC-2500 Mounting Plate (243.8x290.9mm)',
+    'box',
+    roundedRectWithHoles(
+      width: 243.84,
+      height: 290.8735,
+      holeDiameter: 2.78,
+      holeCenters: const [
+        Vec2(7.620, 283.252),
+        Vec2(236.220, 283.252),
+        Vec2(20.320, 265.980),
+        Vec2(121.920, 265.980),
+        Vec2(147.320, 265.980),
+        Vec2(160.020, 265.980),
+        Vec2(223.520, 265.980),
+        Vec2(83.820, 227.880),
+        Vec2(160.020, 227.880),
+        Vec2(121.920, 189.780),
+        Vec2(223.520, 189.780),
+        Vec2(223.520, 164.380),
+        Vec2(7.620, 151.680),
+        Vec2(83.820, 151.680),
+        Vec2(160.020, 151.680),
+        Vec2(20.320, 138.980),
+        Vec2(121.920, 138.980),
+        Vec2(147.320, 138.980),
+        Vec2(223.520, 138.980),
+        Vec2(7.620, 61.002),
+        Vec2(83.820, 61.002),
+        Vec2(160.020, 61.002),
+        Vec2(236.220, 61.002),
+        Vec2(7.620, 11.002),
+        Vec2(83.820, 11.002),
+        Vec2(160.020, 11.002),
+        Vec2(236.220, 11.002),
+      ],
+    ),
+  );
+
+  writeIndex();
 }

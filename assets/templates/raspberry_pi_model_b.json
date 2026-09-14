@@ -1,0 +1,85 @@
+{
+  "id": "raspberry_pi_model_b",
+  "name": "Raspberry Pi (Model B form factor, 85x56mm)",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 3.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 82.0,
+          "y": 0.0,
+          "bulge": 0.4142135623730951
+        },
+        {
+          "x": 85.0,
+          "y": 3.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 85.0,
+          "y": 53.0,
+          "bulge": 0.4142135623730951
+        },
+        {
+          "x": 82.0,
+          "y": 56.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 3.0,
+          "y": 56.0,
+          "bulge": 0.4142135623730951
+        },
+        {
+          "x": 0.0,
+          "y": 53.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 3.0,
+          "bulge": 0.4142135623730951
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.5,
+        "y": 3.5
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 61.5,
+        "y": 3.5
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.5,
+        "y": 52.5
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 61.5,
+        "y": 52.5
+      },
+      "radius": 1.35
+    }
+  ]
+}

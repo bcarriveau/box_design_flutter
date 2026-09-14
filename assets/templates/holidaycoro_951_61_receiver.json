@@ -1,0 +1,49 @@
+{
+  "id": "holidaycoro_951_61_receiver",
+  "name": "Holiday Coro AlphaPix Flex Receiver 951-61 (81x60mm)",
+  "category": "receiver",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 80.963,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 80.963,
+          "y": 60.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 60.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 27.789,
+        "y": 24.441
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 53.174,
+        "y": 24.441
+      },
+      "radius": 1.5
+    }
+  ]
+}

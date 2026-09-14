@@ -1,0 +1,249 @@
+{
+  "id": "holidaycoro_hc2500",
+  "name": "Holiday Coro HC-2500 Mounting Plate (243.8x290.9mm)",
+  "category": "box",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 243.84,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 243.84,
+          "y": 290.8735,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 290.8735,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 7.62,
+        "y": 283.252
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 236.22,
+        "y": 283.252
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 20.32,
+        "y": 265.98
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 121.92,
+        "y": 265.98
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 147.32,
+        "y": 265.98
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 160.02,
+        "y": 265.98
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 223.52,
+        "y": 265.98
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 83.82,
+        "y": 227.88
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 160.02,
+        "y": 227.88
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 121.92,
+        "y": 189.78
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 223.52,
+        "y": 189.78
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 223.52,
+        "y": 164.38
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 7.62,
+        "y": 151.68
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 83.82,
+        "y": 151.68
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 160.02,
+        "y": 151.68
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 20.32,
+        "y": 138.98
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 121.92,
+        "y": 138.98
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 147.32,
+        "y": 138.98
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 223.52,
+        "y": 138.98
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 7.62,
+        "y": 61.002
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 83.82,
+        "y": 61.002
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 160.02,
+        "y": 61.002
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 236.22,
+        "y": 61.002
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 7.62,
+        "y": 11.002
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 83.82,
+        "y": 11.002
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 160.02,
+        "y": 11.002
+      },
+      "radius": 1.39
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 236.22,
+        "y": 11.002
+      },
+      "radius": 1.39
+    }
+  ]
+}

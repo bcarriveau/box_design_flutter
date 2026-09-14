@@ -1,7 +1,7 @@
 {
-  "id": "cg1500_placeholder",
-  "name": "CG-1500 Enclosure (estimated, placeholder)",
-  "category": "box",
+  "id": "pb16_receiver_out",
+  "name": "PB_16 Receiver Out SMD (59.3x71.4mm)",
+  "category": "receiver",
   "entities": [
     {
       "type": "polyline",
@@ -13,18 +13,18 @@
           "bulge": 0.0
         },
         {
-          "x": 214.75,
+          "x": 59.33,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 214.75,
-          "y": 171.32,
+          "x": 59.33,
+          "y": 71.4,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 171.32,
+          "y": 71.4,
           "bulge": 0.0
         }
       ]
@@ -32,34 +32,34 @@
     {
       "type": "circle",
       "center": {
-        "x": 12.0,
-        "y": 12.0
+        "x": 54.783,
+        "y": 60.422
       },
-      "radius": 2.0
+      "radius": 1.85
     },
     {
       "type": "circle",
       "center": {
-        "x": 202.75,
-        "y": 12.0
+        "x": 3.983,
+        "y": 60.422
       },
-      "radius": 2.0
+      "radius": 1.85
     },
     {
       "type": "circle",
       "center": {
-        "x": 202.75,
-        "y": 159.32
+        "x": 54.783,
+        "y": 9.622
       },
-      "radius": 2.0
+      "radius": 1.85
     },
     {
       "type": "circle",
       "center": {
-        "x": 12.0,
-        "y": 159.32
+        "x": 3.983,
+        "y": 9.622
       },
-      "radius": 2.0
+      "radius": 1.85
     }
   ]
 }

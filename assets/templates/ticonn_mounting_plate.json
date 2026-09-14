@@ -1,0 +1,49 @@
+{
+  "id": "ticonn_mounting_plate",
+  "name": "TICONN Enclosure Mounting Plate (140.5x191.5mm)",
+  "category": "box",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 140.5,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 140.5,
+          "y": 191.5,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 191.5,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 70.25,
+        "y": 15.25
+      },
+      "radius": 3.125
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 70.25,
+        "y": 176.25
+      },
+      "radius": 3.125
+    }
+  ]
+}
