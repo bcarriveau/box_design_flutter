@@ -21,7 +21,97 @@ class DesignController extends ChangeNotifier {
   String? selectedId;
   int _nextId = 1;
 
+  bool measureModeEnabled = false;
+  Vec2? measureStart;
+  Vec2? measureEnd;
+
+  PlacedTemplate? _clipboardTemplate;
+  Hole? _clipboardHole;
+
+  static const Vec2 _pasteOffset = Vec2(10, 10);
+
   String _newId(String prefix) => '$prefix-${_nextId++}';
+
+  /// Copies the selected placed template or hole to an internal clipboard,
+  /// ready for [pasteClipboard].
+  void copySelected() {
+    final template = selectedTemplate;
+    if (template != null) {
+      _clipboardTemplate = template;
+      _clipboardHole = null;
+      return;
+    }
+    final hole = selectedHole;
+    if (hole != null) {
+      _clipboardHole = hole;
+      _clipboardTemplate = null;
+    }
+  }
+
+  /// Pastes whatever [copySelected] last captured as a new item, offset
+  /// from the original so the copy is visibly distinct, and selects it.
+  void pasteClipboard() {
+    final template = _clipboardTemplate;
+    if (template != null) {
+      final copy = PlacedTemplate(
+        id: _newId('placed'),
+        templateId: template.templateId,
+        position: template.position.add(_pasteOffset),
+        rotationDeg: template.rotationDeg,
+      );
+      project = project.copyWith(placedTemplates: [...project.placedTemplates, copy]);
+      selectedId = copy.id;
+      notifyListeners();
+      return;
+    }
+    final hole = _clipboardHole;
+    if (hole != null) {
+      final copy = Hole(
+        id: _newId('hole'),
+        type: hole.type,
+        position: hole.position.add(_pasteOffset),
+        rotationDeg: hole.rotationDeg,
+        diameter: hole.diameter,
+        slotLength: hole.slotLength,
+        slotWidth: hole.slotWidth,
+      );
+      project = project.copyWith(holes: [...project.holes, copy]);
+      selectedId = copy.id;
+      notifyListeners();
+    }
+  }
+
+  void toggleMeasureMode() {
+    measureModeEnabled = !measureModeEnabled;
+    measureStart = null;
+    measureEnd = null;
+    notifyListeners();
+  }
+
+  /// Click-to-measure (no dragging): the first click sets the starting
+  /// point, the second sets the end point and completes the measurement,
+  /// and a further click starts a brand new measurement from scratch.
+  void placeMeasurePoint(Vec2 mm) {
+    if (measureStart == null || measureEnd != null) {
+      measureStart = mm;
+      measureEnd = null;
+    } else {
+      measureEnd = mm;
+    }
+    notifyListeners();
+  }
+
+  void startMeasure(Vec2 mm) {
+    measureStart = mm;
+    measureEnd = mm;
+    notifyListeners();
+  }
+
+  void updateMeasure(Vec2 mm) {
+    if (measureStart == null) return;
+    measureEnd = mm;
+    notifyListeners();
+  }
 
   /// Applies [templateId] (a box-category template) as the enclosure
   /// outline, normalizing its geometry so the bounding box's min corner

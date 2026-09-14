@@ -6,6 +6,7 @@ import '../models/palette_drag_item.dart';
 import '../models/vec2.dart';
 import 'box_painter.dart';
 import 'design_controller.dart';
+import 'snap.dart';
 
 const double pixelsPerMm = 4.0;
 
@@ -96,6 +97,21 @@ class _BoxCanvasState extends State<BoxCanvas> {
                       ),
                     ),
                     ...itemOverlays,
+                    if (controller.measureModeEnabled)
+                      Positioned.fill(
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTapUp: (details) => controller.placeMeasurePoint(
+                            snapPoint(_localPxToMm(details.localPosition, boxHeightMm), controller),
+                          ),
+                          onPanStart: (details) => controller.startMeasure(
+                            snapPoint(_localPxToMm(details.localPosition, boxHeightMm), controller),
+                          ),
+                          onPanUpdate: (details) => controller.updateMeasure(
+                            snapPoint(_localPxToMm(details.localPosition, boxHeightMm), controller),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),

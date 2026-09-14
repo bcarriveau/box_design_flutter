@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'design/design_controller.dart';
 import 'design/box_canvas.dart';
@@ -37,6 +38,10 @@ class _BoxDesignHomePageState extends State<BoxDesignHomePage> {
   late final Future<void> _initialLoad = _library.loadBuiltIns().then((_) {
     final defaultBox = _library.defaultBoxTemplate;
     if (defaultBox != null) _controller.applyBoxTemplate(defaultBox.id);
+    // Fire-and-forget: refreshes/extends the bundled set from GitHub in the
+    // background once the UI is already up on the bundled templates, so a
+    // slow or unreachable network never delays first paint.
+    _library.loadRemoteDefaults();
   });
 
   @override
@@ -49,36 +54,65 @@ class _BoxDesignHomePageState extends State<BoxDesignHomePage> {
             if (snapshot.connectionState != ConnectionState.done) {
               return const Center(child: CircularProgressIndicator());
             }
-            return Column(
-              children: [
-                TopToolbar(controller: _controller),
-                Expanded(
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 240,
-                        child: LeftPalette(library: _library, controller: _controller),
-                      ),
-                      const VerticalDivider(width: 1),
-                      Expanded(
-                        child: ColoredBox(
-                          color: Colors.grey.shade200,
-                          child: BoxCanvas(controller: _controller),
+            return Focus(
+              autofocus: true,
+              onKeyEvent: (node, event) => _handleKeyEvent(event),
+              child: Column(
+                children: [
+                  TopToolbar(controller: _controller),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 240,
+                          child: LeftPalette(library: _library, controller: _controller),
                         ),
-                      ),
-                      const VerticalDivider(width: 1),
-                      SizedBox(
-                        width: 280,
-                        child: RightPropertyPanel(controller: _controller),
-                      ),
-                    ],
+                        const VerticalDivider(width: 1),
+                        Expanded(
+                          child: ColoredBox(
+                            color: Colors.grey.shade200,
+                            child: BoxCanvas(controller: _controller),
+                          ),
+                        ),
+                        const VerticalDivider(width: 1),
+                        SizedBox(
+                          width: 280,
+                          child: RightPropertyPanel(controller: _controller),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             );
           },
         ),
       ),
     );
+  }
+
+  /// Delete/Backspace deletes the selected item; Ctrl/Cmd+C and Ctrl/Cmd+V
+  /// copy and paste it. A focused text field (e.g. a property panel number
+  /// field) consumes these keys itself for editing/text-clipboard use
+  /// before they ever reach here, so this only fires for the canvas.
+  KeyEventResult _handleKeyEvent(KeyEvent event) {
+    if (event is! KeyDownEvent) return KeyEventResult.ignored;
+
+    if (event.logicalKey == LogicalKeyboardKey.delete || event.logicalKey == LogicalKeyboardKey.backspace) {
+      _controller.deleteSelected();
+      return KeyEventResult.handled;
+    }
+
+    final isCtrlOrCmd = HardwareKeyboard.instance.isControlPressed || HardwareKeyboard.instance.isMetaPressed;
+    if (isCtrlOrCmd && event.logicalKey == LogicalKeyboardKey.keyC) {
+      _controller.copySelected();
+      return KeyEventResult.handled;
+    }
+    if (isCtrlOrCmd && event.logicalKey == LogicalKeyboardKey.keyV) {
+      _controller.pasteClipboard();
+      return KeyEventResult.handled;
+    }
+
+    return KeyEventResult.ignored;
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../geometry/transform.dart';
@@ -37,6 +39,70 @@ class DesignPainter extends CustomPainter {
       final selected = controller.selectedId == hole.id;
       _drawEntities(canvas, hole.toEntities(), boxHeightMm, color: selected ? Colors.blue : Colors.red, width: selected ? 1.6 : 1.0);
     }
+
+    _drawMeasurement(canvas, boxHeightMm);
+  }
+
+  void _drawMeasurement(Canvas canvas, double boxHeightMm) {
+    final start = controller.measureStart;
+    final end = controller.measureEnd;
+    if (start == null) return;
+
+    if (end == null) {
+      // First click placed; waiting for the second.
+      canvas.drawCircle(_toPx(start, boxHeightMm), 4, Paint()..color = Colors.deepPurple);
+      return;
+    }
+
+    final p1 = _toPx(start, boxHeightMm);
+    final p2 = _toPx(end, boxHeightMm);
+    const color = Colors.deepPurple;
+    final linePaint = Paint()
+      ..color = color
+      ..strokeWidth = 1.4
+      ..style = PaintingStyle.stroke;
+
+    canvas.drawLine(p1, p2, linePaint);
+
+    // Perpendicular tick marks at each end, like a dimension line.
+    final dx = p2.dx - p1.dx;
+    final dy = p2.dy - p1.dy;
+    final length = math.sqrt(dx * dx + dy * dy);
+    if (length > 0.001) {
+      final perpX = -dy / length * 5;
+      final perpY = dx / length * 5;
+      canvas.drawLine(Offset(p1.dx - perpX, p1.dy - perpY), Offset(p1.dx + perpX, p1.dy + perpY), linePaint);
+      canvas.drawLine(Offset(p2.dx - perpX, p2.dy - perpY), Offset(p2.dx + perpX, p2.dy + perpY), linePaint);
+    }
+
+    for (final p in [p1, p2]) {
+      canvas.drawCircle(p, 3, Paint()..color = color);
+    }
+
+    final deltaMm = end.subtract(start);
+    final distanceMm = math.sqrt(deltaMm.x * deltaMm.x + deltaMm.y * deltaMm.y);
+    final label = 'ΔX ${deltaMm.x.toStringAsFixed(2)}  ΔY ${deltaMm.y.toStringAsFixed(2)}\n'
+        '${distanceMm.toStringAsFixed(2)} mm';
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: label,
+        style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+      ),
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    )..layout();
+
+    final mid = Offset((p1.dx + p2.dx) / 2, (p1.dy + p2.dy) / 2);
+    final labelRect = Rect.fromCenter(
+      center: mid,
+      width: textPainter.width + 8,
+      height: textPainter.height + 4,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(labelRect, const Radius.circular(4)),
+      Paint()..color = color,
+    );
+    textPainter.paint(canvas, Offset(labelRect.left + 4, labelRect.top + 2));
   }
 
   void _drawGrid(Canvas canvas, BoxProject project, double boxHeightMm) {
