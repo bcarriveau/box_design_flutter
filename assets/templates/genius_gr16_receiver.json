@@ -1,0 +1,85 @@
+{
+  "id": "genius_gr16_receiver",
+  "name": "Genius Pixel GR16 Receiver (16 Port)",
+  "category": "receiver",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 2.5,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 177.5,
+          "y": 0.0,
+          "bulge": 0.4142135623730951
+        },
+        {
+          "x": 180.0,
+          "y": 2.5,
+          "bulge": 0.0
+        },
+        {
+          "x": 180.0,
+          "y": 111.5,
+          "bulge": 0.4142135623730951
+        },
+        {
+          "x": 177.5,
+          "y": 114.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 2.5,
+          "y": 114.0,
+          "bulge": 0.4142135623730951
+        },
+        {
+          "x": 0.0,
+          "y": 111.5,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 2.5,
+          "bulge": 0.4142135623730951
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 22.0,
+        "y": 109.0
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 175.0,
+        "y": 109.0
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 22.0,
+        "y": 5.0
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 175.0,
+        "y": 5.0
+      },
+      "radius": 2.0
+    }
+  ]
+}

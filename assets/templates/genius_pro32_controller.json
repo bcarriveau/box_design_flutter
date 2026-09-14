@@ -1,0 +1,197 @@
+{
+  "id": "genius_pro32_controller",
+  "name": "Genius PRO 32-Port Controller",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 3.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 331.0,
+          "y": 0.0,
+          "bulge": 0.4142135623730951
+        },
+        {
+          "x": 334.0,
+          "y": 3.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 334.0,
+          "y": 235.0,
+          "bulge": 0.4142135623730951
+        },
+        {
+          "x": 331.0,
+          "y": 238.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 3.0,
+          "y": 238.0,
+          "bulge": 0.4142135623730951
+        },
+        {
+          "x": 0.0,
+          "y": 235.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 3.0,
+          "bulge": 0.4142135623730951
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.116,
+        "y": 4.116
+      },
+      "radius": 2.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 112.654,
+        "y": 4.116
+      },
+      "radius": 2.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 221.087,
+        "y": 4.116
+      },
+      "radius": 2.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 329.52,
+        "y": 4.116
+      },
+      "radius": 2.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.116,
+        "y": 233.916
+      },
+      "radius": 2.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 112.654,
+        "y": 233.916
+      },
+      "radius": 2.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 221.087,
+        "y": 233.916
+      },
+      "radius": 2.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 329.52,
+        "y": 233.916
+      },
+      "radius": 2.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.35,
+        "y": 119.016
+      },
+      "radius": 2.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 329.65,
+        "y": 119.016
+      },
+      "radius": 2.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 59.782,
+        "y": 164.916
+      },
+      "radius": 2.25
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 209.782,
+        "y": 164.916
+      },
+      "radius": 2.25
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 59.782,
+        "y": 139.916
+      },
+      "radius": 2.25
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 209.782,
+        "y": 139.916
+      },
+      "radius": 2.25
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 59.782,
+        "y": 89.916
+      },
+      "radius": 2.25
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 209.782,
+        "y": 89.916
+      },
+      "radius": 2.25
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 59.782,
+        "y": 64.916
+      },
+      "radius": 2.25
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 209.782,
+        "y": 64.916
+      },
+      "radius": 2.25
+    }
+  ]
+}

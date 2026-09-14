@@ -1,0 +1,65 @@
+{
+  "id": "meanwell_lrs350_top",
+  "name": "Mean Well LRS-350 (top mount, 215x115mm)",
+  "category": "powerSupply",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 215.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 215.0,
+          "y": 115.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 115.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 32.5,
+        "y": 32.5
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 182.5,
+        "y": 32.5
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 32.5,
+        "y": 82.5
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 182.5,
+        "y": 82.5
+      },
+      "radius": 2.0
+    }
+  ]
+}

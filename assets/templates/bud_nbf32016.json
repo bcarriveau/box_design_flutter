@@ -1,0 +1,65 @@
+{
+  "id": "bud_nbf32016",
+  "name": "BUD NBF-32016 NEMA Enclosure (304.5x203mm)",
+  "category": "box",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 304.5,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 304.5,
+          "y": 203.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 203.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 39.75,
+        "y": 45.68
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 264.75,
+        "y": 45.68
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 39.75,
+        "y": 173.18
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 264.75,
+        "y": 173.18
+      },
+      "radius": 2.0
+    }
+  ]
+}

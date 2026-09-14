@@ -1,0 +1,65 @@
+{
+  "id": "bud_nbf32226",
+  "name": "BUD NBF-32226 NEMA Enclosure (400x300mm)",
+  "category": "box",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 400.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 400.0,
+          "y": 300.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 300.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 37.35,
+        "y": 50.0
+      },
+      "radius": 2.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 362.65,
+        "y": 50.0
+      },
+      "radius": 2.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 37.35,
+        "y": 279.8
+      },
+      "radius": 2.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 362.65,
+        "y": 279.8
+      },
+      "radius": 2.5
+    }
+  ]
+}

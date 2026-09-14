@@ -8,7 +8,7 @@ enum TemplateSource { builtIn, imported, remote }
 /// Which section of the palette a template belongs to. [box] templates are
 /// applied as the enclosure outline itself (one active at a time); the
 /// others are placed as items inside the box.
-enum TemplateCategory { box, controller, powerSupply }
+enum TemplateCategory { box, controller, powerSupply, receiver }
 
 /// A reusable footprint: a rigid-body bag of geometry (outline, mounting
 /// holes, silkscreen, whatever the source DXF contained), stored in the

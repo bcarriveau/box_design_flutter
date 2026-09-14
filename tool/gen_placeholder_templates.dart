@@ -7,6 +7,79 @@ import 'package:box_design_flutter/dxf/dxf_json_codec.dart';
 import 'package:box_design_flutter/models/dxf_entity.dart';
 import 'package:box_design_flutter/models/vec2.dart';
 
+/// A rectangle outline with [cornerRadius] rounded corners (0 = sharp),
+/// plus a circular hole at each of [holeCenters] (all sharing [holeDiameter]).
+List<DxfEntity> roundedRectWithHoles({
+  required double width,
+  required double height,
+  required List<Vec2> holeCenters,
+  required double holeDiameter,
+  double cornerRadius = 0,
+}) {
+  const bulge90 = 0.4142135623730951; // tan(90deg / 4), quarter-circle bulge
+  final List<PolyVertex> outline;
+  if (cornerRadius <= 0) {
+    outline = [
+      const PolyVertex(Vec2(0, 0)),
+      PolyVertex(Vec2(width, 0)),
+      PolyVertex(Vec2(width, height)),
+      PolyVertex(Vec2(0, height)),
+    ];
+  } else {
+    final r = cornerRadius;
+    outline = [
+      PolyVertex(Vec2(r, 0)),
+      PolyVertex(Vec2(width - r, 0), bulge: bulge90),
+      PolyVertex(Vec2(width, r)),
+      PolyVertex(Vec2(width, height - r), bulge: bulge90),
+      PolyVertex(Vec2(width - r, height)),
+      PolyVertex(Vec2(r, height), bulge: bulge90),
+      PolyVertex(Vec2(0, height - r)),
+      PolyVertex(Vec2(0, r), bulge: bulge90),
+    ];
+  }
+  return [
+    DxfPolyline(outline, closed: true),
+    for (final c in holeCenters) DxfCircle(c, holeDiameter / 2),
+  ];
+}
+
+/// A rectangle with a rectangular notch cut out of the top edge (used by
+/// several Genius Pixel boards), rounded corners on the 6 outer corners,
+/// plus circular holes.
+List<DxfEntity> notchedTopRectWithHoles({
+  required double width,
+  required double height,
+  required double notchLeftWidth,
+  required double notchDepth,
+  required double notchWidth,
+  required List<Vec2> holeCenters,
+  required double holeDiameter,
+  double cornerRadius = 0,
+}) {
+  const bulge90 = 0.4142135623730951;
+  final r = cornerRadius;
+  final notchRight = notchLeftWidth + notchWidth;
+  final outline = [
+    PolyVertex(Vec2(r, 0)),
+    PolyVertex(Vec2(width - r, 0), bulge: bulge90),
+    PolyVertex(Vec2(width, r)),
+    PolyVertex(Vec2(width, height - r), bulge: bulge90),
+    PolyVertex(Vec2(width - r, height)),
+    PolyVertex(Vec2(notchRight, height)),
+    PolyVertex(Vec2(notchRight, height - notchDepth)),
+    PolyVertex(Vec2(notchLeftWidth, height - notchDepth)),
+    PolyVertex(Vec2(notchLeftWidth, height)),
+    PolyVertex(Vec2(r, height), bulge: bulge90),
+    PolyVertex(Vec2(0, height - r)),
+    PolyVertex(Vec2(0, r), bulge: bulge90),
+  ];
+  return [
+    DxfPolyline(outline, closed: true),
+    for (final c in holeCenters) DxfCircle(c, holeDiameter / 2),
+  ];
+}
+
 List<DxfEntity> rectangleWithCornerHoles({
   required double width,
   required double height,
@@ -79,5 +152,375 @@ void main() {
     'Generic Power Supply (placeholder)',
     'powerSupply',
     rectangleWithCornerHoles(width: 115, height: 50, holeInset: 5, holeDiameter: 4),
+  );
+
+  // --- Genius Pixel (Experience Lights) -----------------------------------
+  // Dimensions digitized from official vendor footprint diagrams
+  // (store.experiencelights.com); notch/hole coordinates are direct edge
+  // insets read off those drawings. The two "PRO" boards include only the
+  // primary/confidently-read mounting holes (outline is exact; some minor
+  // interior holes visible on the diagram are omitted) — check the vendor
+  // diagram before fabrication if every hole matters.
+
+  writeTemplate(
+    'genius_gpx16_2023_controller.json',
+    'genius_gpx16_2023_controller',
+    'Genius Pixel GPX16 Controller (2023+)',
+    'controller',
+    notchedTopRectWithHoles(
+      width: 203.55,
+      height: 119.00,
+      notchLeftWidth: 141.00,
+      notchDepth: 12.00,
+      notchWidth: 28.00,
+      cornerRadius: 2.5,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(22.60, 109.00),
+        Vec2(175.00, 109.00),
+        Vec2(22.60, 7.40),
+        Vec2(175.00, 7.40),
+      ],
+    ),
+  );
+
+  writeTemplate(
+    'genius_glr_controller.json',
+    'genius_glr_controller',
+    'Genius Long Range Controller (GLR)',
+    'controller',
+    notchedTopRectWithHoles(
+      width: 180.00,
+      height: 114.00,
+      notchLeftWidth: 123.00,
+      notchDepth: 12.00,
+      notchWidth: 28.00,
+      cornerRadius: 2.5,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(22.00, 109.00),
+        Vec2(175.00, 109.00),
+        Vec2(22.00, 5.00),
+        Vec2(175.00, 5.00),
+      ],
+    ),
+  );
+
+  writeTemplate(
+    'genius_gr16_receiver.json',
+    'genius_gr16_receiver',
+    'Genius Pixel GR16 Receiver (16 Port)',
+    'receiver',
+    roundedRectWithHoles(
+      width: 180.00,
+      height: 114.00,
+      cornerRadius: 2.5,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(22.00, 109.00),
+        Vec2(175.00, 109.00),
+        Vec2(22.00, 5.00),
+        Vec2(175.00, 5.00),
+      ],
+    ),
+  );
+
+  writeTemplate(
+    'genius_gr4_receiver.json',
+    'genius_gr4_receiver',
+    'Genius Pixel GR4 Receiver (2024 Edition)',
+    'receiver',
+    roundedRectWithHoles(
+      width: 91.00,
+      height: 75.00,
+      cornerRadius: 2.5,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(5.00, 70.00),
+        Vec2(86.00, 70.00),
+        Vec2(5.00, 5.00),
+        Vec2(86.00, 5.00),
+      ],
+    ),
+  );
+
+  writeTemplate(
+    'genius_pro32_controller.json',
+    'genius_pro32_controller',
+    'Genius PRO 32-Port Controller',
+    'controller',
+    roundedRectWithHoles(
+      width: 334.00,
+      height: 238.00,
+      cornerRadius: 3.0,
+      holeDiameter: 5.0,
+      holeCenters: const [
+        // 10 perimeter mounting holes
+        Vec2(4.116, 4.116),
+        Vec2(112.654, 4.116),
+        Vec2(221.087, 4.116),
+        Vec2(329.52, 4.116),
+        Vec2(4.116, 233.916),
+        Vec2(112.654, 233.916),
+        Vec2(221.087, 233.916),
+        Vec2(329.52, 233.916),
+        Vec2(4.35, 119.016),
+        Vec2(329.65, 119.016),
+      ],
+    )
+      ..addAll([
+        // 8 interior Ø4.50 holes (slightly smaller than the perimeter Ø5.00)
+        for (final p in const [
+          Vec2(59.782, 164.916),
+          Vec2(209.782, 164.916),
+          Vec2(59.782, 139.916),
+          Vec2(209.782, 139.916),
+          Vec2(59.782, 89.916),
+          Vec2(209.782, 89.916),
+          Vec2(59.782, 64.916),
+          Vec2(209.782, 64.916),
+        ])
+          DxfCircle(p, 4.5 / 2),
+      ]),
+  );
+
+  writeTemplate(
+    'genius_pro16_controller.json',
+    'genius_pro16_controller',
+    'Genius PRO 16-Port Controller',
+    'controller',
+    roundedRectWithHoles(
+      width: 241.00,
+      height: 208.00,
+      cornerRadius: 3.0,
+      holeDiameter: 4.3,
+      holeCenters: const [
+        Vec2(49.50, 160.00),
+        Vec2(199.50, 160.00),
+        Vec2(49.50, 110.00),
+        Vec2(199.50, 110.00),
+      ],
+    ),
+  );
+
+  writeTemplate(
+    'genius_pro_receiver.json',
+    'genius_pro_receiver',
+    'Genius PRO Receiver (4/8/16 Port)',
+    'receiver',
+    roundedRectWithHoles(
+      width: 241.00,
+      height: 208.00,
+      cornerRadius: 3.0,
+      holeDiameter: 4.3,
+      holeCenters: const [
+        Vec2(49.50, 160.00),
+        Vec2(199.50, 160.00),
+        Vec2(49.50, 110.00),
+        Vec2(199.50, 110.00),
+      ],
+    ),
+  );
+
+  // --- Falcon (PixelController / FalconChristmas) -------------------------
+  // No official mechanical drawings or hole coordinates are published for
+  // any Falcon board (checked pixelcontroller.com, falconchristmas.com,
+  // community wikis/forums) — these are generic placeholders only. Falcon
+  // also has no distinct "receiver" product line (expansion boards instead);
+  // the receiver placeholder below is a generic small-board stand-in.
+
+  writeTemplate(
+    'falcon_controller_placeholder.json',
+    'falcon_controller_placeholder',
+    'Falcon Controller (placeholder)',
+    'controller',
+    rectangleWithCornerHoles(width: 170, height: 105, holeInset: 6, holeDiameter: 3.5),
+  );
+
+  writeTemplate(
+    'falcon_receiver_placeholder.json',
+    'falcon_receiver_placeholder',
+    'Falcon Receiver (placeholder)',
+    'receiver',
+    rectangleWithCornerHoles(width: 75, height: 50, holeInset: 5, holeDiameter: 3.0),
+  );
+
+  // --- Kulp (KulpLights) ---------------------------------------------------
+  // No Kulp-specific mechanical drawings are published. Kulp's BeagleBone-
+  // based boards (K16/K32/K8 families) do conform to the official BeagleBone
+  // "cape" envelope, and the Pi-based boards (K8-Pi/K2-Pi) to the official
+  // Raspberry Pi HAT spec — those two are real standards, not guesses.
+  // Kulp has no distinct "receiver" product line; placeholder only.
+
+  writeTemplate(
+    'kulp_beaglebone_controller.json',
+    'kulp_beaglebone_controller',
+    'Kulp Controller – BeagleBone Cape (K16/K32/K8)',
+    'controller',
+    rectangleWithCornerHoles(width: 86.4, height: 53.3, holeInset: 4, holeDiameter: 3.2),
+  );
+
+  writeTemplate(
+    'kulp_pi_hat_controller.json',
+    'kulp_pi_hat_controller',
+    'Kulp Controller – Raspberry Pi HAT (K8-Pi/K2-Pi)',
+    'controller',
+    roundedRectWithHoles(
+      width: 65.0,
+      height: 56.5,
+      holeDiameter: 2.75,
+      holeCenters: const [
+        // Official Raspberry Pi HAT mounting-hole spec: 58 x 49mm spacing.
+        Vec2(3.5, 3.5),
+        Vec2(61.5, 3.5),
+        Vec2(3.5, 52.5),
+        Vec2(61.5, 52.5),
+      ],
+    ),
+  );
+
+  writeTemplate(
+    'kulp_receiver_placeholder.json',
+    'kulp_receiver_placeholder',
+    'Kulp Receiver (placeholder)',
+    'receiver',
+    rectangleWithCornerHoles(width: 75, height: 50, holeInset: 5, holeDiameter: 3.0),
+  );
+
+  // --- BUD Industries NBF-Series NEMA economy enclosures ------------------
+  // Outer footprint (A x B) for each model taken directly from BUD's NBF
+  // datasheet nominal-dimensions table. Corner mounting-hole inset/diameter
+  // for NBF-32022 came from a dimensioned drawing published on its Amazon
+  // listing (ASIN B005UPAPD2): Ø0.157" (~4.0mm) holes at a 0.984"
+  // (~25mm) typical inset -- the drawing's holes are actually slightly
+  // asymmetric (shifted by the lid latches on one edge) and it also shows a
+  // 32-hole lid-gasket screw pattern around the perimeter; both are
+  // simplified away here to the same symmetric 4-corner-hole convention
+  // used by every other bundled template.
+  writeTemplate(
+    'bud_nbf32022.json',
+    'bud_nbf32022',
+    'BUD NBF-32022 NEMA Enclosure (350x250mm)',
+    'box',
+    rectangleWithCornerHoles(width: 350, height: 250, holeInset: 25, holeDiameter: 4.0),
+  );
+
+  // Official BUD dimensioned drawing (hbnbf32016.pdf): outer 304.50 x
+  // 203.00mm; 4x Ø4.00mm M5 self-tapping holes on a 225.00 x 127.50mm
+  // pattern, horizontally centered but vertically asymmetric -- the bottom
+  // row sits 45.68mm from the bottom edge (leaving 29.82mm at the top).
+  writeTemplate(
+    'bud_nbf32016.json',
+    'bud_nbf32016',
+    'BUD NBF-32016 NEMA Enclosure (304.5x203mm)',
+    'box',
+    roundedRectWithHoles(
+      width: 304.50,
+      height: 203.00,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(39.75, 45.68),
+        Vec2(264.75, 45.68),
+        Vec2(39.75, 173.18),
+        Vec2(264.75, 173.18),
+      ],
+    ),
+  );
+
+  // Official BUD dimensioned drawing (hbnbf32226.pdf): outer 400.0 x
+  // 300.0mm; 4x Ø5.0mm M5x0.8 threaded-insert corner holes on a 325.3 x
+  // 229.8mm pattern, horizontally centered but vertically asymmetric (same
+  // bottom-edge-referenced pattern as NBF-32016) -- bottom row 50.0mm from
+  // the bottom edge, leaving 20.2mm at the top.
+  writeTemplate(
+    'bud_nbf32226.json',
+    'bud_nbf32226',
+    'BUD NBF-32226 NEMA Enclosure (400x300mm)',
+    'box',
+    roundedRectWithHoles(
+      width: 400.0,
+      height: 300.0,
+      holeDiameter: 5.0,
+      holeCenters: const [
+        Vec2(37.35, 50.0),
+        Vec2(362.65, 50.0),
+        Vec2(37.35, 279.8),
+        Vec2(362.65, 279.8),
+      ],
+    ),
+  );
+
+  // --- Mean Well LRS enclosed power supplies -------------------------------
+  // Outer footprint from each unit's official spec sheet DIMENSION line
+  // (LRS-350-SPEC / LRS-150-SPEC, meanwell.com): 215x115x30mm and
+  // 159x97x30mm (L*W*H). Each unit ships with two usable mounting-hole
+  // patterns -- through the top/bottom face, or through one of the end
+  // (side) faces -- so both get a "top" and "side" footprint template.
+  //
+  // LRS-350 (Case 207A) top holes: confidently read as 4x M4 (tapped, no
+  // through-diameter given -- 4.0mm used as a stand-in) at a uniform 32.5mm
+  // inset from every edge on both axes (i.e. a 150.0 x 50.0mm hole
+  // pattern) -- the three "32.5" callouts on the drawing agree with each
+  // other and with the outer size, which is why this one is high-confidence.
+  writeTemplate(
+    'meanwell_lrs350_top.json',
+    'meanwell_lrs350_top',
+    'Mean Well LRS-350 (top mount, 215x115mm)',
+    'powerSupply',
+    roundedRectWithHoles(
+      width: 215.0,
+      height: 115.0,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(32.5, 32.5),
+        Vec2(182.5, 32.5),
+        Vec2(32.5, 82.5),
+        Vec2(182.5, 82.5),
+      ],
+    ),
+  );
+
+  // LRS-350 side-mount footprint: outer size (length x case height) is
+  // exact, but the drawing's "4-M4(Both Sides)" side holes couldn't be read
+  // with confidence beyond their horizontal position (reusing the same
+  // 32.5mm end inset as the top pattern seems likely but isn't verified) --
+  // shown as a single hole at each end, vertically centered, as a
+  // placeholder for the real 4-hole pattern. Check the datasheet before
+  // fabrication if the side mount is actually being used.
+  writeTemplate(
+    'meanwell_lrs350_side_placeholder.json',
+    'meanwell_lrs350_side_placeholder',
+    'Mean Well LRS-350 (side mount, 215x30mm, placeholder holes)',
+    'powerSupply',
+    roundedRectWithHoles(
+      width: 215.0,
+      height: 30.0,
+      holeDiameter: 4.0,
+      holeCenters: const [
+        Vec2(32.5, 15.0),
+        Vec2(182.5, 15.0),
+      ],
+    ),
+  );
+
+  // LRS-150 (Case 241A): outer size is exact (official DIMENSION line), but
+  // its top view shows only 2x M3 holes and the side view only 3x M3 --
+  // neither count nor exact offsets could be read with confidence from the
+  // drawing. Hole positions below are generic corner placeholders (not
+  // measured) until a clearer drawing or real DXF is available.
+  writeTemplate(
+    'meanwell_lrs150_top_placeholder.json',
+    'meanwell_lrs150_top_placeholder',
+    'Mean Well LRS-150 (top mount, 159x97mm, placeholder holes)',
+    'powerSupply',
+    rectangleWithCornerHoles(width: 159.0, height: 97.0, holeInset: 10.0, holeDiameter: 3.0),
+  );
+
+  writeTemplate(
+    'meanwell_lrs150_side_placeholder.json',
+    'meanwell_lrs150_side_placeholder',
+    'Mean Well LRS-150 (side mount, 159x30mm, placeholder holes)',
+    'powerSupply',
+    rectangleWithCornerHoles(width: 159.0, height: 30.0, holeInset: 10.0, holeDiameter: 3.0),
   );
 }

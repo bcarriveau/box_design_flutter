@@ -74,6 +74,7 @@ class _LeftPaletteState extends State<LeftPalette> {
                   _boxSection(),
                   const Divider(height: 1),
                   _categorySection('Controllers', TemplateCategory.controller),
+                  _categorySection('Receivers', TemplateCategory.receiver),
                   _categorySection('Power Supplies', TemplateCategory.powerSupply),
                   _genericHolesSection(),
                 ],
@@ -93,6 +94,7 @@ class _LeftPaletteState extends State<LeftPalette> {
                     items: const [
                       DropdownMenuItem(value: TemplateCategory.box, child: Text('Box')),
                       DropdownMenuItem(value: TemplateCategory.controller, child: Text('Controller')),
+                      DropdownMenuItem(value: TemplateCategory.receiver, child: Text('Receiver')),
                       DropdownMenuItem(value: TemplateCategory.powerSupply, child: Text('Power Supply')),
                     ],
                     onChanged: (v) => setState(() => _importCategory = v ?? TemplateCategory.controller),

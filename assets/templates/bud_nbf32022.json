@@ -1,0 +1,65 @@
+{
+  "id": "bud_nbf32022",
+  "name": "BUD NBF-32022 NEMA Enclosure (350x250mm)",
+  "category": "box",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 350.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 350.0,
+          "y": 250.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 250.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 25.0,
+        "y": 25.0
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 325.0,
+        "y": 25.0
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 325.0,
+        "y": 225.0
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 25.0,
+        "y": 225.0
+      },
+      "radius": 2.0
+    }
+  ]
+}

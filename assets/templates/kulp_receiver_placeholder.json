@@ -1,0 +1,65 @@
+{
+  "id": "kulp_receiver_placeholder",
+  "name": "Kulp Receiver (placeholder)",
+  "category": "receiver",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 75.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 75.0,
+          "y": 50.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 50.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 5.0,
+        "y": 5.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 70.0,
+        "y": 5.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 70.0,
+        "y": 45.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 5.0,
+        "y": 45.0
+      },
+      "radius": 1.5
+    }
+  ]
+}

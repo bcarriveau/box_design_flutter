@@ -1,0 +1,65 @@
+{
+  "id": "meanwell_lrs150_top_placeholder",
+  "name": "Mean Well LRS-150 (top mount, 159x97mm, placeholder holes)",
+  "category": "powerSupply",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 159.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 159.0,
+          "y": 97.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 97.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 10.0,
+        "y": 10.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 149.0,
+        "y": 10.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 149.0,
+        "y": 87.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 10.0,
+        "y": 87.0
+      },
+      "radius": 1.5
+    }
+  ]
+}
