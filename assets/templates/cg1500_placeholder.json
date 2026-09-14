@@ -1,0 +1,65 @@
+{
+  "id": "cg1500_placeholder",
+  "name": "CG-1500 Enclosure (placeholder)",
+  "category": "box",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 250.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 250.0,
+          "y": 150.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 150.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 8.0,
+        "y": 8.0
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 242.0,
+        "y": 8.0
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 242.0,
+        "y": 142.0
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 8.0,
+        "y": 142.0
+      },
+      "radius": 2.0
+    }
+  ]
+}

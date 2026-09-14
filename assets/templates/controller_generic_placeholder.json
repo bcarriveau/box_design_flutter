@@ -1,0 +1,65 @@
+{
+  "id": "controller_generic_placeholder",
+  "name": "Generic Controller Board (placeholder)",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 172.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 172.0,
+          "y": 111.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 111.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 6.0,
+        "y": 6.0
+      },
+      "radius": 1.75
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 166.0,
+        "y": 6.0
+      },
+      "radius": 1.75
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 166.0,
+        "y": 105.0
+      },
+      "radius": 1.75
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 6.0,
+        "y": 105.0
+      },
+      "radius": 1.75
+    }
+  ]
+}
