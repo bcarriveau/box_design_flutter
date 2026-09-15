@@ -108,6 +108,14 @@
     "file": "meanwell_lrs600_side_placeholder.json"
   },
   {
+    "id": "meanwell_rs25_top",
+    "file": "meanwell_rs25_top.json"
+  },
+  {
+    "id": "meanwell_rs25_side",
+    "file": "meanwell_rs25_side.json"
+  },
+  {
     "id": "ticonn_mounting_plate",
     "file": "ticonn_mounting_plate.json"
   },

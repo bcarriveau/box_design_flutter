@@ -1,6 +1,6 @@
 {
-  "id": "meanwell_lrs150_side_placeholder",
-  "name": "Mean Well LRS-150 (side mount)",
+  "id": "meanwell_rs25_side",
+  "name": "Meanwell RS25 (Side)",
   "category": "powerSupply",
   "entities": [
     {
@@ -13,18 +13,18 @@
           "bulge": 0.0
         },
         {
-          "x": 159.0,
+          "x": 92.0,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 159.0,
-          "y": 30.0,
+          "x": 92.0,
+          "y": 28.0,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 30.0,
+          "y": 28.0,
           "bulge": 0.0
         }
       ]
@@ -32,24 +32,16 @@
     {
       "type": "circle",
       "center": {
-        "x": 22.0,
-        "y": 15.0
+        "x": 22.75,
+        "y": 14.0
       },
       "radius": 1.75
     },
     {
       "type": "circle",
       "center": {
-        "x": 139.0,
-        "y": 6.0
-      },
-      "radius": 1.75
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 139.0,
-        "y": 24.0
+        "x": 89.25,
+        "y": 14.0
       },
       "radius": 1.75
     }

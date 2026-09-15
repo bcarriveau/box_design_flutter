@@ -32,34 +32,18 @@
     {
       "type": "circle",
       "center": {
-        "x": 10.0,
-        "y": 10.0
+        "x": 24.0,
+        "y": 32.0
       },
-      "radius": 1.5
+      "radius": 1.75
     },
     {
       "type": "circle",
       "center": {
-        "x": 149.0,
-        "y": 10.0
+        "x": 102.0,
+        "y": 32.0
       },
-      "radius": 1.5
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 149.0,
-        "y": 87.0
-      },
-      "radius": 1.5
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 10.0,
-        "y": 87.0
-      },
-      "radius": 1.5
+      "radius": 1.75
     }
   ]
 }
