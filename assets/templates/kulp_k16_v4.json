@@ -1,0 +1,97 @@
+{
+  "id": "kulp_k16_v4",
+  "name": "Kulp K16 V4",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 168.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 168.0,
+          "y": 139.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 139.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 5.0,
+        "y": 26.25
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 5.0,
+        "y": 80.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 5.0,
+        "y": 135.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 163.0,
+        "y": 26.25
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 163.0,
+        "y": 80.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 163.0,
+        "y": 135.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 84.5,
+        "y": 4.5
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 84.5,
+        "y": 66.69
+      },
+      "radius": 1.5
+    }
+  ]
+}

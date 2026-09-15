@@ -56,12 +56,8 @@
     "file": "holidaycoro_951_61_receiver.json"
   },
   {
-    "id": "kulp_beaglebone_controller",
-    "file": "kulp_beaglebone_controller.json"
-  },
-  {
-    "id": "kulp_pi_hat_controller",
-    "file": "kulp_pi_hat_controller.json"
+    "id": "kulp_k16_v4",
+    "file": "kulp_k16_v4.json"
   },
   {
     "id": "raspberry_pi_model_b",
