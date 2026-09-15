@@ -625,7 +625,9 @@ void main() {
   // footprints) rather than reverse-engineered from a mesh or drawing --
   // exact, not approximated. 4x Ø3.7mm non-plated mounting holes, genuinely
   // asymmetric on both axes (left/right inset differs by ~0.6mm, top/bottom
-  // by ~1.4mm) -- confirmed real from the source file.
+  // by ~1.4mm) -- confirmed real from the source file. KiCad's Y axis
+  // increases downward, so the raw footprint Y values are flipped
+  // (height - y) here to match this app's Y-up coordinate system.
   writeTemplate(
     'pb16_receiver_out.json',
     'pb16_receiver_out',
@@ -636,10 +638,10 @@ void main() {
       height: 71.40,
       holeDiameter: 3.7,
       holeCenters: const [
-        Vec2(54.783, 60.422),
-        Vec2(3.983, 60.422),
-        Vec2(54.783, 9.622),
-        Vec2(3.983, 9.622),
+        Vec2(54.783, 10.978),
+        Vec2(3.983, 10.978),
+        Vec2(54.783, 61.778),
+        Vec2(3.983, 61.778),
       ],
     ),
   );
@@ -649,8 +651,9 @@ void main() {
   // main 16-channel PocketBeagle-based controller board. Hole spacing lands
   // on exact imperial values (127.0mm = 5.00in, 50.8mm = 2.00in), but
   // placement is genuinely asymmetric on both axes -- notably 13.32mm from
-  // the bottom edge vs 35.77mm from the top, since the PocketBeagle SBC and
-  // its headers occupy the top portion of the board.
+  // the top edge vs 35.77mm from the bottom, since the PocketBeagle SBC and
+  // its headers occupy the top portion of the board. (KiCad Y flipped to
+  // this app's Y-up convention, same as pb16_receiver_out above.)
   writeTemplate(
     'pb16_controller.json',
     'pb16_controller',
@@ -661,10 +664,10 @@ void main() {
       height: 99.89,
       holeDiameter: 3.7,
       holeCenters: const [
-        Vec2(135.999, 64.122),
-        Vec2(8.999, 64.122),
-        Vec2(135.999, 13.322),
-        Vec2(8.999, 13.322),
+        Vec2(135.999, 35.768),
+        Vec2(8.999, 35.768),
+        Vec2(135.999, 86.568),
+        Vec2(8.999, 86.568),
       ],
     ),
   );
