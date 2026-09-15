@@ -31,5 +31,8 @@ class HolePreset {
     HolePreset(id: 'slot_small', name: 'Small Slot (4x12mm)', type: HoleType.slot, slotLength: 12, slotWidth: 4),
     HolePreset(id: 'slot_standard', name: 'Standard Slot (5x16mm)', type: HoleType.slot, slotLength: 16, slotWidth: 5),
     HolePreset(id: 'slot_large', name: 'Large Slot (6x20mm)', type: HoleType.slot, slotLength: 20, slotWidth: 6),
+    HolePreset(id: 'rect_small', name: 'Small Rect Slot (10x6mm)', type: HoleType.rectangle, slotLength: 10, slotWidth: 6),
+    HolePreset(id: 'rect_standard', name: 'Standard Rect Slot (16x8mm)', type: HoleType.rectangle, slotLength: 16, slotWidth: 8),
+    HolePreset(id: 'rect_large', name: 'Large Rect Slot (24x12mm)', type: HoleType.rectangle, slotLength: 24, slotWidth: 12),
   ];
 }

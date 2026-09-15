@@ -202,15 +202,27 @@ class DxfPolyline extends DxfEntity {
   }
 }
 
-/// A stadium (elongated slot) outline as a single closed 4-vertex polyline,
-/// centered on the origin with its long axis along X: semicircular caps at
-/// each end (bulge = 1.0, a 180-degree arc) joined by straight sides. Used
-/// for both placed [Hole]s of type slot and template-maker slot holes, so
-/// every consumer (mesh cutting, DXF/PDF export, on-canvas painting) sees
-/// one continuous closed loop rather than separate line/arc pieces.
+/// A stadium (elongated slot) outline as a single closed polyline, centered
+/// on the origin with its long axis along X: semicircular caps at each end
+/// (bulge = 1.0, a 180-degree arc) joined by straight sides. Used for both
+/// placed [Hole]s of type slot and template-maker slot holes, so every
+/// consumer (mesh cutting, DXF/PDF export, on-canvas painting) sees one
+/// continuous closed loop rather than separate line/arc pieces.
 List<PolyVertex> stadiumVertices(double length, double width) {
   final r = width / 2;
-  final hl = math.max(0.0, length / 2 - r);
+  final hl = length / 2 - r;
+  if (hl <= 0) {
+    // length <= width: the straight middle collapses to nothing and the
+    // shape is just a circle of this radius. The 4-vertex form below would
+    // repeat two vertex positions exactly (both "ends" landing at the same
+    // point), leaving zero-length edges in the loop -- represent it as a
+    // plain 2-vertex circle (each vertex bulging 180 degrees to the other)
+    // instead, which has no duplicate points.
+    return [
+      PolyVertex(Vec2(0, -r), bulge: 1.0),
+      PolyVertex(Vec2(0, r), bulge: 1.0),
+    ];
+  }
   return [
     PolyVertex(Vec2(hl, -r), bulge: 1.0),
     PolyVertex(Vec2(hl, r)),

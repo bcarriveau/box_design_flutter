@@ -104,6 +104,8 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
         return 'Zip-Tie Holes';
       case HoleType.slot:
         return 'Slot';
+      case HoleType.rectangle:
+        return 'Rectangular Slot';
     }
   }
 
@@ -208,14 +210,14 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
               if (v != null) controller.updateHole(hole.id, (h) => h.copyWith(slotWidth: v));
             }),
           ],
-          if (hole != null && hole.type == HoleType.slot) ...[
+          if (hole != null && (hole.type == HoleType.slot || hole.type == HoleType.rectangle)) ...[
             const SizedBox(height: 12),
-            _numberField('Slot length (mm)', _lengthController, _lengthFocus, () {
+            _numberField(hole.type == HoleType.rectangle ? 'Length (mm)' : 'Slot length (mm)', _lengthController, _lengthFocus, () {
               final v = double.tryParse(_lengthController.text);
               if (v != null) controller.updateHole(hole.id, (h) => h.copyWith(slotLength: v));
             }),
             const SizedBox(height: 8),
-            _numberField('Slot width (mm)', _widthController, _widthFocus, () {
+            _numberField(hole.type == HoleType.rectangle ? 'Width (mm)' : 'Slot width (mm)', _widthController, _widthFocus, () {
               final v = double.tryParse(_widthController.text);
               if (v != null) controller.updateHole(hole.id, (h) => h.copyWith(slotWidth: v));
             }),

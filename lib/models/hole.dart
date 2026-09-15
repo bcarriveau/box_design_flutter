@@ -4,10 +4,10 @@ import '../geometry/tessellate.dart';
 import 'dxf_entity.dart';
 import 'vec2.dart';
 
-enum HoleType { screw, zipTie, slot }
+enum HoleType { screw, zipTie, slot, rectangle }
 
-/// A screw hole, zip-tie hole pair, or elongated slot placed directly in
-/// box (global) space —
+/// A screw hole, zip-tie hole pair, elongated (stadium) slot, or plain
+/// rectangular cutout placed directly in box (global) space —
 /// unlike [PlacedTemplate], holes are not reusable templates so they carry
 /// their own absolute geometry parameters rather than a local origin.
 class Hole {
@@ -21,8 +21,8 @@ class Hole {
 
   /// Overall end-to-end span in mm between the two hole centers' outer
   /// edges, and the diameter of each hole, used when [type] is
-  /// [HoleType.zipTie]. For [HoleType.slot], the overall length and width
-  /// of a single elongated stadium-shaped slot instead.
+  /// [HoleType.zipTie]. For [HoleType.slot] and [HoleType.rectangle], the
+  /// overall length and width of the cutout instead.
   final double slotLength;
   final double slotWidth;
 
@@ -56,33 +56,48 @@ class Hole {
 
   /// The hole's cut geometry, in absolute box-space mm coordinates.
   List<DxfEntity> toEntities() {
-    if (type == HoleType.screw) {
-      return [DxfCircle(position, diameter / 2)];
-    }
+    switch (type) {
+      case HoleType.screw:
+        return [DxfCircle(position, diameter / 2)];
 
-    if (type == HoleType.zipTie) {
-      // Two round holes with solid material left between them -- the wire
-      // bundle lies across that bridge and a zip tie loops down through one
-      // hole, over the wires, and back up through the other.
-      final r = slotWidth / 2;
-      final hl = math.max(0.0, slotLength / 2 - r);
-      final local = <DxfEntity>[
-        DxfCircle(Vec2(-hl, 0), r),
-        DxfCircle(Vec2(hl, 0), r),
-      ];
-      return local
-          .map((e) => e.transformed(delta: position, rotationDeg: rotationDeg))
-          .toList();
-    }
+      case HoleType.zipTie:
+        // Two round holes with solid material left between them -- the wire
+        // bundle lies across that bridge and a zip tie loops down through
+        // one hole, over the wires, and back up through the other.
+        final r = slotWidth / 2;
+        final hl = math.max(0.0, slotLength / 2 - r);
+        final local = <DxfEntity>[
+          DxfCircle(Vec2(-hl, 0), r),
+          DxfCircle(Vec2(hl, 0), r),
+        ];
+        return local
+            .map((e) => e.transformed(delta: position, rotationDeg: rotationDeg))
+            .toList();
 
-    // A single elongated stadium-shaped slot (e.g. for a screw with
-    // adjustable position, or a wide zip-tie pass-through). One closed
-    // polyline rather than separate line/arc entities, so hole-cutting code
-    // that treats each hole boundary as one closed loop sees a continuous
-    // slot instead of two disconnected end-cap semicircles with solid
-    // material left between them.
-    final outline = DxfPolyline(stadiumVertices(slotLength, slotWidth), closed: true);
-    return [outline.transformed(delta: position, rotationDeg: rotationDeg)];
+      case HoleType.slot:
+        // A single elongated stadium-shaped slot (e.g. for a screw with
+        // adjustable position, or a wide zip-tie pass-through). One closed
+        // polyline rather than separate line/arc entities, so hole-cutting
+        // code that treats each hole boundary as one closed loop sees a
+        // continuous slot instead of two disconnected end-cap semicircles
+        // with solid material left between them.
+        final outline = DxfPolyline(stadiumVertices(slotLength, slotWidth), closed: true);
+        return [outline.transformed(delta: position, rotationDeg: rotationDeg)];
+
+      case HoleType.rectangle:
+        // A plain sharp-cornered rectangular cutout (e.g. for a connector
+        // or panel-mount part that isn't round) -- length along local X,
+        // width along local Y, centered on position before rotation.
+        final hw = slotLength / 2;
+        final hh = slotWidth / 2;
+        final outline = DxfPolyline([
+          PolyVertex(Vec2(-hw, -hh)),
+          PolyVertex(Vec2(hw, -hh)),
+          PolyVertex(Vec2(hw, hh)),
+          PolyVertex(Vec2(-hw, hh)),
+        ], closed: true);
+        return [outline.transformed(delta: position, rotationDeg: rotationDeg)];
+    }
   }
 
   BoundingBox get boundingBox => entitiesBoundingBox(toEntities());

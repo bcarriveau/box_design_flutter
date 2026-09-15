@@ -67,4 +67,53 @@ void main() {
     expect(box.width, closeTo(5, 0.05));
     expect(box.height, closeTo(16, 0.05));
   });
+
+  test('a slot with length <= width (a degenerate circle) has no duplicate boundary points', () {
+    // Regression test: stadiumVertices used to repeat two vertex positions
+    // exactly whenever length <= width (the "straight" middle collapses to
+    // zero), leaving zero-length edges in the loop.
+    final hole = Hole(id: '6', type: HoleType.slot, position: const Vec2(0, 0), slotLength: 20, slotWidth: 20);
+    // toPoints() always repeats the first point at the very end to close
+    // the loop (by design, same as every other closed entity) -- check
+    // every consecutive pair except that final closing edge.
+    final points = hole.toEntities().single.toPoints();
+    for (var i = 0; i < points.length - 1; i++) {
+      final a = points[i];
+      final b = points[i + 1];
+      final dx = a.x - b.x, dy = a.y - b.y;
+      expect(dx * dx + dy * dy, greaterThan(1e-9), reason: 'zero-length edge at index $i');
+    }
+    final box = hole.boundingBox;
+    expect(box.width, closeTo(20, 0.05));
+    expect(box.height, closeTo(20, 0.05));
+  });
+
+  test('rectangle bounding box matches length x width exactly, centered on position', () {
+    final hole = Hole(
+      id: '7',
+      type: HoleType.rectangle,
+      position: const Vec2(10, -5),
+      slotLength: 18,
+      slotWidth: 6,
+    );
+    final box = hole.boundingBox;
+    expect(box.width, closeTo(18, 1e-9));
+    expect(box.height, closeTo(6, 1e-9));
+    expect(box.center.x, closeTo(10, 1e-9));
+    expect(box.center.y, closeTo(-5, 1e-9));
+  });
+
+  test('rectangle rotates 90 degrees, swapping the bounding box dimensions', () {
+    final hole = Hole(
+      id: '8',
+      type: HoleType.rectangle,
+      position: const Vec2(0, 0),
+      slotLength: 18,
+      slotWidth: 6,
+      rotationDeg: 90,
+    );
+    final box = hole.boundingBox;
+    expect(box.width, closeTo(6, 1e-9));
+    expect(box.height, closeTo(18, 1e-9));
+  });
 }
