@@ -7,6 +7,9 @@ class Vec3 {
   final double z;
 
   const Vec3(this.x, this.y, this.z);
+
+  @override
+  String toString() => 'Vec3($x, $y, $z)';
 }
 
 /// A triangle mesh: [triangles] are index triples into [vertices], each
@@ -35,7 +38,8 @@ Mesh extrudePlate({
       if (h.length >= 3) (signedArea(h) < 0 ? h.reversed.toList() : List<Vec2>.from(h)),
   ];
 
-  final merged = mergeHolesIntoOuter(outerCcw, holesCcw);
+  final mergeResult = mergeHolesIntoOuter(outerCcw, holesCcw);
+  final merged = mergeResult.polygon;
   final faceTriangles = earClipTriangulate(merged);
 
   final vertices = <Vec3>[];
@@ -79,8 +83,13 @@ Mesh extrudePlate({
     }
   }
 
-  addWalls(outerCcw);
-  for (final h in holesCcw) {
+  // Walked from mergeResult (not the raw outerCcw/holesCcw) so a wall
+  // segment always matches a real top/bottom-face boundary edge — a Steiner
+  // point [mergeHolesIntoOuter] inserts to split an edge for one bridge
+  // must split the corresponding wall too, or the two surfaces disagree
+  // about where the boundary actually runs and the mesh isn't watertight.
+  addWalls(mergeResult.outerBoundary);
+  for (final h in mergeResult.holeBoundaries) {
     addWalls(h.reversed.toList());
   }
 

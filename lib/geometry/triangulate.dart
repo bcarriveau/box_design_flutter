@@ -39,17 +39,35 @@ bool _properlyIntersect(Vec2 p1, Vec2 p2, Vec2 p3, Vec2 p4) {
   return ((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) && ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0));
 }
 
-/// Finds a vertex of [working] visible from [m] (a hole's rightmost point)
-/// via the standard hole-bridging construction: cast a ray from [m] in the
-/// +X direction, find the nearest edge it crosses, and take that edge's
-/// rightmost endpoint as the candidate bridge target — then, if any other
-/// vertex lies inside the (m, crossing point, candidate) triangle (i.e. it
-/// actually occludes the view), swap to whichever occluder is closest in
-/// angle to the ray. This is guaranteed to find a truly non-crossing bridge
-/// for any simple polygon, which naive nearest-Euclidean-vertex search is
-/// not (it was silently producing self-crossing merges on shapes with more
-/// than one hole).
-int _findBridgeTarget(Vec2 m, List<Vec2> working) {
+/// A bridge target found by [_findBridgeTarget]: either an existing vertex
+/// of `working` (`isNew: false`, [afterIndex] *is* the target) or a new
+/// point to be spliced into the boundary right after [afterIndex]
+/// (`isNew: true`), splitting the edge it sits on.
+class BridgeTarget {
+  final int afterIndex;
+  final Vec2 point;
+  final bool isNew;
+  const BridgeTarget(this.afterIndex, this.point, this.isNew);
+}
+
+/// Finds where [working] should be bridged to from [m] (a hole's rightmost
+/// point), via the standard hole-bridging ray cast: cast a ray from [m] in
+/// the +X direction and take the nearest point where it meets the boundary.
+/// That point is, by construction, visible from [m] with nothing in between
+/// — no occlusion check is needed the way it would be for a diagonal to
+/// some other vertex — so it's always a valid bridge target. It usually
+/// isn't an existing vertex, in which case the caller splices it in as a
+/// new one splitting the edge it landed on; when it exactly coincides with
+/// an existing vertex (the ray grazes a corner, or two holes' rays cross
+/// the same edge at the same point), that vertex is reused instead of
+/// creating a second vertex at an identical position — which is what
+/// used to happen when multiple holes' bridges converged on the same
+/// rectangle corner (there being nowhere else to bridge *to*, short of a
+/// new point): ear-clipping would then find two different, validly
+/// non-crossing diagonals that were nonetheless the exact same physical
+/// segment, producing a duplicated face once vertices are welded by
+/// position downstream (see [extrudePlate]).
+BridgeTarget _findBridgeTarget(Vec2 m, List<Vec2> working) {
   final n = working.length;
 
   // Every earlier bridge is a zero-width slit traversed once out and once
@@ -104,72 +122,81 @@ int _findBridgeTarget(Vec2 m, List<Vec2> working) {
         best = i;
       }
     }
-    return best;
+    return BridgeTarget(best, working[best], false);
   }
 
   final iPoint = Vec2(bestX, m.y);
-  // The standard construction just says "the crossed edge's endpoint with
-  // the larger x", but a vertical edge (common — box outlines are usually
-  // rectangle-ish) makes that a true tie; breaking it towards whichever
-  // endpoint is closer to the ray gives a shorter, more natural bridge and
-  // — importantly — stops every hole near that edge from bridging to the
-  // exact same far corner, which was needlessly piling up bridges on one
-  // vertex and defeating the ear tests around it.
-  final xA = working[edgeA].x;
-  final xB = working[edgeB].x;
-  int pIdx;
-  if ((xA - xB).abs() < 1e-9) {
-    pIdx = (working[edgeA].y - m.y).abs() <= (working[edgeB].y - m.y).abs() ? edgeA : edgeB;
-  } else {
-    pIdx = xA > xB ? edgeA : edgeB;
-  }
-  double slope(Vec2 v) => (v.y - m.y).abs() / math.max(v.x - m.x, 1e-9);
-  var bestSlope = slope(working[pIdx]);
+  // A near-miss (not just an exact match) still needs reusing: two holes'
+  // rays can cross the same short discretized-circle edge at points that
+  // are only a hair apart, and inserting two separate new vertices that
+  // close probably degenerates the same way an exact duplicate would in
+  // the ear-clipping predicates below (a near-zero-area/near-collinear
+  // sliver that the strict, exact-arithmetic checks can misjudge either
+  // way). Snapping one onto the other costs nothing visible at plate scale.
+  const epsilon = 1e-6;
   for (var i = 0; i < n; i++) {
-    if (i == pIdx || i == edgeA || i == edgeB) continue;
     final v = working[i];
-    if (v.x <= m.x) continue;
-    if (_pointStrictlyInsideTriangle(v, m, iPoint, working[pIdx])) {
-      final s = slope(v);
-      if (s < bestSlope) {
-        bestSlope = s;
-        pIdx = i;
-      }
+    if ((v.x - iPoint.x).abs() < epsilon && (v.y - iPoint.y).abs() < epsilon) {
+      return BridgeTarget(i, v, false);
     }
   }
-  return pIdx;
+  return BridgeTarget(edgeA, iPoint, true);
 }
 
-Vec2 _rotate(Vec2 p, double cosT, double sinT) => Vec2(p.x * cosT - p.y * sinT, p.x * sinT + p.y * cosT);
+/// Result of [mergeHolesIntoOuter]: the single bridged [polygon] ready for
+/// ear-clipping, plus the outer boundary and each hole's own boundary loop
+/// exactly as they should be walked for wall generation — meaning with any
+/// Steiner points [_findBridgeTarget] inserted along the way included, so a
+/// wall segment always matches a real top/bottom-face boundary edge.
+class MergeResult {
+  final List<Vec2> polygon;
+  final List<Vec2> outerBoundary;
+  final List<List<Vec2>> holeBoundaries;
+  const MergeResult(this.polygon, this.outerBoundary, this.holeBoundaries);
+}
+
+/// Inserts [point] into the closed loop [loop] between whichever adjacent
+/// pair of its vertices matches ([a], [b]) (in either order) — used to keep
+/// [MergeResult.outerBoundary]/[holeBoundaries] in sync when a bridge splits
+/// one of their edges. `loop` is modified in place.
+void _insertIntoLoop(List<Vec2> loop, Vec2 a, Vec2 b, Vec2 point) {
+  final n = loop.length;
+  for (var i = 0; i < n; i++) {
+    final p = loop[i];
+    final q = loop[(i + 1) % n];
+    if ((p == a && q == b) || (p == b && q == a)) {
+      loop.insert(i + 1, point);
+      return;
+    }
+  }
+}
 
 /// Merges each hole in [holesCcw] into [outerCcw] by bridging it to a
 /// visible boundary vertex, found via [_findBridgeTarget] (the classic
 /// "keyhole" technique), producing a single simple polygon suitable for
 /// ear-clipping. Both the outer boundary and every hole must already be
 /// closed loops (first point not repeated at the end).
-List<Vec2> mergeHolesIntoOuter(List<Vec2> outerCcw, List<List<Vec2>> holesCcw) {
+MergeResult mergeHolesIntoOuter(List<Vec2> outerCcw, List<List<Vec2>> holesCcw) {
   var working = List<Vec2>.from(outerCcw);
   if (signedArea(working) < 0) working = working.reversed.toList();
 
-  final sortedHoles = [...holesCcw]
+  // Tracks which original boundary ('outer' or 'hole$i') each position in
+  // `working` belongs to, so a Steiner insertion (which always splits an
+  // edge whose two endpoints share one owner) can be mirrored into that
+  // owner's own refined loop below.
+  var workingOwner = List<String>.filled(working.length, 'outer');
+  final outerBoundary = List<Vec2>.from(working);
+  final holeBoundaries = [for (final h in holesCcw) List<Vec2>.from(h)];
+  List<Vec2> loopFor(String owner) => owner == 'outer' ? outerBoundary : holeBoundaries[int.parse(owner.substring(4))];
+
+  final indexedHoles = [for (var i = 0; i < holesCcw.length; i++) (i, holesCcw[i])]
     ..sort((a, b) {
-      final maxA = a.map((p) => p.x).reduce(math.max);
-      final maxB = b.map((p) => p.x).reduce(math.max);
+      final maxA = a.$2.map((p) => p.x).reduce(math.max);
+      final maxB = b.$2.map((p) => p.x).reduce(math.max);
       return maxB.compareTo(maxA);
     });
 
-  // Every bridge target used so far. Multiple holes converging on the exact
-  // same vertex turns out to reliably defeat the ear-clipping pass
-  // afterwards (even though each individual bridge is, in isolation,
-  // perfectly valid) — so when a hole's natural ray-cast target has already
-  // been claimed, retry with the ray tilted by a small alternating angle
-  // (0, +Δ, -Δ, +2Δ, -2Δ, ...) until it lands on a fresh vertex. This
-  // doesn't weaken the visibility guarantee the ray-cast itself gives,
-  // since [_findBridgeTarget] is re-run in full against the tilted geometry
-  // each time, not just nudged after the fact.
-  final usedTargets = <Vec2>{};
-
-  for (final rawHole in sortedHoles) {
+  for (final (holeIndex, rawHole) in indexedHoles) {
     if (rawHole.length < 3) continue;
     var hole = List<Vec2>.from(rawHole);
     if (signedArea(hole) > 0) hole = hole.reversed.toList(); // must be CW inside a CCW outer
@@ -180,35 +207,61 @@ List<Vec2> mergeHolesIntoOuter(List<Vec2> outerCcw, List<List<Vec2>> holesCcw) {
     }
     final m = hole[mIdx];
 
-    var chosen = 0;
-    for (var attempt = 0; attempt < 60; attempt++) {
-      final magnitude = 0.05 * ((attempt + 1) ~/ 2);
-      final theta = attempt == 0 ? 0.0 : (attempt.isOdd ? magnitude : -magnitude);
-      final cosT = math.cos(theta);
-      final sinT = math.sin(theta);
-      final tiltedWorking = [for (final p in working) _rotate(p, cosT, sinT)];
-      final tiltedM = _rotate(m, cosT, sinT);
-      chosen = _findBridgeTarget(tiltedM, tiltedWorking);
-      if (!usedTargets.contains(working[chosen])) break;
+    final target = _findBridgeTarget(m, working);
+    int chosen;
+    if (target.isNew) {
+      final owner = workingOwner[target.afterIndex];
+      _insertIntoLoop(loopFor(owner), working[target.afterIndex], working[target.afterIndex + 1], target.point);
+      working = [
+        ...working.sublist(0, target.afterIndex + 1),
+        target.point,
+        ...working.sublist(target.afterIndex + 1),
+      ];
+      workingOwner = [
+        ...workingOwner.sublist(0, target.afterIndex + 1),
+        owner,
+        ...workingOwner.sublist(target.afterIndex + 1),
+      ];
+      chosen = target.afterIndex + 1;
+    } else {
+      chosen = target.afterIndex;
     }
-    usedTargets.add(working[chosen]);
+    final attachOwner = workingOwner[chosen];
     final rotatedHole = [for (var k = 0; k < hole.length; k++) hole[(mIdx + k) % hole.length]];
     final bridgeStart = working[chosen];
+    final holeOwner = 'hole$holeIndex';
 
     final spliced = <Vec2>[];
+    final splicedOwner = <String>[];
     for (var i = 0; i <= chosen; i++) {
       spliced.add(working[i]);
+      splicedOwner.add(workingOwner[i]);
     }
     spliced.addAll(rotatedHole);
+    splicedOwner.addAll(List.filled(rotatedHole.length, holeOwner));
     spliced.add(m);
+    splicedOwner.add(holeOwner);
     spliced.add(bridgeStart);
+    splicedOwner.add(attachOwner);
     for (var i = chosen + 1; i < working.length; i++) {
       spliced.add(working[i]);
+      splicedOwner.add(workingOwner[i]);
     }
     working = spliced;
+    workingOwner = splicedOwner;
   }
 
-  return working;
+  return MergeResult(working, outerBoundary, holeBoundaries);
+}
+
+/// Canonical, order-independent, position-based key for an edge/diagonal —
+/// used to catch a diagonal being clipped a second time under a *different*
+/// pair of vertex indices that merely happen to sit at the same two
+/// physical positions (see [earClipTriangulate]'s `usedDiagonals`).
+String _posKey(Vec2 a, Vec2 b) {
+  final p1 = '${a.x},${a.y}';
+  final p2 = '${b.x},${b.y}';
+  return p1.compareTo(p2) <= 0 ? '$p1|$p2' : '$p2|$p1';
 }
 
 /// Ear-clipping triangulation of a simple (possibly already hole-bridged)
@@ -225,6 +278,19 @@ List<List<int>> earClipTriangulate(List<Vec2> pts) {
   final triangles = <List<int>>[];
   var remaining = order;
   var guard = 0;
+  // Once an ear's closing diagonal (a -> c) is clipped, it becomes a
+  // boundary edge of the reduced polygon and is never a diagonal again — so
+  // the same physical segment should never be proposed as a diagonal twice.
+  // When two or more holes bridge to the exact same target vertex (entirely
+  // legitimate — see mergeHolesIntoOuter), the boundary ends up with
+  // several *different-index, same-position* copies of that vertex; a later
+  // ear can then reach a diagonal that is positionally identical to one
+  // already clipped via a different copy. `_properlyIntersect` doesn't
+  // flag that (it's collinear, not a proper crossing), so without this
+  // check the clipper happily validates both — producing two triangles
+  // that trace the same physical diagonal, which becomes a duplicated face
+  // once vertices are welded by position downstream (extrudePlate).
+  final usedDiagonals = <String>{};
   while (remaining.length > 3 && guard < n * n + 16) {
     guard++;
     var clippedIndex = -1;
@@ -253,6 +319,8 @@ List<List<int>> earClipTriangulate(List<Vec2> pts) {
       }
       if (containsOther) continue;
 
+      if (usedDiagonals.contains(_posKey(a, c))) continue;
+
       // Vertex-containment alone isn't sufficient once holes have been
       // bridged into the boundary: the "ear"'s closing diagonal (a -> c)
       // can cut across a hole/slit edge without any vertex happening to
@@ -270,6 +338,7 @@ List<List<int>> earClipTriangulate(List<Vec2> pts) {
       }
       if (diagonalCrossesEdge) continue;
 
+      usedDiagonals.add(_posKey(a, c));
       triangles.add([iPrev, iCurr, iNext]);
       clippedIndex = i;
       break;
@@ -284,48 +353,63 @@ List<List<int>> earClipTriangulate(List<Vec2> pts) {
       // silently corrupting the total area on complex, multi-hole shapes.
       var bestI = -1;
       var bestArea = double.infinity;
-      for (var i = 0; i < remaining.length; i++) {
-        final iPrev = remaining[(i - 1 + remaining.length) % remaining.length];
-        final iCurr = remaining[i];
-        final iNext = remaining[(i + 1) % remaining.length];
-        final a = pts[iPrev];
-        final b = pts[iCurr];
-        final c = pts[iNext];
-        if (_cross(a, b, c) <= 1e-9) continue;
-        var containsOther = false;
-        for (final j in remaining) {
-          if (j == iPrev || j == iCurr || j == iNext) continue;
-          if (_pointStrictlyInsideTriangle(pts[j], a, b, c)) {
-            containsOther = true;
-            break;
-          }
-        }
-        if (containsOther) continue;
-        final area = triangleArea(a, b, c);
-        if (area < bestArea) {
-          bestArea = area;
-          bestI = i;
-        }
-      }
-      // Truly nothing is even locally convex-and-clean (shouldn't happen
-      // for a valid simple polygon) — fall back to the most-convex vertex
-      // just to guarantee the loop terminates.
-      if (bestI == -1) {
-        var bestCross = double.negativeInfinity;
+      // Run twice: first refusing to reuse an already-clipped diagonal's
+      // position (same reasoning as the primary pass above), then — only if
+      // that finds nothing at all — again without that restriction, so a
+      // pathological shape still terminates rather than falling through to
+      // the much cruder most-convex-vertex fallback below.
+      for (final avoidUsedDiagonals in [true, false]) {
         for (var i = 0; i < remaining.length; i++) {
           final iPrev = remaining[(i - 1 + remaining.length) % remaining.length];
           final iCurr = remaining[i];
           final iNext = remaining[(i + 1) % remaining.length];
-          final cr = _cross(pts[iPrev], pts[iCurr], pts[iNext]);
-          if (cr > bestCross) {
-            bestCross = cr;
+          final a = pts[iPrev];
+          final b = pts[iCurr];
+          final c = pts[iNext];
+          if (_cross(a, b, c) <= 1e-9) continue;
+          if (avoidUsedDiagonals && usedDiagonals.contains(_posKey(a, c))) continue;
+          var containsOther = false;
+          for (final j in remaining) {
+            if (j == iPrev || j == iCurr || j == iNext) continue;
+            if (_pointStrictlyInsideTriangle(pts[j], a, b, c)) {
+              containsOther = true;
+              break;
+            }
+          }
+          if (containsOther) continue;
+          final area = triangleArea(a, b, c);
+          if (area < bestArea) {
+            bestArea = area;
             bestI = i;
           }
+        }
+        if (bestI != -1) break;
+      }
+      // Truly nothing is even locally convex-and-clean (shouldn't happen
+      // for a valid simple polygon) — fall back to the most-convex vertex
+      // just to guarantee the loop terminates. Same two-pass preference for
+      // an unused diagonal as above, for the same reason.
+      if (bestI == -1) {
+        for (final avoidUsedDiagonals in [true, false]) {
+          var bestCross = double.negativeInfinity;
+          for (var i = 0; i < remaining.length; i++) {
+            final iPrev = remaining[(i - 1 + remaining.length) % remaining.length];
+            final iCurr = remaining[i];
+            final iNext = remaining[(i + 1) % remaining.length];
+            if (avoidUsedDiagonals && usedDiagonals.contains(_posKey(pts[iPrev], pts[iNext]))) continue;
+            final cr = _cross(pts[iPrev], pts[iCurr], pts[iNext]);
+            if (cr > bestCross) {
+              bestCross = cr;
+              bestI = i;
+            }
+          }
+          if (bestI != -1) break;
         }
       }
       final iPrev = remaining[(bestI - 1 + remaining.length) % remaining.length];
       final iCurr = remaining[bestI];
       final iNext = remaining[(bestI + 1) % remaining.length];
+      usedDiagonals.add(_posKey(pts[iPrev], pts[iNext]));
       triangles.add([iPrev, iCurr, iNext]);
       clippedIndex = bestI;
     }

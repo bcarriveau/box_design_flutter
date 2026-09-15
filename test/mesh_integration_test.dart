@@ -124,4 +124,63 @@ void main() {
 
     expect(areaIgnoringNothing, closeTo(expectedArea, expectedArea * 0.01));
   });
+
+  test('a single hole near the box\'s own baked holes does not duplicate a wall edge', () {
+    // Regression test for a real user-reported "malformed STL": on a box
+    // template that already bakes in mounting holes of its own (like
+    // ticonn_mounting_plate.json's two holes on its vertical centerline),
+    // adding just one more hole near that same centerline made bridging
+    // pick the same rectangle corner as an existing bake-in hole's bridge,
+    // producing two different but positionally-identical ear-clipping
+    // diagonals — a duplicated face once vertices are welded by position.
+    final assetJson = File('assets/templates/ticonn_mounting_plate.json').readAsStringSync();
+    final decoded = jsonDecode(assetJson) as Map<String, dynamic>;
+    final library = TemplateLibrary();
+    library.importJson(assetJson);
+    final controller = DesignController(library);
+    controller.applyBoxTemplate(decoded['id'] as String);
+    controller.project = controller.project.copyWith(holes: [
+      Hole(id: 'h1', type: HoleType.screw, position: const Vec2(78.88055466547041, 66.97985664251524), diameter: 3.355810361700363),
+    ]);
+
+    final mesh = buildPlateMesh(controller.project, library, thicknessMm: 5);
+    _expectStrictManifold(mesh);
+  });
+
+  test('several holes all nearest the same rectangle corner still produce a strict manifold', () {
+    // Regression test for the same class of bug as above, triggered instead
+    // by several *unrelated* holes all naturally bridging toward the same
+    // corner (nothing clustered near the box's own holes this time).
+    final assetJson = File('assets/templates/ticonn_mounting_plate.json').readAsStringSync();
+    final decoded = jsonDecode(assetJson) as Map<String, dynamic>;
+    final library = TemplateLibrary();
+    library.importJson(assetJson);
+    final controller = DesignController(library);
+    controller.applyBoxTemplate(decoded['id'] as String);
+    controller.project = controller.project.copyWith(holes: [
+      Hole(id: 'h1', type: HoleType.screw, position: const Vec2(59.27729454112653, 159.7840958291389), diameter: 5.006056967726834),
+      Hole(id: 'h2', type: HoleType.screw, position: const Vec2(99.9724344414215, 85.24201437645418), diameter: 5.7387945105676375),
+      Hole(id: 'h3', type: HoleType.screw, position: const Vec2(104.19772690812405, 144.63663582811952), diameter: 4.818995065098594),
+      Hole(id: 'h4', type: HoleType.screw, position: const Vec2(104.404174600793, 13.966773300693486), diameter: 5.628505516354667),
+    ]);
+
+    final mesh = buildPlateMesh(controller.project, library, thicknessMm: 5);
+    _expectStrictManifold(mesh);
+  });
+}
+
+/// Every directed edge of a closed, watertight mesh must have a matching
+/// edge in the opposite direction exactly once — see mesh_test.dart's
+/// `_expectManifold` for the low-level version of this same check.
+void _expectStrictManifold(Mesh mesh) {
+  final edgeCount = <String, int>{};
+  for (final t in mesh.triangles) {
+    for (var i = 0; i < 3; i++) {
+      final key = '${t[i]}->${t[(i + 1) % 3]}';
+      edgeCount[key] = (edgeCount[key] ?? 0) + 1;
+    }
+  }
+  for (final entry in edgeCount.entries) {
+    expect(entry.value, 1, reason: 'directed edge ${entry.key} appears ${entry.value} times (should be exactly 1)');
+  }
 }

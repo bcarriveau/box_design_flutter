@@ -53,7 +53,7 @@ void main() {
     test('a square with one circular hole loses exactly the hole area', () {
       final outer = _rect(10, 10);
       final hole = _circle(const Vec2(5, 5), 2, segments: 64);
-      final merged = mergeHolesIntoOuter(outer, [hole]);
+      final merged = mergeHolesIntoOuter(outer, [hole]).polygon;
       final tris = earClipTriangulate(merged);
       final area = _sumTriangleAreas(merged, tris);
       expect(area, closeTo(100 - math.pi * 4, 0.05));
@@ -63,7 +63,7 @@ void main() {
       final outer = _rect(20, 10);
       final holeA = _circle(const Vec2(5, 5), 1.5, segments: 48);
       final holeB = _circle(const Vec2(15, 5), 1.5, segments: 48);
-      final merged = mergeHolesIntoOuter(outer, [holeA, holeB]);
+      final merged = mergeHolesIntoOuter(outer, [holeA, holeB]).polygon;
       final tris = earClipTriangulate(merged);
       final area = _sumTriangleAreas(merged, tris);
       expect(area, closeTo(200 - 2 * math.pi * 1.5 * 1.5, 0.05));
@@ -82,7 +82,7 @@ void main() {
         _circle(const Vec2(5, 15), 1.5),
         _circle(const Vec2(25, 15), 1.5),
       ];
-      final merged = mergeHolesIntoOuter(outer, holes);
+      final merged = mergeHolesIntoOuter(outer, holes).polygon;
       final tris = earClipTriangulate(merged);
       final area = _sumTriangleAreas(merged, tris);
       // Default 32-segment circles undershoot a true circle's area a little
@@ -104,7 +104,7 @@ void main() {
         _circle(const Vec2(150, 20), 2.5),
         _circle(const Vec2(150, 180), 2.5),
       ];
-      final merged = mergeHolesIntoOuter(outer, holes);
+      final merged = mergeHolesIntoOuter(outer, holes).polygon;
       final tris = earClipTriangulate(merged);
       final area = _sumTriangleAreas(merged, tris);
       final holesArea = 4 * math.pi * 4 + 2 * math.pi * 6.25;
