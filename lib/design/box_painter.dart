@@ -2,7 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../geometry/transform.dart';
+import '../geometry/placed_entities.dart';
+import '../geometry/tessellate.dart';
 import '../models/box_project.dart';
 import '../models/dxf_entity.dart';
 import '../models/vec2.dart';
@@ -30,9 +31,10 @@ class DesignPainter extends CustomPainter {
     for (final placed in project.placedTemplates) {
       final template = controller.library.byId(placed.templateId);
       if (template == null) continue;
-      final entities = placeEntities(template.entities, delta: placed.position, rotationDeg: placed.rotationDeg);
+      final entities = placedTemplateEntities(template, placed);
       final selected = controller.selectedId == placed.id;
       _drawEntities(canvas, entities, boxHeightMm, color: selected ? Colors.blue : Colors.black87, width: selected ? 1.6 : 1.0);
+      _drawNameLabel(canvas, template.name, entitiesBoundingBox(entities), boxHeightMm, selected: selected);
     }
 
     for (final hole in project.holes) {
@@ -103,6 +105,26 @@ class DesignPainter extends CustomPainter {
       Paint()..color = color,
     );
     textPainter.paint(canvas, Offset(labelRect.left + 4, labelRect.top + 2));
+  }
+
+  void _drawNameLabel(Canvas canvas, String name, BoundingBox bbox, double boxHeightMm, {required bool selected}) {
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: name,
+        style: TextStyle(
+          color: selected ? Colors.blue.shade900 : Colors.black54,
+          fontSize: 10,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+      ellipsis: '…',
+    )..layout(maxWidth: (bbox.width * pixelsPerMm - 4).clamp(0, double.infinity));
+
+    // Top-left corner of the item's own bounding box (mm space is Y-up, so
+    // that's the box's max-Y edge), inset a couple pixels from the corner.
+    final corner = _toPx(Vec2(bbox.minX, bbox.maxY), boxHeightMm);
+    textPainter.paint(canvas, Offset(corner.dx + 2, corner.dy + 2));
   }
 
   void _drawGrid(Canvas canvas, BoxProject project, double boxHeightMm) {

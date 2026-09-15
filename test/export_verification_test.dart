@@ -1,6 +1,7 @@
 // Builds a sample project (placed template + a screw hole + a zip-tie hole)
 // and writes the DXF/PDF exports to disk under build/, so their content can
 // be inspected directly rather than only checked through the save dialog.
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -11,7 +12,9 @@ import 'package:box_design_flutter/models/placed_template.dart';
 import 'package:box_design_flutter/models/vec2.dart';
 import 'package:box_design_flutter/services/dxf_export.dart';
 import 'package:box_design_flutter/services/pdf_export.dart';
+import 'package:box_design_flutter/services/stl_export.dart';
 import 'package:box_design_flutter/services/template_library.dart';
+import 'package:box_design_flutter/services/threemf_export.dart';
 
 void main() {
   test('exports a sample project to real .dxf and .pdf files', () async {
@@ -42,5 +45,17 @@ void main() {
     expect(pdfBytes.length, greaterThan(0));
     // %PDF header magic bytes.
     expect(pdfBytes.sublist(0, 4), [0x25, 0x50, 0x44, 0x46]);
+
+    final stlBytes = exportProjectAsStlBytes(project, thicknessMm: 3);
+    File('build/verify_export.stl').writeAsBytesSync(stlBytes);
+    final stlText = utf8.decode(stlBytes);
+    expect(stlText, startsWith('solid box_design'));
+    expect(stlText.trim(), endsWith('endsolid box_design'));
+    expect('facet normal'.allMatches(stlText).length, greaterThan(0));
+
+    final threemfBytes = exportProjectAs3mfBytes(project, thicknessMm: 3);
+    File('build/verify_export.3mf').writeAsBytesSync(threemfBytes);
+    // ZIP local-file-header magic bytes (PK\x03\x04).
+    expect(threemfBytes.sublist(0, 4), [0x50, 0x4B, 0x03, 0x04]);
   });
 }

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import '../dxf/dxf_writer.dart';
-import '../geometry/transform.dart';
+import '../geometry/placed_entities.dart';
 import '../models/box_project.dart';
 import '../models/dxf_entity.dart';
 import 'template_library.dart';
@@ -16,11 +16,7 @@ List<DxfEntity> assembleProjectEntities(BoxProject project, TemplateLibrary libr
   for (final placed in project.placedTemplates) {
     final template = library.byId(placed.templateId);
     if (template == null) continue;
-    entities.addAll(placeEntities(
-      template.entities,
-      delta: placed.position,
-      rotationDeg: placed.rotationDeg,
-    ));
+    entities.addAll(placedTemplateEntities(template, placed));
   }
 
   for (final hole in project.holes) {

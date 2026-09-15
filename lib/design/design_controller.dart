@@ -179,6 +179,18 @@ class DesignController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Resizes every round mounting hole baked into a placed template's own
+  /// geometry at once. Pass null to go back to the template's own size.
+  void setMountingHoleDiameter(String id, double? diameterMm) {
+    project = project.copyWith(
+      placedTemplates: [
+        for (final p in project.placedTemplates)
+          if (p.id == id) p.withHoleDiameterOverride(diameterMm) else p,
+      ],
+    );
+    notifyListeners();
+  }
+
   void addHoleFromPreset(HolePreset preset, Vec2 position) {
     final hole = Hole(
       id: _newId('hole'),

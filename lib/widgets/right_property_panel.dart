@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../design/design_controller.dart';
+import '../models/dxf_entity.dart';
 import '../models/hole.dart';
+import '../models/placed_template.dart';
 import '../models/vec2.dart';
 
 class RightPropertyPanel extends StatefulWidget {
@@ -21,11 +23,13 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
   final _diameterController = TextEditingController();
   final _lengthController = TextEditingController();
   final _widthController = TextEditingController();
+  final _mountingHoleController = TextEditingController();
   final _xFocus = FocusNode();
   final _yFocus = FocusNode();
   final _diameterFocus = FocusNode();
   final _lengthFocus = FocusNode();
   final _widthFocus = FocusNode();
+  final _mountingHoleFocus = FocusNode();
 
   DesignController get controller => widget.controller;
 
@@ -39,10 +43,10 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
   @override
   void dispose() {
     controller.removeListener(_onControllerChanged);
-    for (final c in [_xController, _yController, _rotController, _diameterController, _lengthController, _widthController]) {
+    for (final c in [_xController, _yController, _rotController, _diameterController, _lengthController, _widthController, _mountingHoleController]) {
       c.dispose();
     }
-    for (final f in [_xFocus, _yFocus, _diameterFocus, _lengthFocus, _widthFocus]) {
+    for (final f in [_xFocus, _yFocus, _diameterFocus, _lengthFocus, _widthFocus, _mountingHoleFocus]) {
       f.dispose();
     }
     super.dispose();
@@ -65,13 +69,17 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
       if (force || !_xFocus.hasFocus) _xController.text = placed.position.x.toStringAsFixed(2);
       if (force || !_yFocus.hasFocus) _yController.text = placed.position.y.toStringAsFixed(2);
       _rotController.text = placed.rotationDeg.toStringAsFixed(0);
+      final effective = placed.holeDiameterOverride ?? _bakedInHoleDiameter(placed);
+      if ((force || !_mountingHoleFocus.hasFocus) && effective != null) {
+        _mountingHoleController.text = effective.toStringAsFixed(1);
+      }
     } else if (hole != null) {
       if (force || !_xFocus.hasFocus) _xController.text = hole.position.x.toStringAsFixed(2);
       if (force || !_yFocus.hasFocus) _yController.text = hole.position.y.toStringAsFixed(2);
       _rotController.text = hole.rotationDeg.toStringAsFixed(0);
-      if (force || !_diameterFocus.hasFocus) _diameterController.text = hole.diameter.toStringAsFixed(2);
-      if (force || !_lengthFocus.hasFocus) _lengthController.text = hole.slotLength.toStringAsFixed(2);
-      if (force || !_widthFocus.hasFocus) _widthController.text = hole.slotWidth.toStringAsFixed(2);
+      if (force || !_diameterFocus.hasFocus) _diameterController.text = hole.diameter.toStringAsFixed(1);
+      if (force || !_lengthFocus.hasFocus) _lengthController.text = hole.slotLength.toStringAsFixed(1);
+      if (force || !_widthFocus.hasFocus) _widthController.text = hole.slotWidth.toStringAsFixed(1);
     }
   }
 
@@ -97,6 +105,24 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
       controller.updateHole(hole.id, (h) => h.copyWith(rotationDeg: degrees));
     }
     _rotController.text = degrees.toStringAsFixed(0);
+  }
+
+  /// The diameter baked into the template's own geometry (its first round
+  /// mounting hole), or null if it has none — used both as the field's
+  /// starting value and to decide whether to show the field at all.
+  double? _bakedInHoleDiameter(PlacedTemplate placed) {
+    final template = controller.library.byId(placed.templateId);
+    if (template == null) return null;
+    for (final e in template.entities) {
+      if (e is DxfCircle) return e.radius * 2;
+    }
+    return null;
+  }
+
+  void _applyMountingHoleDiameter(PlacedTemplate placed) {
+    final d = double.tryParse(_mountingHoleController.text);
+    if (d == null || d <= 0) return;
+    controller.setMountingHoleDiameter(placed.id, d);
   }
 
   @override
@@ -137,6 +163,21 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
                 OutlinedButton(onPressed: () => _applyRotation(deg), child: Text('${deg.toInt()}°')),
             ],
           ),
+          if (placed != null && _bakedInHoleDiameter(placed) != null) ...[
+            const SizedBox(height: 12),
+            _numberField('Mounting hole size (mm)', _mountingHoleController, _mountingHoleFocus, () => _applyMountingHoleDiameter(placed)),
+            if (placed.holeDiameterOverride != null)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () {
+                    controller.setMountingHoleDiameter(placed.id, null);
+                    _mountingHoleController.text = _bakedInHoleDiameter(placed)!.toStringAsFixed(1);
+                  },
+                  child: const Text('Reset to template default'),
+                ),
+              ),
+          ],
           if (hole != null && hole.type == HoleType.screw) ...[
             const SizedBox(height: 12),
             _numberField('Diameter (mm)', _diameterController, _diameterFocus, () {

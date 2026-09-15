@@ -7,11 +7,30 @@ import '../services/dxf_export.dart';
 import '../services/file_io.dart';
 import '../services/pdf_export.dart';
 import '../services/project_io.dart';
+import '../services/stl_export.dart';
+import '../services/threemf_export.dart';
 
-class TopToolbar extends StatelessWidget {
+class TopToolbar extends StatefulWidget {
   final DesignController controller;
 
   const TopToolbar({super.key, required this.controller});
+
+  @override
+  State<TopToolbar> createState() => _TopToolbarState();
+}
+
+class _TopToolbarState extends State<TopToolbar> {
+  final _thicknessController = TextEditingController(text: '5');
+
+  DesignController get controller => widget.controller;
+
+  double get _thicknessMm => double.tryParse(_thicknessController.text) ?? 5.0;
+
+  @override
+  void dispose() {
+    _thicknessController.dispose();
+    super.dispose();
+  }
 
   void _snack(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
@@ -107,6 +126,33 @@ class TopToolbar extends StatelessWidget {
                     if (context.mounted) _snack(context, result != null ? 'PDF exported' : 'Export cancelled');
                   },
                   child: const Text('Export PDF'),
+                ),
+                const VerticalDivider(width: 1),
+                SizedBox(
+                  width: 90,
+                  child: TextField(
+                    controller: _thicknessController,
+                    decoration: const InputDecoration(labelText: 'Plate mm', isDense: true, border: OutlineInputBorder()),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  ),
+                ),
+                FilledButton.tonal(
+                  onPressed: () {
+                    final bytes = exportProjectAsStlBytes(controller.project, thicknessMm: _thicknessMm);
+                    saveBytes('${controller.project.name}.stl', bytes, dialogTitle: 'Export STL', mimeType: 'model/stl').then((result) {
+                      if (context.mounted) _snack(context, result != null ? 'STL exported' : 'Export cancelled');
+                    });
+                  },
+                  child: const Text('Export STL'),
+                ),
+                FilledButton.tonal(
+                  onPressed: () {
+                    final bytes = exportProjectAs3mfBytes(controller.project, thicknessMm: _thicknessMm);
+                    saveBytes('${controller.project.name}.3mf', bytes, dialogTitle: 'Export 3MF', mimeType: 'model/3mf').then((result) {
+                      if (context.mounted) _snack(context, result != null ? '3MF exported' : 'Export cancelled');
+                    });
+                  },
+                  child: const Text('Export 3MF'),
                 ),
               ],
             ),

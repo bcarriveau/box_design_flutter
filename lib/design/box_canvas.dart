@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../geometry/placed_entities.dart';
 import '../geometry/tessellate.dart';
-import '../geometry/transform.dart';
 import '../models/palette_drag_item.dart';
 import '../models/vec2.dart';
 import 'box_painter.dart';
@@ -52,7 +52,7 @@ class _BoxCanvasState extends State<BoxCanvas> {
         for (final placed in project.placedTemplates) {
           final template = controller.library.byId(placed.templateId);
           if (template == null) continue;
-          final entities = placeEntities(template.entities, delta: placed.position, rotationDeg: placed.rotationDeg);
+          final entities = placedTemplateEntities(template, placed);
           final rect = _mmBoxToScreenRect(entitiesBoundingBox(entities), boxHeightMm);
           itemOverlays.add(_dragHandle(rect, placed.id, boxHeightMm));
         }

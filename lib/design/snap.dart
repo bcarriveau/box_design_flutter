@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import '../geometry/transform.dart';
+import '../geometry/placed_entities.dart';
 import '../models/vec2.dart';
 import 'design_controller.dart';
 
@@ -39,7 +39,7 @@ Vec2 snapPoint(Vec2 raw, DesignController controller, {double toleranceMm = 3.0}
     consider(placed.position);
     final template = controller.library.byId(placed.templateId);
     if (template == null) continue;
-    final entities = placeEntities(template.entities, delta: placed.position, rotationDeg: placed.rotationDeg);
+    final entities = placedTemplateEntities(template, placed);
     for (final entity in entities) {
       considerEdges(entity.toPoints());
     }
