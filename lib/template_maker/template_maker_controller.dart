@@ -1,8 +1,12 @@
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 
 import '../models/controller_template.dart';
 import '../models/dxf_entity.dart';
 import '../models/vec2.dart';
+
+const _bulge90 = 0.4142135623730951; // tan(90deg / 4), quarter-circle bulge
 
 /// A single round mounting hole in the template being built: diameter plus
 /// a center position in the template's own local coordinate space (min
@@ -27,6 +31,7 @@ class TemplateMakerController extends ChangeNotifier {
   TemplateCategory category = TemplateCategory.box;
   double outlineWidth = 100;
   double outlineHeight = 100;
+  double cornerRadius = 0;
   final List<TemplateMakerHole> holes = [];
 
   int _nextHoleSeq = 1;
@@ -55,6 +60,15 @@ class TemplateMakerController extends ChangeNotifier {
   void setOutlineHeight(double value) {
     if (value <= 0) return;
     outlineHeight = value;
+    notifyListeners();
+  }
+
+  /// Corner fillet radius in mm, 0 for sharp corners. Clamped to the
+  /// outline's own half-width/height when applied so it can never invert
+  /// the rectangle.
+  void setCornerRadius(double value) {
+    if (value < 0) return;
+    cornerRadius = value;
     notifyListeners();
   }
 
@@ -90,26 +104,40 @@ class TemplateMakerController extends ChangeNotifier {
     category = TemplateCategory.box;
     outlineWidth = 100;
     outlineHeight = 100;
+    cornerRadius = 0;
     holes.clear();
     _nextHoleSeq = 1;
     notifyListeners();
   }
 
-  /// Builds the template's geometry: a closed rectangular outline plus one
-  /// [DxfCircle] per hole, exactly the shape [ControllerTemplate.toJson]
-  /// (and the rest of the app, e.g. mesh export's own-hole detection) expect.
+  /// Builds the template's geometry: a closed rectangular (optionally
+  /// corner-filleted) outline plus one [DxfCircle] per hole, exactly the
+  /// shape [ControllerTemplate.toJson] (and the rest of the app, e.g. mesh
+  /// export's own-hole detection) expect.
   ControllerTemplate toTemplate() {
-    final outline = DxfPolyline(
-      [
+    final r = cornerRadius <= 0 ? 0.0 : math.min(cornerRadius, math.min(outlineWidth, outlineHeight) / 2);
+    final List<PolyVertex> vertices;
+    if (r <= 0) {
+      vertices = [
         const PolyVertex(Vec2(0, 0)),
         PolyVertex(Vec2(outlineWidth, 0)),
         PolyVertex(Vec2(outlineWidth, outlineHeight)),
         PolyVertex(Vec2(0, outlineHeight)),
-      ],
-      closed: true,
-    );
+      ];
+    } else {
+      vertices = [
+        PolyVertex(Vec2(r, 0)),
+        PolyVertex(Vec2(outlineWidth - r, 0), bulge: _bulge90),
+        PolyVertex(Vec2(outlineWidth, r)),
+        PolyVertex(Vec2(outlineWidth, outlineHeight - r), bulge: _bulge90),
+        PolyVertex(Vec2(outlineWidth - r, outlineHeight)),
+        PolyVertex(Vec2(r, outlineHeight), bulge: _bulge90),
+        PolyVertex(Vec2(0, outlineHeight - r)),
+        PolyVertex(Vec2(0, r), bulge: _bulge90),
+      ];
+    }
     final entities = <DxfEntity>[
-      outline,
+      DxfPolyline(vertices, closed: true),
       for (final h in holes) DxfCircle(Vec2(h.x, h.y), h.diameter / 2),
     ];
     return ControllerTemplate(
@@ -126,8 +154,9 @@ class TemplateMakerController extends ChangeNotifier {
   /// app picks out a template's own outline vs. its baked-in holes), and
   /// every [DxfCircle] elsewhere becomes an editable hole. Any other entity
   /// shape (arcs, non-rectangular outlines, lines) is dropped silently —
-  /// this tool only ever produces plain rectangles with round holes, so
-  /// round-tripping a template it didn't create is best-effort.
+  /// this tool only ever produces plain or corner-filleted rectangles with
+  /// round holes, so round-tripping a template it didn't create is
+  /// best-effort.
   void loadFromTemplate(ControllerTemplate template) {
     id = template.id;
     name = template.name;
@@ -143,10 +172,19 @@ class TemplateMakerController extends ChangeNotifier {
         outlineEntity = e;
       }
     }
+    cornerRadius = 0;
     if (outlineEntity != null) {
       final b = outlineEntity.boundingBox;
       outlineWidth = b.width;
       outlineHeight = b.height;
+      // This tool's own filleted outline is always an 8-vertex polyline
+      // with a bulge on every other vertex, first vertex at (r, 0) -- read
+      // the radius back off that shape. Any other rounded-corner encoding
+      // (a different vertex order, arcs as separate entities, etc.) isn't
+      // recognized and comes back in as sharp corners instead.
+      if (outlineEntity is DxfPolyline && outlineEntity.vertices.length == 8 && outlineEntity.vertices.any((v) => v.bulge != 0)) {
+        cornerRadius = outlineEntity.vertices.first.point.x.abs();
+      }
     }
 
     holes.clear();

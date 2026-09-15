@@ -96,6 +96,17 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
     }
   }
 
+  String _holeTitle(Hole hole) {
+    switch (hole.type) {
+      case HoleType.screw:
+        return 'Screw Hole';
+      case HoleType.zipTie:
+        return 'Zip-Tie Holes';
+      case HoleType.slot:
+        return 'Slot';
+    }
+  }
+
   void _applyRotation(double degrees) {
     final placed = controller.selectedTemplate;
     final hole = controller.selectedHole;
@@ -143,7 +154,7 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            placed != null ? (controller.library.byId(placed.templateId)?.name ?? placed.templateId) : (hole!.type == HoleType.screw ? 'Screw Hole' : 'Zip-Tie Holes'),
+            placed != null ? (controller.library.byId(placed.templateId)?.name ?? placed.templateId) : _holeTitle(hole!),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
@@ -193,6 +204,18 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
             }),
             const SizedBox(height: 8),
             _numberField('Hole diameter (mm)', _widthController, _widthFocus, () {
+              final v = double.tryParse(_widthController.text);
+              if (v != null) controller.updateHole(hole.id, (h) => h.copyWith(slotWidth: v));
+            }),
+          ],
+          if (hole != null && hole.type == HoleType.slot) ...[
+            const SizedBox(height: 12),
+            _numberField('Slot length (mm)', _lengthController, _lengthFocus, () {
+              final v = double.tryParse(_lengthController.text);
+              if (v != null) controller.updateHole(hole.id, (h) => h.copyWith(slotLength: v));
+            }),
+            const SizedBox(height: 8),
+            _numberField('Slot width (mm)', _widthController, _widthFocus, () {
               final v = double.tryParse(_widthController.text);
               if (v != null) controller.updateHole(hole.id, (h) => h.copyWith(slotWidth: v));
             }),

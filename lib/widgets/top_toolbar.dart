@@ -89,7 +89,7 @@ class _TopToolbarState extends State<TopToolbar> {
               children: [
                 OutlinedButton(onPressed: () => controller.newProject(), child: const Text('New')),
                 OutlinedButton(
-                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const TemplateMakerScreen())),
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => TemplateMakerScreen(library: controller.library))),
                   child: const Text('Template Maker'),
                 ),
                 OutlinedButton(

@@ -38,4 +38,33 @@ void main() {
     expect(box.width, closeTo(4, 0.05));
     expect(box.height, closeTo(12, 0.05));
   });
+
+  test('slot bounding box matches length x width, centered on position', () {
+    final hole = Hole(
+      id: '4',
+      type: HoleType.slot,
+      position: const Vec2(0, 0),
+      slotLength: 16,
+      slotWidth: 5,
+    );
+    final box = hole.boundingBox;
+    expect(box.width, closeTo(16, 0.05));
+    expect(box.height, closeTo(5, 0.05));
+    expect(box.center.x, closeTo(0, 0.05));
+    expect(box.center.y, closeTo(0, 0.05));
+  });
+
+  test('slot rotates 90 degrees, swapping the bounding box dimensions', () {
+    final hole = Hole(
+      id: '5',
+      type: HoleType.slot,
+      position: const Vec2(0, 0),
+      slotLength: 16,
+      slotWidth: 5,
+      rotationDeg: 90,
+    );
+    final box = hole.boundingBox;
+    expect(box.width, closeTo(5, 0.05));
+    expect(box.height, closeTo(16, 0.05));
+  });
 }

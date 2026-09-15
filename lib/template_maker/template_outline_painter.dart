@@ -9,9 +9,15 @@ import '../models/vec2.dart';
 class TemplateOutlinePainter extends CustomPainter {
   final double outlineWidth;
   final double outlineHeight;
+  final double cornerRadius;
   final List<({Vec2 center, double diameter})> holes;
 
-  const TemplateOutlinePainter({required this.outlineWidth, required this.outlineHeight, required this.holes});
+  const TemplateOutlinePainter({
+    required this.outlineWidth,
+    required this.outlineHeight,
+    this.cornerRadius = 0,
+    required this.holes,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -30,7 +36,12 @@ class TemplateOutlinePainter extends CustomPainter {
       ..color = Colors.black
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
-    canvas.drawRect(Rect.fromPoints(toPx(const Vec2(0, 0)), toPx(Vec2(outlineWidth, outlineHeight))), outlinePaint);
+    final outlineRect = Rect.fromPoints(toPx(const Vec2(0, 0)), toPx(Vec2(outlineWidth, outlineHeight)));
+    if (cornerRadius > 0) {
+      canvas.drawRRect(RRect.fromRectAndRadius(outlineRect, Radius.circular(cornerRadius * scale)), outlinePaint);
+    } else {
+      canvas.drawRect(outlineRect, outlinePaint);
+    }
 
     final holePaint = Paint()
       ..color = Colors.red
@@ -54,6 +65,9 @@ class TemplateOutlinePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant TemplateOutlinePainter oldDelegate) {
-    return oldDelegate.outlineWidth != outlineWidth || oldDelegate.outlineHeight != outlineHeight || oldDelegate.holes != holes;
+    return oldDelegate.outlineWidth != outlineWidth ||
+        oldDelegate.outlineHeight != outlineHeight ||
+        oldDelegate.cornerRadius != cornerRadius ||
+        oldDelegate.holes != holes;
   }
 }

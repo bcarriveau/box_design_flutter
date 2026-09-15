@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../models/controller_template.dart';
 import '../models/vec2.dart';
 import '../services/file_io.dart';
+import '../services/template_library.dart';
 import 'template_maker_controller.dart';
 import 'template_outline_painter.dart';
 
@@ -12,9 +13,13 @@ import 'template_outline_painter.dart';
 /// outline rectangle sized by width/height fields, plus a list of round
 /// holes each given a diameter and X/Y position. Loads and exports the same
 /// JSON template format the rest of the app reads, so a file made here can
-/// be dropped straight into `assets/templates/` or imported.
+/// be dropped straight into `assets/templates/` or imported. When opened
+/// with a [library] (the running app's live template set), "Add to
+/// Library" drops the template straight into it with no file round-trip.
 class TemplateMakerScreen extends StatefulWidget {
-  const TemplateMakerScreen({super.key});
+  final TemplateLibrary? library;
+
+  const TemplateMakerScreen({super.key, this.library});
 
   @override
   State<TemplateMakerScreen> createState() => _TemplateMakerScreenState();
@@ -27,6 +32,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   late final _nameController = TextEditingController(text: _controller.name);
   late final _widthController = TextEditingController(text: _fmt(_controller.outlineWidth));
   late final _heightController = TextEditingController(text: _fmt(_controller.outlineHeight));
+  late final _cornerRadiusController = TextEditingController(text: _fmt(_controller.cornerRadius));
 
   final Map<String, TextEditingController> _holeX = {};
   final Map<String, TextEditingController> _holeY = {};
@@ -40,6 +46,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     _nameController.dispose();
     _widthController.dispose();
     _heightController.dispose();
+    _cornerRadiusController.dispose();
     for (final c in [..._holeX.values, ..._holeY.values, ..._holeD.values]) {
       c.dispose();
     }
@@ -67,6 +74,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     _nameController.text = _controller.name;
     _widthController.text = _fmt(_controller.outlineWidth);
     _heightController.text = _fmt(_controller.outlineHeight);
+    _cornerRadiusController.text = _fmt(_controller.cornerRadius);
     for (final h in _controller.holes) {
       _holeX[h.id]?.text = _fmt(h.x);
       _holeY[h.id]?.text = _fmt(h.y);
@@ -103,6 +111,14 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     _snack(result != null ? 'Template exported' : 'Export cancelled');
   }
 
+  void _addToLibrary() {
+    final library = widget.library;
+    if (library == null) return;
+    final template = _controller.toTemplate();
+    library.importJson(jsonEncode(template.toJson()));
+    _snack('Added "${template.name}" to the library');
+  }
+
   void _newTemplate() {
     setState(() {
       _controller.newTemplate();
@@ -133,6 +149,12 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
           TextButton.icon(onPressed: _newTemplate, icon: const Icon(Icons.add), label: const Text('New')),
           TextButton.icon(onPressed: _loadJson, icon: const Icon(Icons.folder_open), label: const Text('Load JSON')),
           TextButton.icon(onPressed: _exportJson, icon: const Icon(Icons.save_alt), label: const Text('Export JSON')),
+          if (widget.library != null)
+            TextButton.icon(
+              onPressed: _addToLibrary,
+              icon: const Icon(Icons.library_add),
+              label: const Text('Add to Library'),
+            ),
           const SizedBox(width: 8),
         ],
       ),
@@ -198,6 +220,16 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                     ),
                   ],
                 ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _cornerRadiusController,
+                  decoration: const InputDecoration(labelText: 'Corner radius (mm)', isDense: true, border: OutlineInputBorder()),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  onChanged: (v) {
+                    final parsed = double.tryParse(v);
+                    if (parsed != null) setState(() => _controller.setCornerRadius(parsed));
+                  },
+                ),
                 const Divider(height: 32),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -220,6 +252,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                   painter: TemplateOutlinePainter(
                     outlineWidth: _controller.outlineWidth,
                     outlineHeight: _controller.outlineHeight,
+                    cornerRadius: _controller.cornerRadius,
                     holes: [
                       for (final h in _controller.holes) (center: Vec2(h.x, h.y), diameter: h.diameter),
                     ],

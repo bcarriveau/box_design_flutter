@@ -26,5 +26,8 @@ class HolePreset {
     HolePreset(id: 'ziptie_small', name: 'Small Zip Tie (2.5x10mm)', type: HoleType.zipTie, slotLength: 10, slotWidth: 2.5),
     HolePreset(id: 'ziptie_standard', name: 'Standard Zip Tie (4x15mm)', type: HoleType.zipTie, slotLength: 15, slotWidth: 4),
     HolePreset(id: 'ziptie_large', name: 'Large Zip Tie (7x20mm)', type: HoleType.zipTie, slotLength: 20, slotWidth: 7),
+    HolePreset(id: 'slot_small', name: 'Small Slot (4x12mm)', type: HoleType.slot, slotLength: 12, slotWidth: 4),
+    HolePreset(id: 'slot_standard', name: 'Standard Slot (5x16mm)', type: HoleType.slot, slotLength: 16, slotWidth: 5),
+    HolePreset(id: 'slot_large', name: 'Large Slot (6x20mm)', type: HoleType.slot, slotLength: 20, slotWidth: 6),
   ];
 }
