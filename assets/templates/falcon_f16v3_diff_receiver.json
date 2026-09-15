@@ -1,7 +1,7 @@
 {
   "id": "falcon_f16v3_diff_receiver",
   "name": "Falcon F16v3 Differential Receiver",
-  "category": "receiver",
+  "category": "controller",
   "entities": [
     {
       "type": "polyline",

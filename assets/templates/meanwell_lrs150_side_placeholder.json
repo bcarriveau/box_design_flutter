@@ -1,6 +1,6 @@
 {
   "id": "meanwell_lrs150_side_placeholder",
-  "name": "Mean Well LRS-150 (side mount, 159x30mm, placeholder holes)",
+  "name": "Mean Well LRS-150 (side mount)",
   "category": "powerSupply",
   "entities": [
     {

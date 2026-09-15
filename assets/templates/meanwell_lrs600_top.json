@@ -1,6 +1,6 @@
 {
   "id": "meanwell_lrs600_top",
-  "name": "Mean Well LRS-600 (top mount, 225x124mm)",
+  "name": "Mean Well LRS-600 (top mount)",
   "category": "powerSupply",
   "entities": [
     {
