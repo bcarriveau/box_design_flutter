@@ -12,6 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:box_design_flutter/design/design_controller.dart';
 import 'package:box_design_flutter/geometry/mesh.dart';
 import 'package:box_design_flutter/geometry/triangulate.dart';
+import 'package:box_design_flutter/models/dxf_entity.dart';
 import 'package:box_design_flutter/models/hole.dart';
 import 'package:box_design_flutter/models/placed_template.dart';
 import 'package:box_design_flutter/models/vec2.dart';
@@ -199,6 +200,41 @@ void main() {
       final areaSquared = (nx * nx + ny * ny + nz * nz) / 4;
       expect(areaSquared, greaterThan(1e-12), reason: 'degenerate triangle ${t[0]},${t[1]},${t[2]}: $a, $b, $c');
     }
+  });
+
+  test('a slot hole removes its full stadium area, not just its two end caps', () {
+    // Regression test: HoleType.slot used to build its cut boundary out of
+    // 4 separate entities (2 lines + 2 arcs). mesh_export.dart's hole-loop
+    // builder treats each entity as its own independent closed loop, so the
+    // 2-point lines were dropped (too few points) and the 2 arcs were each
+    // implicitly closed by their own chord -- cutting only the two
+    // semicircular end caps and leaving the whole rectangular middle
+    // section of the slot as solid, uncut material. Fixed by representing
+    // the slot as one closed polyline (see stadiumVertices).
+    const outerW = 100.0, outerH = 60.0;
+    final library = TemplateLibrary();
+    final controller = DesignController(library);
+    controller.project = controller.project.copyWith(
+      boxOutline: [
+        DxfPolyline([
+          const PolyVertex(Vec2(0, 0)),
+          const PolyVertex(Vec2(outerW, 0)),
+          const PolyVertex(Vec2(outerW, outerH)),
+          const PolyVertex(Vec2(0, outerH)),
+        ], closed: true),
+      ],
+      holes: [Hole(id: 'h1', type: HoleType.slot, position: const Vec2(50, 30), slotLength: 20, slotWidth: 6)],
+    );
+
+    final mesh = buildPlateMesh(controller.project, library, thicknessMm: 5);
+    _expectStrictManifold(mesh);
+
+    final topArea = _topFaceArea(mesh);
+    const r = 6 / 2;
+    const hl = 20 / 2 - r;
+    final slotArea = (2 * hl) * (2 * r) + math.pi * r * r;
+    final expectedArea = outerW * outerH - slotArea;
+    expect(topArea, closeTo(expectedArea, expectedArea * 0.01));
   });
 }
 

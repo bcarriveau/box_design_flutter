@@ -201,3 +201,20 @@ class DxfPolyline extends DxfEntity {
     return points;
   }
 }
+
+/// A stadium (elongated slot) outline as a single closed 4-vertex polyline,
+/// centered on the origin with its long axis along X: semicircular caps at
+/// each end (bulge = 1.0, a 180-degree arc) joined by straight sides. Used
+/// for both placed [Hole]s of type slot and template-maker slot holes, so
+/// every consumer (mesh cutting, DXF/PDF export, on-canvas painting) sees
+/// one continuous closed loop rather than separate line/arc pieces.
+List<PolyVertex> stadiumVertices(double length, double width) {
+  final r = width / 2;
+  final hl = math.max(0.0, length / 2 - r);
+  return [
+    PolyVertex(Vec2(hl, -r), bulge: 1.0),
+    PolyVertex(Vec2(hl, r)),
+    PolyVertex(Vec2(-hl, r), bulge: 1.0),
+    PolyVertex(Vec2(-hl, -r)),
+  ];
+}

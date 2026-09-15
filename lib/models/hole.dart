@@ -76,18 +76,13 @@ class Hole {
     }
 
     // A single elongated stadium-shaped slot (e.g. for a screw with
-    // adjustable position, or a wide zip-tie pass-through).
-    final r = slotWidth / 2;
-    final hl = math.max(0.0, slotLength / 2 - r);
-    final slotLocal = <DxfEntity>[
-      DxfLine(Vec2(-hl, r), Vec2(hl, r)),
-      DxfLine(Vec2(hl, -r), Vec2(-hl, -r)),
-      DxfArc(Vec2(hl, 0), r, -90, 90),
-      DxfArc(Vec2(-hl, 0), r, 90, 270),
-    ];
-    return slotLocal
-        .map((e) => e.transformed(delta: position, rotationDeg: rotationDeg))
-        .toList();
+    // adjustable position, or a wide zip-tie pass-through). One closed
+    // polyline rather than separate line/arc entities, so hole-cutting code
+    // that treats each hole boundary as one closed loop sees a continuous
+    // slot instead of two disconnected end-cap semicircles with solid
+    // material left between them.
+    final outline = DxfPolyline(stadiumVertices(slotLength, slotWidth), closed: true);
+    return [outline.transformed(delta: position, rotationDeg: rotationDeg)];
   }
 
   BoundingBox get boundingBox => entitiesBoundingBox(toEntities());
