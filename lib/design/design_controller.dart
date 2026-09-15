@@ -125,6 +125,29 @@ class DesignController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setPlateThicknessMm(double value) {
+    if (value <= 0) return;
+    project = project.copyWith(plateThicknessMm: value);
+    notifyListeners();
+  }
+
+  void setAddStandoffs(bool value) {
+    project = project.copyWith(addStandoffs: value);
+    notifyListeners();
+  }
+
+  void setStandoffHeightMm(double value) {
+    if (value <= 0) return;
+    project = project.copyWith(standoffHeightMm: value);
+    notifyListeners();
+  }
+
+  void setStandoffWallThicknessMm(double value) {
+    if (value <= 0) return;
+    project = project.copyWith(standoffWallThicknessMm: value);
+    notifyListeners();
+  }
+
   void newProject() {
     final defaultBox = library.defaultBoxTemplate;
     project = BoxProject(

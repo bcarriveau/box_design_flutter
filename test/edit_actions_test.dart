@@ -77,4 +77,27 @@ void main() {
     expect(controller.project.holes, isEmpty);
     expect(controller.project.placedTemplates, isEmpty);
   });
+
+  test('plate thickness and standoff setters update the project and ignore invalid values', () {
+    final controller = DesignController(TemplateLibrary());
+
+    controller.setPlateThicknessMm(6);
+    expect(controller.project.plateThicknessMm, 6);
+    controller.setPlateThicknessMm(0);
+    controller.setPlateThicknessMm(-1);
+    expect(controller.project.plateThicknessMm, 6, reason: 'non-positive values should be ignored');
+
+    controller.setAddStandoffs(true);
+    expect(controller.project.addStandoffs, isTrue);
+
+    controller.setStandoffHeightMm(4);
+    expect(controller.project.standoffHeightMm, 4);
+    controller.setStandoffHeightMm(0);
+    expect(controller.project.standoffHeightMm, 4);
+
+    controller.setStandoffWallThicknessMm(2.5);
+    expect(controller.project.standoffWallThicknessMm, 2.5);
+    controller.setStandoffWallThicknessMm(-3);
+    expect(controller.project.standoffWallThicknessMm, 2.5);
+  });
 }

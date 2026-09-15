@@ -149,4 +149,58 @@ void main() {
       expect(zs, {0.0, 4.5});
     });
   });
+
+  group('buildAnnularTube', () {
+    double signedVolume(Mesh mesh) {
+      var vol = 0.0;
+      for (final t in mesh.triangles) {
+        final a = mesh.vertices[t[0]];
+        final b = mesh.vertices[t[1]];
+        final c = mesh.vertices[t[2]];
+        final crossX = b.y * c.z - b.z * c.y;
+        final crossY = b.z * c.x - b.x * c.z;
+        final crossZ = b.x * c.y - b.y * c.x;
+        vol += (a.x * crossX + a.y * crossY + a.z * crossZ) / 6;
+      }
+      return vol;
+    }
+
+    test('produces a watertight, correctly-oriented (positive volume) tube', () {
+      final mesh = buildAnnularTube(
+        center: const Vec2(10, 5),
+        innerRadius: 2,
+        outerRadius: 4,
+        baseZ: 5,
+        topZ: 8,
+        segments: 24,
+      );
+      _expectManifold(mesh);
+      final expected = math.pi * (16 - 4) * 3;
+      expect(signedVolume(mesh), closeTo(expected, expected * 0.02));
+    });
+
+    test('vertices span exactly [baseZ, topZ] in z', () {
+      final mesh = buildAnnularTube(center: const Vec2(0, 0), innerRadius: 1, outerRadius: 3, baseZ: 5, topZ: 8);
+      final zs = mesh.vertices.map((v) => v.z).toSet();
+      expect(zs, {5.0, 8.0});
+    });
+  });
+
+  group('combineMeshes', () {
+    test('offsets each mesh\'s triangle indices into the shared combined vertex list', () {
+      final a = extrudePlate(outer: _rect(10, 10), holes: const [], thickness: 3);
+      final b = buildAnnularTube(center: const Vec2(20, 20), innerRadius: 1, outerRadius: 2, baseZ: 3, topZ: 6);
+      final combined = combineMeshes([a, b]);
+      expect(combined.vertices.length, a.vertices.length + b.vertices.length);
+      expect(combined.triangles.length, a.triangles.length + b.triangles.length);
+      _expectManifold(a);
+      _expectManifold(b);
+      // Every triangle index in the combined mesh must point at a real vertex.
+      for (final t in combined.triangles) {
+        for (final i in t) {
+          expect(i, inInclusiveRange(0, combined.vertices.length - 1));
+        }
+      }
+    });
+  });
 }

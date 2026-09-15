@@ -236,6 +236,131 @@ void main() {
     final expectedArea = outerW * outerH - slotArea;
     expect(topArea, closeTo(expectedArea, expectedArea * 0.01));
   });
+
+  test('addStandoffs raises a boss (matching the hole\'s own radius) on every controller/receiver mounting hole', () {
+    final assetJson = File('assets/templates/bud_nbf32016.json').readAsStringSync();
+    final decoded = jsonDecode(assetJson) as Map<String, dynamic>;
+    final library = TemplateLibrary();
+    library.importJson(assetJson);
+    final board = library.importJson(jsonEncode({
+      'id': 'test_controller_board',
+      'name': 'Test Controller Board',
+      'category': 'controller',
+      'entities': [
+        {
+          'type': 'polyline',
+          'closed': true,
+          'vertices': [
+            {'x': 0, 'y': 0, 'bulge': 0},
+            {'x': 40, 'y': 0, 'bulge': 0},
+            {'x': 40, 'y': 20, 'bulge': 0},
+            {'x': 0, 'y': 20, 'bulge': 0},
+          ],
+        },
+        {
+          'type': 'circle',
+          'center': {'x': 5, 'y': 5},
+          'radius': 1.5,
+        },
+        {
+          'type': 'circle',
+          'center': {'x': 35, 'y': 15},
+          'radius': 1.5,
+        },
+      ],
+    }));
+
+    final controller = DesignController(library);
+    controller.applyBoxTemplate(decoded['id'] as String);
+    controller.project = controller.project.copyWith(placedTemplates: [
+      PlacedTemplate(id: 'p1', templateId: board.id, position: const Vec2(100, 100)),
+    ]);
+
+    final plain = buildPlateMesh(controller.project, library, thicknessMm: 5);
+    final withStandoffs = buildPlateMesh(
+      controller.project,
+      library,
+      thicknessMm: 5,
+      addStandoffs: true,
+      standoffHeight: 3,
+      standoffWallThickness: 2,
+    );
+
+    expect(withStandoffs.vertices.length, greaterThan(plain.vertices.length));
+    expect(withStandoffs.triangles.length, greaterThan(plain.triangles.length));
+
+    final plainMaxZ = plain.vertices.map((v) => v.z).reduce(math.max);
+    final standoffMaxZ = withStandoffs.vertices.map((v) => v.z).reduce(math.max);
+    expect(standoffMaxZ, closeTo(plainMaxZ + 3, 1e-9));
+
+    // Standoffs are appended as their own independent solids (see
+    // buildAnnularTube) -- the plate portion of the combined mesh should be
+    // untouched, so its own directed edges still each appear exactly once.
+    final plateEdgeCount = <String, int>{};
+    for (final t in withStandoffs.triangles.take(plain.triangles.length)) {
+      for (var i = 0; i < 3; i++) {
+        final key = '${t[i]}->${t[(i + 1) % 3]}';
+        plateEdgeCount[key] = (plateEdgeCount[key] ?? 0) + 1;
+      }
+    }
+    for (final entry in plateEdgeCount.entries) {
+      expect(entry.value, 1, reason: 'plate edge ${entry.key} appears ${entry.value} times');
+    }
+  });
+
+  test('addStandoffs is a no-op with no controller/receiver boards placed', () {
+    final assetJson = File('assets/templates/bud_nbf32016.json').readAsStringSync();
+    final decoded = jsonDecode(assetJson) as Map<String, dynamic>;
+    final library = TemplateLibrary();
+    library.importJson(assetJson);
+    final controller = DesignController(library);
+    controller.applyBoxTemplate(decoded['id'] as String);
+
+    final plain = buildPlateMesh(controller.project, library, thicknessMm: 5);
+    final withStandoffs = buildPlateMesh(controller.project, library, thicknessMm: 5, addStandoffs: true);
+    expect(withStandoffs.vertices.length, plain.vertices.length);
+    expect(withStandoffs.triangles.length, plain.triangles.length);
+  });
+
+  test('addStandoffs skips power-supply boards', () {
+    final assetJson = File('assets/templates/bud_nbf32016.json').readAsStringSync();
+    final decoded = jsonDecode(assetJson) as Map<String, dynamic>;
+    final library = TemplateLibrary();
+    library.importJson(assetJson);
+    final board = library.importJson(jsonEncode({
+      'id': 'test_power_supply_board',
+      'name': 'Test PSU',
+      'category': 'powerSupply',
+      'entities': [
+        {
+          'type': 'polyline',
+          'closed': true,
+          'vertices': [
+            {'x': 0, 'y': 0, 'bulge': 0},
+            {'x': 40, 'y': 0, 'bulge': 0},
+            {'x': 40, 'y': 20, 'bulge': 0},
+            {'x': 0, 'y': 20, 'bulge': 0},
+          ],
+        },
+        {
+          'type': 'circle',
+          'center': {'x': 5, 'y': 5},
+          'radius': 1.5,
+        },
+      ],
+    }));
+
+    final controller = DesignController(library);
+    controller.applyBoxTemplate(decoded['id'] as String);
+    controller.project = controller.project.copyWith(placedTemplates: [
+      PlacedTemplate(id: 'p1', templateId: board.id, position: const Vec2(100, 100)),
+    ]);
+
+    final plain = buildPlateMesh(controller.project, library, thicknessMm: 5);
+    final withStandoffs = buildPlateMesh(controller.project, library, thicknessMm: 5, addStandoffs: true);
+    expect(withStandoffs.vertices.length, plain.vertices.length);
+    expect(withStandoffs.triangles.length, plain.triangles.length);
+  });
 }
 
 /// Every directed edge of a closed, watertight mesh must have a matching

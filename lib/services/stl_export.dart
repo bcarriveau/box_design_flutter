@@ -43,7 +43,21 @@ String meshToStlText(Mesh mesh, {String solidName = 'box_design'}) {
   return buffer.toString();
 }
 
-Uint8List exportProjectAsStlBytes(BoxProject project, TemplateLibrary library, {double thicknessMm = 5.0}) {
-  final mesh = buildPlateMesh(project, library, thicknessMm: thicknessMm);
+Uint8List exportProjectAsStlBytes(
+  BoxProject project,
+  TemplateLibrary library, {
+  double thicknessMm = 5.0,
+  bool addStandoffs = false,
+  double standoffHeight = 3,
+  double standoffWallThickness = 2,
+}) {
+  final mesh = buildPlateMesh(
+    project,
+    library,
+    thicknessMm: thicknessMm,
+    addStandoffs: addStandoffs,
+    standoffHeight: standoffHeight,
+    standoffWallThickness: standoffWallThickness,
+  );
   return Uint8List.fromList(utf8.encode(meshToStlText(mesh)));
 }

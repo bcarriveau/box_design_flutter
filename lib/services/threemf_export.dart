@@ -51,8 +51,22 @@ String meshTo3mfModelXml(Mesh mesh) {
   return buffer.toString();
 }
 
-Uint8List exportProjectAs3mfBytes(BoxProject project, TemplateLibrary library, {double thicknessMm = 5.0}) {
-  final mesh = buildPlateMesh(project, library, thicknessMm: thicknessMm);
+Uint8List exportProjectAs3mfBytes(
+  BoxProject project,
+  TemplateLibrary library, {
+  double thicknessMm = 5.0,
+  bool addStandoffs = false,
+  double standoffHeight = 3,
+  double standoffWallThickness = 2,
+}) {
+  final mesh = buildPlateMesh(
+    project,
+    library,
+    thicknessMm: thicknessMm,
+    addStandoffs: addStandoffs,
+    standoffHeight: standoffHeight,
+    standoffWallThickness: standoffWallThickness,
+  );
 
   final archive = Archive()
     ..addFile(ArchiveFile.string('[Content_Types].xml', _contentTypesXml))

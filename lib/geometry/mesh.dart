@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import '../models/vec2.dart';
 import 'triangulate.dart';
 
@@ -93,5 +95,101 @@ Mesh extrudePlate({
     addWalls(h.reversed.toList());
   }
 
+  return Mesh(vertices, triangles);
+}
+
+/// Builds a self-contained, independently watertight annular tube (a
+/// standoff/boss): a hollow cylinder from [baseZ] to [topZ] with an
+/// [innerRadius] through-hole and [outerRadius] outer wall, capped top and
+/// bottom. Meant to be appended alongside a plate's own mesh (see
+/// [combineMeshes]) rather than CSG-unioned with it: it deliberately
+/// overlaps the plate's existing solid material below [topZ] down to
+/// wherever the plate itself ends (a standard, widely-supported
+/// "overlapping bodies" technique — slicers union overlapping solids
+/// automatically when slicing), so it never needs to know anything about
+/// the plate's own triangulation.
+Mesh buildAnnularTube({
+  required Vec2 center,
+  required double innerRadius,
+  required double outerRadius,
+  required double baseZ,
+  required double topZ,
+  int segments = 32,
+}) {
+  final vertices = <Vec3>[];
+  final triangles = <List<int>>[];
+
+  List<Vec2> ring(double radius) => [
+        for (var i = 0; i < segments; i++)
+          Vec2(
+            center.x + radius * math.cos(2 * math.pi * i / segments),
+            center.y + radius * math.sin(2 * math.pi * i / segments),
+          ),
+      ];
+
+  int addVertex(Vec2 p, double z) {
+    vertices.add(Vec3(p.x, p.y, z));
+    return vertices.length - 1;
+  }
+
+  final innerRing = ring(innerRadius);
+  final outerRing = ring(outerRadius);
+  final innerBot = [for (final p in innerRing) addVertex(p, baseZ)];
+  final innerTop = [for (final p in innerRing) addVertex(p, topZ)];
+  final outerBot = [for (final p in outerRing) addVertex(p, baseZ)];
+  final outerTop = [for (final p in outerRing) addVertex(p, topZ)];
+
+  // A ring of points at increasing angle is CCW when viewed from +z looking
+  // down (matching signedArea's convention elsewhere in this file), so
+  // walking it forward (i -> i+1) and using the same wall-triangle winding
+  // as extrudePlate's outer boundary gives an outward-pointing normal;
+  // walking it backward (i+1 -> i, as for a hole boundary there) gives a
+  // normal pointing back toward the axis -- exactly what the inner (hole)
+  // wall needs.
+  void wall(List<int> bot, List<int> top, {required bool forward}) {
+    final n = bot.length;
+    for (var i = 0; i < n; i++) {
+      final j = (i + 1) % n;
+      final a = forward ? i : j;
+      final b = forward ? j : i;
+      triangles.add([bot[a], bot[b], top[b]]);
+      triangles.add([bot[a], top[b], top[a]]);
+    }
+  }
+
+  wall(outerBot, outerTop, forward: true);
+  wall(innerBot, innerTop, forward: false);
+
+  // Top annulus cap: CCW (in x/y) triangles face +z, matching extrudePlate's
+  // own top-face convention.
+  for (var i = 0; i < segments; i++) {
+    final j = (i + 1) % segments;
+    triangles.add([innerTop[i], outerTop[i], outerTop[j]]);
+    triangles.add([innerTop[i], outerTop[j], innerTop[j]]);
+  }
+  // Bottom annulus cap: reversed winding to face -z.
+  for (var i = 0; i < segments; i++) {
+    final j = (i + 1) % segments;
+    triangles.add([innerBot[i], outerBot[j], outerBot[i]]);
+    triangles.add([innerBot[i], innerBot[j], outerBot[j]]);
+  }
+
+  return Mesh(vertices, triangles);
+}
+
+/// Concatenates several independent meshes into one, offsetting each one's
+/// triangle indices to point into the combined vertex list. Does not weld
+/// or deduplicate shared/overlapping geometry between the inputs -- see
+/// [buildAnnularTube].
+Mesh combineMeshes(List<Mesh> meshes) {
+  final vertices = <Vec3>[];
+  final triangles = <List<int>>[];
+  for (final m in meshes) {
+    final offset = vertices.length;
+    vertices.addAll(m.vertices);
+    for (final t in m.triangles) {
+      triangles.add([t[0] + offset, t[1] + offset, t[2] + offset]);
+    }
+  }
   return Mesh(vertices, triangles);
 }

@@ -21,16 +21,35 @@ class TopToolbar extends StatefulWidget {
 }
 
 class _TopToolbarState extends State<TopToolbar> {
-  final _thicknessController = TextEditingController(text: '5');
+  late final _thicknessController = TextEditingController(text: _fmt(controller.project.plateThicknessMm));
+  late final _standoffHeightController = TextEditingController(text: _fmt(controller.project.standoffHeightMm));
+  late final _standoffWallController = TextEditingController(text: _fmt(controller.project.standoffWallThicknessMm));
+  final _thicknessFocus = FocusNode();
+  final _standoffHeightFocus = FocusNode();
+  final _standoffWallFocus = FocusNode();
 
   DesignController get controller => widget.controller;
 
-  double get _thicknessMm => double.tryParse(_thicknessController.text) ?? 5.0;
+  String _fmt(double v) => v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(1);
 
   @override
   void dispose() {
     _thicknessController.dispose();
+    _standoffHeightController.dispose();
+    _standoffWallController.dispose();
+    _thicknessFocus.dispose();
+    _standoffHeightFocus.dispose();
+    _standoffWallFocus.dispose();
     super.dispose();
+  }
+
+  /// Keeps the text fields showing the project's own values (e.g. right
+  /// after Open/New loads a different project) without clobbering a field
+  /// the user is actively typing into.
+  void _syncFields() {
+    if (!_thicknessFocus.hasFocus) _thicknessController.text = _fmt(controller.project.plateThicknessMm);
+    if (!_standoffHeightFocus.hasFocus) _standoffHeightController.text = _fmt(controller.project.standoffHeightMm);
+    if (!_standoffWallFocus.hasFocus) _standoffWallController.text = _fmt(controller.project.standoffWallThicknessMm);
   }
 
   void _snack(BuildContext context, String message) {
@@ -77,6 +96,7 @@ class _TopToolbarState extends State<TopToolbar> {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, _) {
+        _syncFields();
         final box = controller.library.byId(controller.project.boxTemplateId ?? '');
         return Material(
           elevation: 1,
@@ -137,13 +157,63 @@ class _TopToolbarState extends State<TopToolbar> {
                   width: 90,
                   child: TextField(
                     controller: _thicknessController,
+                    focusNode: _thicknessFocus,
                     decoration: const InputDecoration(labelText: 'Plate mm', isDense: true, border: OutlineInputBorder()),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    onChanged: (v) {
+                      final parsed = double.tryParse(v);
+                      if (parsed != null) controller.setPlateThicknessMm(parsed);
+                    },
                   ),
                 ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Checkbox(
+                      value: controller.project.addStandoffs,
+                      onChanged: (v) => controller.setAddStandoffs(v ?? false),
+                    ),
+                    const Text('Standoffs'),
+                  ],
+                ),
+                if (controller.project.addStandoffs) ...[
+                  SizedBox(
+                    width: 90,
+                    child: TextField(
+                      controller: _standoffHeightController,
+                      focusNode: _standoffHeightFocus,
+                      decoration: const InputDecoration(labelText: 'Height mm', isDense: true, border: OutlineInputBorder()),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      onChanged: (v) {
+                        final parsed = double.tryParse(v);
+                        if (parsed != null) controller.setStandoffHeightMm(parsed);
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    width: 90,
+                    child: TextField(
+                      controller: _standoffWallController,
+                      focusNode: _standoffWallFocus,
+                      decoration: const InputDecoration(labelText: 'Wall mm', isDense: true, border: OutlineInputBorder()),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      onChanged: (v) {
+                        final parsed = double.tryParse(v);
+                        if (parsed != null) controller.setStandoffWallThicknessMm(parsed);
+                      },
+                    ),
+                  ),
+                ],
                 FilledButton.tonal(
                   onPressed: () {
-                    final bytes = exportProjectAsStlBytes(controller.project, controller.library, thicknessMm: _thicknessMm);
+                    final bytes = exportProjectAsStlBytes(
+                      controller.project,
+                      controller.library,
+                      thicknessMm: controller.project.plateThicknessMm,
+                      addStandoffs: controller.project.addStandoffs,
+                      standoffHeight: controller.project.standoffHeightMm,
+                      standoffWallThickness: controller.project.standoffWallThicknessMm,
+                    );
                     saveBytes('${controller.project.name}.stl', bytes, dialogTitle: 'Export STL', mimeType: 'model/stl').then((result) {
                       if (context.mounted) _snack(context, result != null ? 'STL exported' : 'Export cancelled');
                     });
@@ -152,7 +222,14 @@ class _TopToolbarState extends State<TopToolbar> {
                 ),
                 FilledButton.tonal(
                   onPressed: () {
-                    final bytes = exportProjectAs3mfBytes(controller.project, controller.library, thicknessMm: _thicknessMm);
+                    final bytes = exportProjectAs3mfBytes(
+                      controller.project,
+                      controller.library,
+                      thicknessMm: controller.project.plateThicknessMm,
+                      addStandoffs: controller.project.addStandoffs,
+                      standoffHeight: controller.project.standoffHeightMm,
+                      standoffWallThickness: controller.project.standoffWallThicknessMm,
+                    );
                     saveBytes('${controller.project.name}.3mf', bytes, dialogTitle: 'Export 3MF', mimeType: 'model/3mf').then((result) {
                       if (context.mounted) _snack(context, result != null ? '3MF exported' : 'Export cancelled');
                     });

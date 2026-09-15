@@ -1,6 +1,7 @@
 import '../geometry/mesh.dart';
 import '../geometry/placed_entities.dart';
 import '../models/box_project.dart';
+import '../models/controller_template.dart';
 import '../models/dxf_entity.dart';
 import '../models/hole.dart';
 import '../models/vec2.dart';
@@ -77,14 +78,46 @@ List<List<Vec2>> _placedTemplateHoles(BoxProject project, TemplateLibrary librar
   return result;
 }
 
+/// Every round mounting hole on a placed controller or receiver template
+/// (not power supplies or the box's own holes), as a center + radius in
+/// absolute box-space mm — the candidates for [buildPlateMesh]'s
+/// `addStandoffs` option, since those are the boards that actually get
+/// screwed down onto raised standoffs.
+List<({Vec2 center, double radius})> _controllerReceiverMountingHoles(BoxProject project, TemplateLibrary library) {
+  final result = <({Vec2 center, double radius})>[];
+  for (final placed in project.placedTemplates) {
+    final template = library.byId(placed.templateId);
+    if (template == null) continue;
+    if (template.category != TemplateCategory.controller && template.category != TemplateCategory.receiver) continue;
+    for (final entity in placedTemplateEntities(template, placed)) {
+      if (entity is! DxfCircle) continue;
+      result.add((center: entity.center, radius: entity.radius));
+    }
+  }
+  return result;
+}
+
 /// Builds a solid-plate [Mesh] for [project]: the box outline extruded to
 /// [thicknessMm], with every screw/zip-tie hole, every hole already baked
 /// into the box template itself (e.g. a real enclosure's own mounting
 /// flange holes), and every round mounting hole on a placed
 /// controller/power-supply template cut all the way through.
-Mesh buildPlateMesh(BoxProject project, TemplateLibrary library, {required double thicknessMm}) {
+///
+/// When [addStandoffs] is set, every mounting hole on a placed controller
+/// or receiver template also gets a raised annular boss ([standoffHeight]
+/// mm tall, [standoffWallThickness] mm of material around the hole) so the
+/// board sits proud of the plate on printed standoffs instead of flush
+/// against it.
+Mesh buildPlateMesh(
+  BoxProject project,
+  TemplateLibrary library, {
+  required double thicknessMm,
+  bool addStandoffs = false,
+  double standoffHeight = 3,
+  double standoffWallThickness = 2,
+}) {
   final split = _splitBoxOutline(project.boxOutline);
-  return extrudePlate(
+  final plate = extrudePlate(
     outer: split.outer,
     holes: [
       ...split.ownHoles,
@@ -93,4 +126,17 @@ Mesh buildPlateMesh(BoxProject project, TemplateLibrary library, {required doubl
     ],
     thickness: thicknessMm,
   );
+  if (!addStandoffs) return plate;
+
+  final standoffs = [
+    for (final hole in _controllerReceiverMountingHoles(project, library))
+      buildAnnularTube(
+        center: hole.center,
+        innerRadius: hole.radius,
+        outerRadius: hole.radius + standoffWallThickness,
+        baseZ: thicknessMm,
+        topZ: thicknessMm + standoffHeight,
+      ),
+  ];
+  return combineMeshes([plate, ...standoffs]);
 }

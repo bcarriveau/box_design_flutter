@@ -32,12 +32,23 @@ class BoxProject {
   final List<PlacedTemplate> placedTemplates;
   final List<Hole> holes;
 
+  /// 3D/STL/3MF export settings — kept on the project so Save/Open round
+  /// trips them instead of resetting to defaults every session.
+  final double plateThicknessMm;
+  final bool addStandoffs;
+  final double standoffHeightMm;
+  final double standoffWallThicknessMm;
+
   BoxProject({
     this.name = 'Untitled Box',
     this.boxTemplateId,
     List<DxfEntity>? boxOutline,
     this.placedTemplates = const [],
     this.holes = const [],
+    this.plateThicknessMm = 5,
+    this.addStandoffs = false,
+    this.standoffHeightMm = 3,
+    this.standoffWallThicknessMm = 2,
   }) : boxOutline = boxOutline ?? defaultRectangleOutline();
 
   BoundingBox get boxBoundingBox => entitiesBoundingBox(boxOutline);
@@ -50,6 +61,10 @@ class BoxProject {
     List<DxfEntity>? boxOutline,
     List<PlacedTemplate>? placedTemplates,
     List<Hole>? holes,
+    double? plateThicknessMm,
+    bool? addStandoffs,
+    double? standoffHeightMm,
+    double? standoffWallThicknessMm,
   }) {
     return BoxProject(
       name: name ?? this.name,
@@ -57,6 +72,10 @@ class BoxProject {
       boxOutline: boxOutline ?? this.boxOutline,
       placedTemplates: placedTemplates ?? this.placedTemplates,
       holes: holes ?? this.holes,
+      plateThicknessMm: plateThicknessMm ?? this.plateThicknessMm,
+      addStandoffs: addStandoffs ?? this.addStandoffs,
+      standoffHeightMm: standoffHeightMm ?? this.standoffHeightMm,
+      standoffWallThicknessMm: standoffWallThicknessMm ?? this.standoffWallThicknessMm,
     );
   }
 
@@ -66,6 +85,10 @@ class BoxProject {
         'boxOutline': entitiesToJson(boxOutline),
         'placedTemplates': placedTemplates.map((p) => p.toJson()).toList(),
         'holes': holes.map((h) => h.toJson()).toList(),
+        'plateThicknessMm': plateThicknessMm,
+        'addStandoffs': addStandoffs,
+        'standoffHeightMm': standoffHeightMm,
+        'standoffWallThicknessMm': standoffWallThicknessMm,
       };
 
   factory BoxProject.fromJson(Map<String, dynamic> json) => BoxProject(
@@ -83,5 +106,9 @@ class BoxProject {
         holes: (json['holes'] as List<dynamic>? ?? [])
             .map((h) => Hole.fromJson(h as Map<String, dynamic>))
             .toList(),
+        plateThicknessMm: (json['plateThicknessMm'] as num?)?.toDouble() ?? 5,
+        addStandoffs: json['addStandoffs'] as bool? ?? false,
+        standoffHeightMm: (json['standoffHeightMm'] as num?)?.toDouble() ?? 3,
+        standoffWallThicknessMm: (json['standoffWallThicknessMm'] as num?)?.toDouble() ?? 2,
       );
 }
