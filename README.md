@@ -1,6 +1,6 @@
-# Box Design (Flutter)
+# Box Design
 
-A Flutter (Web + Windows/Linux/macOS) rewrite of [box_design](https://github.com/computergeek1507/box_design), a tool for laying out controller enclosures: pick a box, drag controller boards / power supplies onto it, add screw holes and zip-tie slots, then export the result as DXF (for CNC/laser cutting) or PDF (1:1 scale reference/print).
+A tool for laying out controller enclosures (Web + Windows/Linux/macOS): pick a box, drag controller boards / power supplies onto it, add screw holes and zip-tie slots, then export the result as DXF (for CNC/laser cutting) or PDF (1:1 scale reference/print).
 
 **Try it live: [computergeek1507.github.io/box_design_flutter](https://computergeek1507.github.io/box_design_flutter/)**
 
