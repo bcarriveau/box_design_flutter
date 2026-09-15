@@ -9,6 +9,7 @@ import '../services/pdf_export.dart';
 import '../services/project_io.dart';
 import '../services/stl_export.dart';
 import '../services/threemf_export.dart';
+import '../template_maker/template_maker_screen.dart';
 
 class TopToolbar extends StatefulWidget {
   final DesignController controller;
@@ -87,6 +88,10 @@ class _TopToolbarState extends State<TopToolbar> {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 OutlinedButton(onPressed: () => controller.newProject(), child: const Text('New')),
+                OutlinedButton(
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const TemplateMakerScreen())),
+                  child: const Text('Template Maker'),
+                ),
                 OutlinedButton(
                   onPressed: () async {
                     final project = await openProject();
