@@ -77,4 +77,105 @@ void main() {
     expect(template.category, TemplateCategory.receiver);
     expect(template.entities.whereType<DxfCircle>(), hasLength(1));
   });
+
+  test('a positive cornerCutSize produces a 12-vertex notched outline with the right bounding box', () {
+    final controller = TemplateMakerController()
+      ..setOutlineWidth(80)
+      ..setOutlineHeight(50)
+      ..setCornerCutSize(8);
+
+    final outline = controller.toTemplate().entities.first as DxfPolyline;
+    expect(outline.vertices, hasLength(12));
+    expect(outline.vertices.every((v) => v.bulge == 0), isTrue);
+    expect(outline.boundingBox.width, closeTo(80, 1e-9));
+    expect(outline.boundingBox.height, closeTo(50, 1e-9));
+  });
+
+  test('cornerCutSize is clamped so it can never exceed half the smaller side', () {
+    final controller = TemplateMakerController()
+      ..setOutlineWidth(80)
+      ..setOutlineHeight(50)
+      ..setCornerCutSize(1000);
+
+    final outline = controller.toTemplate().entities.first as DxfPolyline;
+    expect(outline.vertices.first.point.x, closeTo(25, 1e-9));
+  });
+
+  test('cornerRadius and cornerCutSize are mutually exclusive', () {
+    final controller = TemplateMakerController()
+      ..setOutlineWidth(80)
+      ..setOutlineHeight(50)
+      ..setCornerRadius(6);
+    expect(controller.cornerRadius, 6);
+    controller.setCornerCutSize(8);
+    expect(controller.cornerCutSize, 8);
+    expect(controller.cornerRadius, 0);
+    controller.setCornerRadius(5);
+    expect(controller.cornerRadius, 5);
+    expect(controller.cornerCutSize, 0);
+  });
+
+  test('loadFromTemplate round-trips a notched outline back to its cut size', () {
+    final original = TemplateMakerController()
+      ..setOutlineWidth(80)
+      ..setOutlineHeight(50)
+      ..setCornerCutSize(8);
+    final template = original.toTemplate();
+
+    final loaded = TemplateMakerController()..loadFromTemplate(template);
+    expect(loaded.outlineWidth, closeTo(80, 1e-9));
+    expect(loaded.outlineHeight, closeTo(50, 1e-9));
+    expect(loaded.cornerCutSize, closeTo(8, 1e-9));
+    expect(loaded.cornerRadius, 0);
+  });
+
+  test('addSlot produces a closed stadium polyline with the right bounding box', () {
+    final controller = TemplateMakerController()
+      ..setOutlineWidth(80)
+      ..setOutlineHeight(50)
+      ..addSlot();
+    final hole = controller.holes.single;
+    controller.updateHole(hole.id, x: 40, y: 25, slotLength: 20, slotWidth: 6);
+
+    final template = controller.toTemplate();
+    final slotEntity = template.entities.whereType<DxfPolyline>().last;
+    expect(slotEntity.closed, isTrue);
+    expect(slotEntity.boundingBox.width, closeTo(20, 0.05));
+    expect(slotEntity.boundingBox.height, closeTo(6, 0.05));
+    expect(slotEntity.boundingBox.center.x, closeTo(40, 0.05));
+    expect(slotEntity.boundingBox.center.y, closeTo(25, 0.05));
+  });
+
+  test('a rotated slot swaps its bounding box dimensions', () {
+    final controller = TemplateMakerController()
+      ..setOutlineWidth(80)
+      ..setOutlineHeight(50)
+      ..addSlot();
+    final hole = controller.holes.single;
+    controller.updateHole(hole.id, x: 40, y: 25, slotLength: 20, slotWidth: 6, rotationDeg: 90);
+
+    final slotEntity = controller.toTemplate().entities.whereType<DxfPolyline>().last;
+    expect(slotEntity.boundingBox.width, closeTo(6, 0.05));
+    expect(slotEntity.boundingBox.height, closeTo(20, 0.05));
+  });
+
+  test('loadFromTemplate round-trips a slot hole back to its length/width/rotation', () {
+    final original = TemplateMakerController()
+      ..setOutlineWidth(80)
+      ..setOutlineHeight(50)
+      ..addSlot();
+    final hole = original.holes.single;
+    original.updateHole(hole.id, x: 30, y: 15, slotLength: 18, slotWidth: 5, rotationDeg: 35);
+    final template = original.toTemplate();
+
+    final loaded = TemplateMakerController()..loadFromTemplate(template);
+    expect(loaded.holes, hasLength(1));
+    final loadedHole = loaded.holes.single;
+    expect(loadedHole.shape, TemplateMakerHoleShape.slot);
+    expect(loadedHole.x, closeTo(30, 1e-6));
+    expect(loadedHole.y, closeTo(15, 1e-6));
+    expect(loadedHole.slotLength, closeTo(18, 1e-6));
+    expect(loadedHole.slotWidth, closeTo(5, 1e-6));
+    expect(loadedHole.rotationDeg, closeTo(35, 1e-6));
+  });
 }

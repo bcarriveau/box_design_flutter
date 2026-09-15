@@ -1,21 +1,36 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
+import '../models/dxf_entity.dart';
 import '../models/vec2.dart';
+import 'template_maker_controller.dart';
 
 /// Scale-to-fit preview of a template being built: the outline rectangle
-/// plus every round hole, each labeled with its diameter. mm-space is
-/// math/Y-up (matching the rest of the app's DXF convention); the canvas is
-/// screen Y-down, so points are flipped in Y before drawing.
+/// (optionally corner-filleted or corner-notched) plus every hole, round or
+/// slot, each labeled with its size. mm-space is math/Y-up (matching the
+/// rest of the app's DXF convention); the canvas is screen Y-down, so
+/// points are flipped in Y before drawing.
 class TemplateOutlinePainter extends CustomPainter {
   final double outlineWidth;
   final double outlineHeight;
   final double cornerRadius;
-  final List<({Vec2 center, double diameter})> holes;
+  final double cornerCutSize;
+  final List<
+      ({
+        TemplateMakerHoleShape shape,
+        Vec2 center,
+        double diameter,
+        double slotLength,
+        double slotWidth,
+        double rotationDeg,
+      })> holes;
 
   const TemplateOutlinePainter({
     required this.outlineWidth,
     required this.outlineHeight,
     this.cornerRadius = 0,
+    this.cornerCutSize = 0,
     required this.holes,
   });
 
@@ -36,11 +51,17 @@ class TemplateOutlinePainter extends CustomPainter {
       ..color = Colors.black
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
-    final outlineRect = Rect.fromPoints(toPx(const Vec2(0, 0)), toPx(Vec2(outlineWidth, outlineHeight)));
-    if (cornerRadius > 0) {
-      canvas.drawRRect(RRect.fromRectAndRadius(outlineRect, Radius.circular(cornerRadius * scale)), outlinePaint);
+    final cut = cornerCutSize <= 0 ? 0.0 : math.min(cornerCutSize, math.min(outlineWidth, outlineHeight) / 2);
+    if (cut > 0) {
+      final pts = notchedRectVertices(outlineWidth, outlineHeight, cut).map((v) => toPx(v.point)).toList();
+      canvas.drawPath(Path()..addPolygon(pts, true), outlinePaint);
     } else {
-      canvas.drawRect(outlineRect, outlinePaint);
+      final outlineRect = Rect.fromPoints(toPx(const Vec2(0, 0)), toPx(Vec2(outlineWidth, outlineHeight)));
+      if (cornerRadius > 0) {
+        canvas.drawRRect(RRect.fromRectAndRadius(outlineRect, Radius.circular(cornerRadius * scale)), outlinePaint);
+      } else {
+        canvas.drawRect(outlineRect, outlinePaint);
+      }
     }
 
     final holePaint = Paint()
@@ -48,10 +69,19 @@ class TemplateOutlinePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
     for (final hole in holes) {
-      final center = toPx(hole.center);
-      final radiusPx = hole.diameter / 2 * scale;
-      canvas.drawCircle(center, radiusPx, holePaint);
-      _drawLabel(canvas, '⌀${hole.diameter.toStringAsFixed(1)}', center + Offset(radiusPx + 4, -radiusPx - 4));
+      if (hole.shape == TemplateMakerHoleShape.round) {
+        final center = toPx(hole.center);
+        final radiusPx = hole.diameter / 2 * scale;
+        canvas.drawCircle(center, radiusPx, holePaint);
+        _drawLabel(canvas, '⌀${hole.diameter.toStringAsFixed(1)}', center + Offset(radiusPx + 4, -radiusPx - 4));
+      } else {
+        final outline = DxfPolyline(stadiumVertices(hole.slotLength, hole.slotWidth), closed: true)
+            .transformed(delta: hole.center, rotationDeg: hole.rotationDeg);
+        final pts = outline.toPoints().map(toPx).toList();
+        canvas.drawPath(Path()..addPolygon(pts, true), holePaint);
+        final center = toPx(hole.center);
+        _drawLabel(canvas, '${hole.slotLength.toStringAsFixed(1)}x${hole.slotWidth.toStringAsFixed(1)}', center + const Offset(6, -6));
+      }
     }
   }
 
@@ -68,6 +98,7 @@ class TemplateOutlinePainter extends CustomPainter {
     return oldDelegate.outlineWidth != outlineWidth ||
         oldDelegate.outlineHeight != outlineHeight ||
         oldDelegate.cornerRadius != cornerRadius ||
+        oldDelegate.cornerCutSize != cornerCutSize ||
         oldDelegate.holes != holes;
   }
 }

@@ -33,10 +33,14 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   late final _widthController = TextEditingController(text: _fmt(_controller.outlineWidth));
   late final _heightController = TextEditingController(text: _fmt(_controller.outlineHeight));
   late final _cornerRadiusController = TextEditingController(text: _fmt(_controller.cornerRadius));
+  late final _cornerCutController = TextEditingController(text: _fmt(_controller.cornerCutSize));
 
   final Map<String, TextEditingController> _holeX = {};
   final Map<String, TextEditingController> _holeY = {};
   final Map<String, TextEditingController> _holeD = {};
+  final Map<String, TextEditingController> _holeLen = {};
+  final Map<String, TextEditingController> _holeWidth = {};
+  final Map<String, TextEditingController> _holeRotation = {};
 
   String _fmt(double v) => v.toStringAsFixed(1);
 
@@ -47,7 +51,15 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     _widthController.dispose();
     _heightController.dispose();
     _cornerRadiusController.dispose();
-    for (final c in [..._holeX.values, ..._holeY.values, ..._holeD.values]) {
+    _cornerCutController.dispose();
+    for (final c in [
+      ..._holeX.values,
+      ..._holeY.values,
+      ..._holeD.values,
+      ..._holeLen.values,
+      ..._holeWidth.values,
+      ..._holeRotation.values,
+    ]) {
       c.dispose();
     }
     super.dispose();
@@ -55,7 +67,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
 
   void _syncHoleControllers() {
     final liveIds = _controller.holes.map((h) => h.id).toSet();
-    for (final map in [_holeX, _holeY, _holeD]) {
+    for (final map in [_holeX, _holeY, _holeD, _holeLen, _holeWidth, _holeRotation]) {
       map.removeWhere((id, c) {
         final stale = !liveIds.contains(id);
         if (stale) c.dispose();
@@ -66,6 +78,9 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
       _holeX.putIfAbsent(h.id, () => TextEditingController(text: _fmt(h.x)));
       _holeY.putIfAbsent(h.id, () => TextEditingController(text: _fmt(h.y)));
       _holeD.putIfAbsent(h.id, () => TextEditingController(text: _fmt(h.diameter)));
+      _holeLen.putIfAbsent(h.id, () => TextEditingController(text: _fmt(h.slotLength)));
+      _holeWidth.putIfAbsent(h.id, () => TextEditingController(text: _fmt(h.slotWidth)));
+      _holeRotation.putIfAbsent(h.id, () => TextEditingController(text: _fmt(h.rotationDeg)));
     }
   }
 
@@ -75,10 +90,14 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     _widthController.text = _fmt(_controller.outlineWidth);
     _heightController.text = _fmt(_controller.outlineHeight);
     _cornerRadiusController.text = _fmt(_controller.cornerRadius);
+    _cornerCutController.text = _fmt(_controller.cornerCutSize);
     for (final h in _controller.holes) {
       _holeX[h.id]?.text = _fmt(h.x);
       _holeY[h.id]?.text = _fmt(h.y);
       _holeD[h.id]?.text = _fmt(h.diameter);
+      _holeLen[h.id]?.text = _fmt(h.slotLength);
+      _holeWidth[h.id]?.text = _fmt(h.slotWidth);
+      _holeRotation[h.id]?.text = _fmt(h.rotationDeg);
     }
   }
 
@@ -130,6 +149,14 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   void _addHole() {
     setState(() {
       _controller.addHole();
+      _syncHoleControllers();
+      _refreshTopFields();
+    });
+  }
+
+  void _addSlot() {
+    setState(() {
+      _controller.addSlot();
       _syncHoleControllers();
       _refreshTopFields();
     });
@@ -221,21 +248,54 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                TextField(
-                  controller: _cornerRadiusController,
-                  decoration: const InputDecoration(labelText: 'Corner radius (mm)', isDense: true, border: OutlineInputBorder()),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  onChanged: (v) {
-                    final parsed = double.tryParse(v);
-                    if (parsed != null) setState(() => _controller.setCornerRadius(parsed));
-                  },
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _cornerRadiusController,
+                        decoration: const InputDecoration(labelText: 'Corner radius (mm)', isDense: true, border: OutlineInputBorder()),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        onChanged: (v) {
+                          final parsed = double.tryParse(v);
+                          if (parsed != null) {
+                            setState(() {
+                              _controller.setCornerRadius(parsed);
+                              _refreshTopFields();
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: _cornerCutController,
+                        decoration: const InputDecoration(labelText: 'Corner cut (mm)', isDense: true, border: OutlineInputBorder()),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        onChanged: (v) {
+                          final parsed = double.tryParse(v);
+                          if (parsed != null) {
+                            setState(() {
+                              _controller.setCornerCutSize(parsed);
+                              _refreshTopFields();
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  ],
                 ),
                 const Divider(height: 32),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Holes', style: Theme.of(context).textTheme.titleMedium),
-                    IconButton(onPressed: _addHole, icon: const Icon(Icons.add_circle_outline), tooltip: 'Add hole'),
+                    Row(
+                      children: [
+                        IconButton(onPressed: _addHole, icon: const Icon(Icons.add_circle_outline), tooltip: 'Add round hole'),
+                        IconButton(onPressed: _addSlot, icon: const Icon(Icons.crop_7_5), tooltip: 'Add slot'),
+                      ],
+                    ),
                   ],
                 ),
                 for (final hole in _controller.holes) _holeRow(hole.id),
@@ -253,8 +313,17 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                     outlineWidth: _controller.outlineWidth,
                     outlineHeight: _controller.outlineHeight,
                     cornerRadius: _controller.cornerRadius,
+                    cornerCutSize: _controller.cornerCutSize,
                     holes: [
-                      for (final h in _controller.holes) (center: Vec2(h.x, h.y), diameter: h.diameter),
+                      for (final h in _controller.holes)
+                        (
+                          shape: h.shape,
+                          center: Vec2(h.x, h.y),
+                          diameter: h.diameter,
+                          slotLength: h.slotLength,
+                          slotWidth: h.slotWidth,
+                          rotationDeg: h.rotationDeg,
+                        ),
                     ],
                   ),
                   size: Size.infinite,
@@ -268,51 +337,108 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   }
 
   Widget _holeRow(String holeId) {
+    final hole = _controller.holes.firstWhere((h) => h.id == holeId);
+    final isSlot = hole.shape == TemplateMakerHoleShape.slot;
     return Padding(
       padding: const EdgeInsets.only(top: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: TextField(
-              controller: _holeX[holeId],
-              decoration: const InputDecoration(labelText: 'X', isDense: true, border: OutlineInputBorder()),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              onChanged: (v) {
-                final parsed = double.tryParse(v);
-                if (parsed != null) setState(() => _controller.updateHole(holeId, x: parsed));
-              },
+          Row(
+            children: [
+              Text(isSlot ? 'Slot' : 'Round hole', style: Theme.of(context).textTheme.labelMedium),
+              const Spacer(),
+              IconButton(
+                onPressed: () => _removeHole(holeId),
+                icon: const Icon(Icons.delete_outline, size: 20),
+                tooltip: 'Remove ${isSlot ? 'slot' : 'hole'}',
+              ),
+            ],
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _holeX[holeId],
+                  decoration: const InputDecoration(labelText: 'X', isDense: true, border: OutlineInputBorder()),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  onChanged: (v) {
+                    final parsed = double.tryParse(v);
+                    if (parsed != null) setState(() => _controller.updateHole(holeId, x: parsed));
+                  },
+                ),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: TextField(
+                  controller: _holeY[holeId],
+                  decoration: const InputDecoration(labelText: 'Y', isDense: true, border: OutlineInputBorder()),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  onChanged: (v) {
+                    final parsed = double.tryParse(v);
+                    if (parsed != null) setState(() => _controller.updateHole(holeId, y: parsed));
+                  },
+                ),
+              ),
+              const SizedBox(width: 6),
+              if (!isSlot)
+                Expanded(
+                  child: TextField(
+                    controller: _holeD[holeId],
+                    decoration: const InputDecoration(labelText: 'Dia', isDense: true, border: OutlineInputBorder()),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    onChanged: (v) {
+                      final parsed = double.tryParse(v);
+                      if (parsed != null) setState(() => _controller.updateHole(holeId, diameter: parsed));
+                    },
+                  ),
+                ),
+            ],
+          ),
+          if (isSlot) ...[
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _holeLen[holeId],
+                    decoration: const InputDecoration(labelText: 'Length', isDense: true, border: OutlineInputBorder()),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    onChanged: (v) {
+                      final parsed = double.tryParse(v);
+                      if (parsed != null) setState(() => _controller.updateHole(holeId, slotLength: parsed));
+                    },
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: TextField(
+                    controller: _holeWidth[holeId],
+                    decoration: const InputDecoration(labelText: 'Width', isDense: true, border: OutlineInputBorder()),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    onChanged: (v) {
+                      final parsed = double.tryParse(v);
+                      if (parsed != null) setState(() => _controller.updateHole(holeId, slotWidth: parsed));
+                    },
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: TextField(
+                    controller: _holeRotation[holeId],
+                    decoration: const InputDecoration(labelText: 'Rotation°', isDense: true, border: OutlineInputBorder()),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                    onChanged: (v) {
+                      final parsed = double.tryParse(v);
+                      if (parsed != null) setState(() => _controller.updateHole(holeId, rotationDeg: parsed));
+                    },
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(width: 6),
-          Expanded(
-            child: TextField(
-              controller: _holeY[holeId],
-              decoration: const InputDecoration(labelText: 'Y', isDense: true, border: OutlineInputBorder()),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              onChanged: (v) {
-                final parsed = double.tryParse(v);
-                if (parsed != null) setState(() => _controller.updateHole(holeId, y: parsed));
-              },
-            ),
-          ),
-          const SizedBox(width: 6),
-          Expanded(
-            child: TextField(
-              controller: _holeD[holeId],
-              decoration: const InputDecoration(labelText: 'Dia', isDense: true, border: OutlineInputBorder()),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              onChanged: (v) {
-                final parsed = double.tryParse(v);
-                if (parsed != null) setState(() => _controller.updateHole(holeId, diameter: parsed));
-              },
-            ),
-          ),
-          IconButton(
-            onPressed: () => _removeHole(holeId),
-            icon: const Icon(Icons.delete_outline, size: 20),
-            tooltip: 'Remove hole',
-          ),
+          ],
+          const Divider(height: 16),
         ],
       ),
     );
