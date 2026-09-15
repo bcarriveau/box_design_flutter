@@ -1,6 +1,6 @@
 # Box Design
 
-A tool for laying out controller enclosures (Web + Windows/Linux/macOS): pick a box, drag controller boards / power supplies onto it, add screw holes and zip-tie slots, then export the result as DXF (for CNC/laser cutting) or PDF (1:1 scale reference/print).
+A tool for laying out controller enclosures (Web + Windows/Linux/macOS): pick a box, drag controller boards / power supplies onto it, add screw holes and zip-tie slots, then export the result as DXF (for CNC/laser cutting), PDF (1:1 scale reference/print), or an STL/3MF solid plate for 3D printing.
 
 **Try it live: [computergeek1507.github.io/box_design_flutter](https://computergeek1507.github.io/box_design_flutter/)**
 
@@ -12,6 +12,7 @@ A tool for laying out controller enclosures (Web + Windows/Linux/macOS): pick a 
 - **Measure tool**: toggle it in the toolbar, then click or drag on the canvas to see the distance (in mm) between two points — clicks snap to nearby holes, template origins, or edges.
 - **Import DXF**: bring in a real DXF as a new template (box, controller, or power-supply).
 - **Export**: DXF (minimal ASCII R12) and PDF (1:1 scale vector) of the assembled design.
+- **3D export**: STL and 3MF of the box outline extruded into a solid plate at a chosen thickness (the "Plate mm" field next to the export buttons), with every screw/zip-tie/slot hole — including holes baked into the box template itself and every mounting hole on a placed controller/power-supply template — cut all the way through. Ready to send straight to a 3D printer.
 - **Save/Open**: project files as JSON.
 - **Auto-updating template set**: the bundled templates work immediately offline, then the app quietly checks this repo's `assets/templates/` for anything newer/added and merges it in — no app update needed to get new boards.
 - **Delete / copy / paste**: Delete removes the selected item; Ctrl/Cmd+C and Ctrl/Cmd+V duplicate it (offset so the copy is visible).
