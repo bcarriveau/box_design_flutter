@@ -11,6 +11,8 @@ import '../services/stl_export.dart';
 import '../services/threemf_export.dart';
 import '../template_maker/template_maker_screen.dart';
 
+enum _ExportFormat { dxf, pdf, stl, threeMf }
+
 class TopToolbar extends StatefulWidget {
   final DesignController controller;
 
@@ -91,12 +93,154 @@ class _TopToolbarState extends State<TopToolbar> {
     );
   }
 
+  Future<void> _runExport(BuildContext context, _ExportFormat format) async {
+    switch (format) {
+      case _ExportFormat.dxf:
+        final bytes = exportProjectAsDxfBytes(controller.project, controller.library);
+        final result = await saveBytes('${controller.project.name}.dxf', bytes, dialogTitle: 'Export DXF', mimeType: 'application/dxf');
+        if (context.mounted) _snack(context, result != null ? 'DXF exported' : 'Export cancelled');
+      case _ExportFormat.pdf:
+        final bytes = await exportProjectAsPdfBytes(controller.project, controller.library);
+        final result = await saveBytes('${controller.project.name}.pdf', bytes, dialogTitle: 'Export PDF', mimeType: 'application/pdf');
+        if (context.mounted) _snack(context, result != null ? 'PDF exported' : 'Export cancelled');
+      case _ExportFormat.stl:
+        final bytes = exportProjectAsStlBytes(
+          controller.project,
+          controller.library,
+          thicknessMm: controller.project.plateThicknessMm,
+          addStandoffs: controller.project.addStandoffs,
+          standoffHeight: controller.project.standoffHeightMm,
+          standoffWallThickness: controller.project.standoffWallThicknessMm,
+        );
+        final result = await saveBytes('${controller.project.name}.stl', bytes, dialogTitle: 'Export STL', mimeType: 'model/stl');
+        if (context.mounted) _snack(context, result != null ? 'STL exported' : 'Export cancelled');
+      case _ExportFormat.threeMf:
+        final bytes = exportProjectAs3mfBytes(
+          controller.project,
+          controller.library,
+          thicknessMm: controller.project.plateThicknessMm,
+          addStandoffs: controller.project.addStandoffs,
+          standoffHeight: controller.project.standoffHeightMm,
+          standoffWallThickness: controller.project.standoffWallThicknessMm,
+        );
+        final result = await saveBytes('${controller.project.name}.3mf', bytes, dialogTitle: 'Export 3MF', mimeType: 'model/3mf');
+        if (context.mounted) _snack(context, result != null ? '3MF exported' : 'Export cancelled');
+    }
+  }
+
+  Widget _exportMenu(BuildContext context) {
+    return PopupMenuButton<_ExportFormat>(
+      tooltip: 'Export',
+      onSelected: (format) => _runExport(context, format),
+      itemBuilder: (context) => const [
+        PopupMenuItem(value: _ExportFormat.dxf, child: Text('Export DXF')),
+        PopupMenuItem(value: _ExportFormat.pdf, child: Text('Export PDF')),
+        PopupMenuItem(value: _ExportFormat.stl, child: Text('Export STL')),
+        PopupMenuItem(value: _ExportFormat.threeMf, child: Text('Export 3MF')),
+      ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondaryContainer,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.file_download_outlined, size: 18),
+            const SizedBox(width: 6),
+            const Text('Export'),
+            const SizedBox(width: 4),
+            const Icon(Icons.arrow_drop_down, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showPrintSettingsDialog(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AnimatedBuilder(
+        animation: controller,
+        builder: (context, _) {
+          _syncFields();
+          return AlertDialog(
+            title: const Text('3D print settings'),
+            content: SizedBox(
+              width: 260,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextField(
+                    controller: _thicknessController,
+                    focusNode: _thicknessFocus,
+                    decoration: const InputDecoration(labelText: 'Plate thickness (mm)', isDense: true, border: OutlineInputBorder()),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    onChanged: (v) {
+                      final parsed = double.tryParse(v);
+                      if (parsed != null) controller.setPlateThicknessMm(parsed);
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    title: const Text('Add standoffs'),
+                    subtitle: const Text('On controller/receiver mounting holes'),
+                    value: controller.project.addStandoffs,
+                    onChanged: (v) => controller.setAddStandoffs(v ?? false),
+                  ),
+                  if (controller.project.addStandoffs) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _standoffHeightController,
+                            focusNode: _standoffHeightFocus,
+                            decoration: const InputDecoration(labelText: 'Height (mm)', isDense: true, border: OutlineInputBorder()),
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            onChanged: (v) {
+                              final parsed = double.tryParse(v);
+                              if (parsed != null) controller.setStandoffHeightMm(parsed);
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextField(
+                            controller: _standoffWallController,
+                            focusNode: _standoffWallFocus,
+                            decoration: const InputDecoration(labelText: 'Wall (mm)', isDense: true, border: OutlineInputBorder()),
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            onChanged: (v) {
+                              final parsed = double.tryParse(v);
+                              if (parsed != null) controller.setStandoffWallThicknessMm(parsed);
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Done')),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, _) {
-        _syncFields();
         final box = controller.library.byId(controller.project.boxTemplateId ?? '');
         return Material(
           elevation: 1,
@@ -136,105 +280,11 @@ class _TopToolbarState extends State<TopToolbar> {
                 const VerticalDivider(width: 1),
                 _measureToggle(context),
                 const VerticalDivider(width: 1),
-                FilledButton(
-                  onPressed: () async {
-                    final bytes = exportProjectAsDxfBytes(controller.project, controller.library);
-                    final result = await saveBytes('${controller.project.name}.dxf', bytes, dialogTitle: 'Export DXF', mimeType: 'application/dxf');
-                    if (context.mounted) _snack(context, result != null ? 'DXF exported' : 'Export cancelled');
-                  },
-                  child: const Text('Export DXF'),
-                ),
-                FilledButton(
-                  onPressed: () async {
-                    final bytes = await exportProjectAsPdfBytes(controller.project, controller.library);
-                    final result = await saveBytes('${controller.project.name}.pdf', bytes, dialogTitle: 'Export PDF', mimeType: 'application/pdf');
-                    if (context.mounted) _snack(context, result != null ? 'PDF exported' : 'Export cancelled');
-                  },
-                  child: const Text('Export PDF'),
-                ),
-                const VerticalDivider(width: 1),
-                SizedBox(
-                  width: 90,
-                  child: TextField(
-                    controller: _thicknessController,
-                    focusNode: _thicknessFocus,
-                    decoration: const InputDecoration(labelText: 'Plate mm', isDense: true, border: OutlineInputBorder()),
-                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    onChanged: (v) {
-                      final parsed = double.tryParse(v);
-                      if (parsed != null) controller.setPlateThicknessMm(parsed);
-                    },
-                  ),
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Checkbox(
-                      value: controller.project.addStandoffs,
-                      onChanged: (v) => controller.setAddStandoffs(v ?? false),
-                    ),
-                    const Text('Standoffs'),
-                  ],
-                ),
-                if (controller.project.addStandoffs) ...[
-                  SizedBox(
-                    width: 90,
-                    child: TextField(
-                      controller: _standoffHeightController,
-                      focusNode: _standoffHeightFocus,
-                      decoration: const InputDecoration(labelText: 'Height mm', isDense: true, border: OutlineInputBorder()),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      onChanged: (v) {
-                        final parsed = double.tryParse(v);
-                        if (parsed != null) controller.setStandoffHeightMm(parsed);
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    width: 90,
-                    child: TextField(
-                      controller: _standoffWallController,
-                      focusNode: _standoffWallFocus,
-                      decoration: const InputDecoration(labelText: 'Wall mm', isDense: true, border: OutlineInputBorder()),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      onChanged: (v) {
-                        final parsed = double.tryParse(v);
-                        if (parsed != null) controller.setStandoffWallThicknessMm(parsed);
-                      },
-                    ),
-                  ),
-                ],
-                FilledButton.tonal(
-                  onPressed: () {
-                    final bytes = exportProjectAsStlBytes(
-                      controller.project,
-                      controller.library,
-                      thicknessMm: controller.project.plateThicknessMm,
-                      addStandoffs: controller.project.addStandoffs,
-                      standoffHeight: controller.project.standoffHeightMm,
-                      standoffWallThickness: controller.project.standoffWallThicknessMm,
-                    );
-                    saveBytes('${controller.project.name}.stl', bytes, dialogTitle: 'Export STL', mimeType: 'model/stl').then((result) {
-                      if (context.mounted) _snack(context, result != null ? 'STL exported' : 'Export cancelled');
-                    });
-                  },
-                  child: const Text('Export STL'),
-                ),
-                FilledButton.tonal(
-                  onPressed: () {
-                    final bytes = exportProjectAs3mfBytes(
-                      controller.project,
-                      controller.library,
-                      thicknessMm: controller.project.plateThicknessMm,
-                      addStandoffs: controller.project.addStandoffs,
-                      standoffHeight: controller.project.standoffHeightMm,
-                      standoffWallThickness: controller.project.standoffWallThicknessMm,
-                    );
-                    saveBytes('${controller.project.name}.3mf', bytes, dialogTitle: 'Export 3MF', mimeType: 'model/3mf').then((result) {
-                      if (context.mounted) _snack(context, result != null ? '3MF exported' : 'Export cancelled');
-                    });
-                  },
-                  child: const Text('Export 3MF'),
+                _exportMenu(context),
+                IconButton(
+                  onPressed: () => _showPrintSettingsDialog(context),
+                  icon: const Icon(Icons.tune),
+                  tooltip: '3D print settings',
                 ),
               ],
             ),

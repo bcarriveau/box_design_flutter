@@ -10,7 +10,7 @@ void main() {
 
     expect(find.text('Box Template'), findsOneWidget);
     expect(find.text('New'), findsOneWidget);
-    expect(find.text('Export DXF'), findsOneWidget);
+    expect(find.text('Export'), findsOneWidget);
     expect(find.textContaining('CG-1500'), findsOneWidget);
 
     // The palette's category tree is a scrollable list, and its Sliver
