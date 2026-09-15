@@ -32,10 +32,6 @@
     "file": "genius_pro_receiver.json"
   },
   {
-    "id": "falcon_controller_placeholder",
-    "file": "falcon_controller_placeholder.json"
-  },
-  {
     "id": "falcon_16v4_controller",
     "file": "falcon_16v4_controller.json"
   },

@@ -1,6 +1,6 @@
 {
   "id": "pb16_controller",
-  "name": "PB 16v2 Controller",
+  "name": "PB_16v2 Controller",
   "category": "controller",
   "entities": [
     {

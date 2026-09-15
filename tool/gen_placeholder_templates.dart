@@ -330,14 +330,6 @@ void main() {
   // also has no distinct "receiver" product line (expansion boards instead);
   // the receiver placeholder below is a generic small-board stand-in.
 
-  writeTemplate(
-    'falcon_controller_placeholder.json',
-    'falcon_controller_placeholder',
-    'Falcon Controller (placeholder)',
-    'controller',
-    rectangleWithCornerHoles(width: 170, height: 105, holeInset: 6, holeDiameter: 3.5),
-  );
-
   // Falcon F16V4: outline and hole positions measured directly from a
   // user-supplied STL (16v4_Controller.stl) via mesh analysis -- the 4
   // mounting holes are exact (perfectly circular, identical Ø4.00mm, found

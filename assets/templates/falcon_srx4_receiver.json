@@ -1,6 +1,6 @@
 {
   "id": "falcon_srx4_receiver",
-  "name": "Falcon SRx4 Receiver",
+  "name": "Falcon SRx4 Receiver (145.7x80mm bounding box)",
   "category": "receiver",
   "entities": [
     {

@@ -1,6 +1,6 @@
 {
   "id": "meanwell_lrs600_side_placeholder",
-  "name": "Mean Well LRS-600 (side mount)",
+  "name": "Mean Well LRS-600 (side mount, 225x41mm, placeholder holes)",
   "category": "powerSupply",
   "entities": [
     {
