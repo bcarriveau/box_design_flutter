@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import '../geometry/mesh.dart';
 import '../models/box_project.dart';
 import 'mesh_export.dart';
+import 'template_library.dart';
 
 Vec3 _triangleNormal(Vec3 a, Vec3 b, Vec3 c) {
   final ux = b.x - a.x, uy = b.y - a.y, uz = b.z - a.z;
@@ -42,7 +43,7 @@ String meshToStlText(Mesh mesh, {String solidName = 'box_design'}) {
   return buffer.toString();
 }
 
-Uint8List exportProjectAsStlBytes(BoxProject project, {double thicknessMm = 5.0}) {
-  final mesh = buildPlateMesh(project, thicknessMm: thicknessMm);
+Uint8List exportProjectAsStlBytes(BoxProject project, TemplateLibrary library, {double thicknessMm = 5.0}) {
+  final mesh = buildPlateMesh(project, library, thicknessMm: thicknessMm);
   return Uint8List.fromList(utf8.encode(meshToStlText(mesh)));
 }

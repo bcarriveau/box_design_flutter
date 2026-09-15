@@ -46,14 +46,14 @@ void main() {
     // %PDF header magic bytes.
     expect(pdfBytes.sublist(0, 4), [0x25, 0x50, 0x44, 0x46]);
 
-    final stlBytes = exportProjectAsStlBytes(project, thicknessMm: 3);
+    final stlBytes = exportProjectAsStlBytes(project, library, thicknessMm: 3);
     File('build/verify_export.stl').writeAsBytesSync(stlBytes);
     final stlText = utf8.decode(stlBytes);
     expect(stlText, startsWith('solid box_design'));
     expect(stlText.trim(), endsWith('endsolid box_design'));
     expect('facet normal'.allMatches(stlText).length, greaterThan(0));
 
-    final threemfBytes = exportProjectAs3mfBytes(project, thicknessMm: 3);
+    final threemfBytes = exportProjectAs3mfBytes(project, library, thicknessMm: 3);
     File('build/verify_export.3mf').writeAsBytesSync(threemfBytes);
     // ZIP local-file-header magic bytes (PK\x03\x04).
     expect(threemfBytes.sublist(0, 4), [0x50, 0x4B, 0x03, 0x04]);

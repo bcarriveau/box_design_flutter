@@ -5,6 +5,7 @@ import 'package:archive/archive.dart';
 import '../geometry/mesh.dart';
 import '../models/box_project.dart';
 import 'mesh_export.dart';
+import 'template_library.dart';
 
 const String _contentTypesXml = '''
 <?xml version="1.0" encoding="UTF-8"?>
@@ -50,8 +51,8 @@ String meshTo3mfModelXml(Mesh mesh) {
   return buffer.toString();
 }
 
-Uint8List exportProjectAs3mfBytes(BoxProject project, {double thicknessMm = 5.0}) {
-  final mesh = buildPlateMesh(project, thicknessMm: thicknessMm);
+Uint8List exportProjectAs3mfBytes(BoxProject project, TemplateLibrary library, {double thicknessMm = 5.0}) {
+  final mesh = buildPlateMesh(project, library, thicknessMm: thicknessMm);
 
   final archive = Archive()
     ..addFile(ArchiveFile.string('[Content_Types].xml', _contentTypesXml))

@@ -138,7 +138,7 @@ class _TopToolbarState extends State<TopToolbar> {
                 ),
                 FilledButton.tonal(
                   onPressed: () {
-                    final bytes = exportProjectAsStlBytes(controller.project, thicknessMm: _thicknessMm);
+                    final bytes = exportProjectAsStlBytes(controller.project, controller.library, thicknessMm: _thicknessMm);
                     saveBytes('${controller.project.name}.stl', bytes, dialogTitle: 'Export STL', mimeType: 'model/stl').then((result) {
                       if (context.mounted) _snack(context, result != null ? 'STL exported' : 'Export cancelled');
                     });
@@ -147,7 +147,7 @@ class _TopToolbarState extends State<TopToolbar> {
                 ),
                 FilledButton.tonal(
                   onPressed: () {
-                    final bytes = exportProjectAs3mfBytes(controller.project, thicknessMm: _thicknessMm);
+                    final bytes = exportProjectAs3mfBytes(controller.project, controller.library, thicknessMm: _thicknessMm);
                     saveBytes('${controller.project.name}.3mf', bytes, dialogTitle: 'Export 3MF', mimeType: 'model/3mf').then((result) {
                       if (context.mounted) _snack(context, result != null ? '3MF exported' : 'Export cancelled');
                     });
