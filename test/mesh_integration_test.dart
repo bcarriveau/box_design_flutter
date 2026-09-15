@@ -167,6 +167,39 @@ void main() {
     final mesh = buildPlateMesh(controller.project, library, thicknessMm: 5);
     _expectStrictManifold(mesh);
   });
+
+  test('circle-hole side walls contain no degenerate (near-zero-area) triangles', () {
+    // Regression test for a real user-reported "corrupt STL": DxfCircle's
+    // point list closes on itself with an *approximate* repeat of its first
+    // point (cos(2*pi) landing a hair off 1.0), so the exact `==` check that
+    // used to dedupe it missed the near-duplicate. The stray point survived
+    // into the hole boundary and produced a hairline-thin side-wall
+    // triangle — invisible in mm terms, but its two vertices round to the
+    // *same* 6-decimal text in the exported ASCII STL, so the facet reads
+    // back with two identical vertices and gets rejected as corrupt.
+    final assetJson = File('assets/templates/cg1500_placeholder.json').readAsStringSync();
+    final decoded = jsonDecode(assetJson) as Map<String, dynamic>;
+    final library = TemplateLibrary();
+    library.importJson(assetJson);
+    final controller = DesignController(library);
+    controller.applyBoxTemplate(decoded['id'] as String);
+
+    final mesh = buildPlateMesh(controller.project, library, thicknessMm: 5);
+    _expectStrictManifold(mesh);
+
+    for (final t in mesh.triangles) {
+      final a = mesh.vertices[t[0]];
+      final b = mesh.vertices[t[1]];
+      final c = mesh.vertices[t[2]];
+      final ux = b.x - a.x, uy = b.y - a.y, uz = b.z - a.z;
+      final vx = c.x - a.x, vy = c.y - a.y, vz = c.z - a.z;
+      final nx = uy * vz - uz * vy;
+      final ny = uz * vx - ux * vz;
+      final nz = ux * vy - uy * vx;
+      final areaSquared = (nx * nx + ny * ny + nz * nz) / 4;
+      expect(areaSquared, greaterThan(1e-12), reason: 'degenerate triangle ${t[0]},${t[1]},${t[2]}: $a, $b, $c');
+    }
+  });
 }
 
 /// Every directed edge of a closed, watertight mesh must have a matching

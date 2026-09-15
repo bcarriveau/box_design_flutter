@@ -8,8 +8,17 @@ import 'template_library.dart';
 
 List<Vec2> _closedLoopPoints(DxfEntity entity, {int arcSegments = 64}) {
   final pts = entity.toPoints(arcSegments: arcSegments);
-  if (pts.length > 1 && pts.first == pts.last) {
-    return pts.sublist(0, pts.length - 1);
+  if (pts.length > 1) {
+    // A closed entity (e.g. a full-circle tessellation) always ends by
+    // revisiting its start point, but floating-point error in the
+    // trig (cos(2*pi) landing a hair off 1.0) means it rarely lands back
+    // on the *exact* same double, so an exact `==` check misses the
+    // near-duplicate and leaves a zero-area sliver in the extruded mesh.
+    final dx = pts.first.x - pts.last.x;
+    final dy = pts.first.y - pts.last.y;
+    if (dx * dx + dy * dy < 1e-12) {
+      return pts.sublist(0, pts.length - 1);
+    }
   }
   return pts;
 }
