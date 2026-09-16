@@ -20,12 +20,16 @@
     "file": "cg1500_door.json"
   },
   {
-    "id": "digocta",
-    "file": "digocta.json"
+    "id": "dig_octa",
+    "file": "dig_octa.json"
   },
   {
     "id": "dig_quad_v3",
     "file": "dig_quad_v3.json"
+  },
+  {
+    "id": "dig_uno_v2",
+    "file": "dig_uno_v2.json"
   },
   {
     "id": "falcon_16v3_controller",
