@@ -1,0 +1,93 @@
+{
+  "id": "holidaycoro_951_62_receiver",
+  "name": "Holiday Coro Smart Receiver 951-62",
+  "category": "receiver",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 2.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 94.52,
+          "y": 0.0,
+          "bulge": 0.4142135623730951
+        },
+        {
+          "x": 96.52,
+          "y": 2.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 96.52,
+          "y": 79.28,
+          "bulge": 0.4142135623730951
+        },
+        {
+          "x": 94.52,
+          "y": 81.28,
+          "bulge": 0.0
+        },
+        {
+          "x": 2.0,
+          "y": 81.28,
+          "bulge": 0.4142135623730951
+        },
+        {
+          "x": 0.0,
+          "y": 79.28,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 2.0,
+          "bulge": 0.4142135623730951
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 24.6,
+        "y": 7.8
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 72.2,
+        "y": 7.8
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 37.8,
+        "y": 33.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 63.2,
+        "y": 33.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 37.8,
+        "y": 68.8
+      },
+      "radius": 1.5
+    }
+  ]
+}
