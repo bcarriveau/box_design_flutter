@@ -16,6 +16,10 @@
     "file": "cg1500_placeholder.json"
   },
   {
+    "id": "cg1500_door",
+    "file": "cg1500_door.json"
+  },
+  {
     "id": "falcon_16v3_controller",
     "file": "falcon_16v3_controller.json"
   },
