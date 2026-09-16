@@ -1,6 +1,6 @@
 {
   "id": "pb16_receiver_out",
-  "name": "PB_16 Receiver Out",
+  "name": "Wally Receiver",
   "category": "receiver",
   "entities": [
     {
