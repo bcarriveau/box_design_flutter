@@ -20,8 +20,8 @@
     "file": "falcon_16v3_controller.json"
   },
   {
-    "id": "falcon_f16v3_diff_receiver",
-    "file": "falcon_f16v3_diff_receiver.json"
+    "id": "falcon_f16v3_diff_expansion",
+    "file": "falcon_f16v3_diff_expansion.json"
   },
   {
     "id": "falcon_16v4_controller",

@@ -1,6 +1,6 @@
 {
-  "id": "falcon_f16v3_diff_receiver",
-  "name": "Falcon F16v3 Differential Receiver",
+  "id": "falcon_f16v3_diff_expansion",
+  "name": "Falcon F16v3 Differential Expansion",
   "category": "controller",
   "entities": [
     {
