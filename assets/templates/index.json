@@ -24,6 +24,10 @@
     "file": "digocta.json"
   },
   {
+    "id": "dig_quad_v3",
+    "file": "dig_quad_v3.json"
+  },
+  {
     "id": "falcon_16v3_controller",
     "file": "falcon_16v3_controller.json"
   },
