@@ -19,7 +19,9 @@ class BoxDesignApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Box Design',
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey)),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
+      ),
       home: const BoxDesignHomePage(),
     );
   }
@@ -35,6 +37,7 @@ class BoxDesignHomePage extends StatefulWidget {
 class _BoxDesignHomePageState extends State<BoxDesignHomePage> {
   final TemplateLibrary _library = TemplateLibrary();
   late final DesignController _controller = DesignController(_library);
+  final FocusNode _canvasFocusNode = FocusNode();
   late final Future<void> _initialLoad = _library.loadBuiltIns().then((_) {
     final defaultBox = _library.defaultBoxTemplate;
     if (defaultBox != null) _controller.applyBoxTemplate(defaultBox.id);
@@ -43,6 +46,12 @@ class _BoxDesignHomePageState extends State<BoxDesignHomePage> {
     // slow or unreachable network never delays first paint.
     _library.loadRemoteDefaults();
   });
+
+  @override
+  void dispose() {
+    _canvasFocusNode.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +64,7 @@ class _BoxDesignHomePageState extends State<BoxDesignHomePage> {
               return const Center(child: CircularProgressIndicator());
             }
             return Focus(
+              focusNode: _canvasFocusNode,
               autofocus: true,
               onKeyEvent: (node, event) => _handleKeyEvent(event),
               child: Column(
@@ -65,13 +75,19 @@ class _BoxDesignHomePageState extends State<BoxDesignHomePage> {
                       children: [
                         SizedBox(
                           width: 240,
-                          child: LeftPalette(library: _library, controller: _controller),
+                          child: LeftPalette(
+                            library: _library,
+                            controller: _controller,
+                          ),
                         ),
                         const VerticalDivider(width: 1),
                         Expanded(
                           child: ColoredBox(
                             color: Colors.grey.shade200,
-                            child: BoxCanvas(controller: _controller),
+                            child: BoxCanvas(
+                              controller: _controller,
+                              focusNode: _canvasFocusNode,
+                            ),
                           ),
                         ),
                         const VerticalDivider(width: 1),
@@ -98,12 +114,15 @@ class _BoxDesignHomePageState extends State<BoxDesignHomePage> {
   KeyEventResult _handleKeyEvent(KeyEvent event) {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
-    if (event.logicalKey == LogicalKeyboardKey.delete || event.logicalKey == LogicalKeyboardKey.backspace) {
+    if (event.logicalKey == LogicalKeyboardKey.delete ||
+        event.logicalKey == LogicalKeyboardKey.backspace) {
       _controller.deleteSelected();
       return KeyEventResult.handled;
     }
 
-    final isCtrlOrCmd = HardwareKeyboard.instance.isControlPressed || HardwareKeyboard.instance.isMetaPressed;
+    final isCtrlOrCmd =
+        HardwareKeyboard.instance.isControlPressed ||
+        HardwareKeyboard.instance.isMetaPressed;
     if (isCtrlOrCmd && event.logicalKey == LogicalKeyboardKey.keyC) {
       _controller.copySelected();
       return KeyEventResult.handled;

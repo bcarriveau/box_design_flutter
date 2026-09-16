@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
@@ -8,6 +9,9 @@ import '../services/file_io.dart';
 import '../services/template_library.dart';
 import 'template_maker_controller.dart';
 import 'template_outline_painter.dart';
+
+const double _outlinePreviewMargin = 32.0;
+const double _holeDragHitPx = 14.0;
 
 /// A standalone screen for building a [ControllerTemplate] by hand: an
 /// outline rectangle sized by width/height fields, plus a list of round
@@ -27,6 +31,7 @@ class TemplateMakerScreen extends StatefulWidget {
 
 class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   final _controller = TemplateMakerController();
+  String? _draggingHoleId;
 
   late final _idController = TextEditingController(text: _controller.id);
   late final _nameController = TextEditingController(text: _controller.name);
@@ -99,6 +104,71 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
       _holeWidth[h.id]?.text = _fmt(h.slotWidth);
       _holeRotation[h.id]?.text = _fmt(h.rotationDeg);
     }
+  }
+
+  /// Mirrors [TemplateOutlinePainter]'s scale-to-fit transform so pointer
+  /// positions in the preview can be mapped back to template mm-space.
+  double _previewScale(Size size) {
+    final availableW = size.width - _outlinePreviewMargin * 2;
+    final availableH = size.height - _outlinePreviewMargin * 2;
+    if (availableW <= 0 || availableH <= 0) return 1;
+    return math.min(availableW / _controller.outlineWidth, availableH / _controller.outlineHeight);
+  }
+
+  Offset _previewOrigin(Size size, double scale) {
+    return Offset(
+      (size.width - _controller.outlineWidth * scale) / 2,
+      (size.height - _controller.outlineHeight * scale) / 2,
+    );
+  }
+
+  Vec2 _previewPxToMm(Offset localPx, Size size) {
+    final scale = _previewScale(size);
+    final origin = _previewOrigin(size, scale);
+    return Vec2(
+      (localPx.dx - origin.dx) / scale,
+      _controller.outlineHeight - (localPx.dy - origin.dy) / scale,
+    );
+  }
+
+  TemplateMakerHole? _holeNear(Vec2 mm, double scale) {
+    final hitToleranceMm = _holeDragHitPx / scale;
+    TemplateMakerHole? closest;
+    var closestDist = double.infinity;
+    for (final h in _controller.holes) {
+      final dx = h.x - mm.x;
+      final dy = h.y - mm.y;
+      final dist = math.sqrt(dx * dx + dy * dy);
+      final radiusMm = h.shape == TemplateMakerHoleShape.slot
+          ? math.max(h.slotLength, h.slotWidth) / 2
+          : h.diameter / 2;
+      if (dist <= math.max(radiusMm, hitToleranceMm) && dist < closestDist) {
+        closestDist = dist;
+        closest = h;
+      }
+    }
+    return closest;
+  }
+
+  void _onPreviewPanStart(DragStartDetails details, Size size) {
+    final scale = _previewScale(size);
+    final mm = _previewPxToMm(details.localPosition, size);
+    _draggingHoleId = _holeNear(mm, scale)?.id;
+  }
+
+  void _onPreviewPanUpdate(DragUpdateDetails details, Size size) {
+    final draggingId = _draggingHoleId;
+    if (draggingId == null) return;
+    final mm = _previewPxToMm(details.localPosition, size);
+    setState(() {
+      _controller.updateHole(draggingId, x: mm.x, y: mm.y);
+      _holeX[draggingId]?.text = _fmt(mm.x);
+      _holeY[draggingId]?.text = _fmt(mm.y);
+    });
+  }
+
+  void _onPreviewPanEnd(DragEndDetails details) {
+    _draggingHoleId = null;
   }
 
   void _snack(String message) {
@@ -306,28 +376,39 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
           Expanded(
             child: ColoredBox(
               color: Colors.grey.shade200,
-              child: AnimatedBuilder(
-                animation: _controller,
-                builder: (context, _) => CustomPaint(
-                  painter: TemplateOutlinePainter(
-                    outlineWidth: _controller.outlineWidth,
-                    outlineHeight: _controller.outlineHeight,
-                    cornerRadius: _controller.cornerRadius,
-                    cornerCutSize: _controller.cornerCutSize,
-                    holes: [
-                      for (final h in _controller.holes)
-                        (
-                          shape: h.shape,
-                          center: Vec2(h.x, h.y),
-                          diameter: h.diameter,
-                          slotLength: h.slotLength,
-                          slotWidth: h.slotWidth,
-                          rotationDeg: h.rotationDeg,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final size = constraints.biggest;
+                  return AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, _) => GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onPanStart: (details) => _onPreviewPanStart(details, size),
+                      onPanUpdate: (details) => _onPreviewPanUpdate(details, size),
+                      onPanEnd: _onPreviewPanEnd,
+                      child: CustomPaint(
+                        painter: TemplateOutlinePainter(
+                          outlineWidth: _controller.outlineWidth,
+                          outlineHeight: _controller.outlineHeight,
+                          cornerRadius: _controller.cornerRadius,
+                          cornerCutSize: _controller.cornerCutSize,
+                          holes: [
+                            for (final h in _controller.holes)
+                              (
+                                shape: h.shape,
+                                center: Vec2(h.x, h.y),
+                                diameter: h.diameter,
+                                slotLength: h.slotLength,
+                                slotWidth: h.slotWidth,
+                                rotationDeg: h.rotationDeg,
+                              ),
+                          ],
                         ),
-                    ],
-                  ),
-                  size: Size.infinite,
-                ),
+                        size: size,
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ),
