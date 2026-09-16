@@ -381,7 +381,11 @@ def _run_gui(board) -> None:
 
     class ExportDialog(wx.Dialog):
         def __init__(self, parent, board):
-            super().__init__(parent, title="Export box_design Template", size=(460, 520))
+            super().__init__(
+                parent,
+                title="Export box_design Template",
+                style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
+            )
             self.board = board
 
             default_name = Path(board.GetFileName()).stem if board.GetFileName() else "New Board"
@@ -462,6 +466,16 @@ def _run_gui(board) -> None:
             sizer.Add(btn_sizer, flag=wx.ALIGN_RIGHT | wx.ALL, border=12)
 
             panel.SetSizer(sizer)
+
+            # Size the dialog to what its content actually needs (a
+            # hardcoded pixel size doesn't scale with font/DPI settings and
+            # was clipping the longer labels, and on some systems the
+            # Export/Cancel buttons entirely -- there was no way to save).
+            outer = wx.BoxSizer(wx.VERTICAL)
+            outer.Add(panel, proportion=1, flag=wx.EXPAND)
+            self.SetSizerAndFit(outer)
+            self.SetMinSize(self.GetSize())
+
             ok_btn.Bind(wx.EVT_BUTTON, self._on_export)
 
         def _on_name_changed(self, evt):

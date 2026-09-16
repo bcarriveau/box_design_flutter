@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../dxf/dxf_parser.dart';
 import '../models/controller_template.dart';
 import '../models/vec2.dart';
 import '../services/file_io.dart';
@@ -48,6 +49,11 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   final Map<String, TextEditingController> _holeRotation = {};
 
   String _fmt(double v) => v.toStringAsFixed(1);
+
+  String _slugify(String name) {
+    final slug = name.trim().replaceAll(RegExp(r'[^a-zA-Z0-9]+'), '_').replaceAll(RegExp(r'^_+|_+$'), '').toLowerCase();
+    return slug.isEmpty ? 'template' : slug;
+  }
 
   @override
   void dispose() {
@@ -193,6 +199,30 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     }
   }
 
+  Future<void> _loadDxf() async {
+    final picked = await pickFile(allowedExtensions: ['dxf'], dialogTitle: 'Load Template DXF');
+    if (picked == null) return;
+    try {
+      final entities = parseDxf(utf8.decode(picked.bytes));
+      final name = picked.name.replaceAll(RegExp(r'\.dxf$', caseSensitive: false), '');
+      final template = ControllerTemplate(
+        id: _slugify(name),
+        name: name,
+        entities: entities,
+        source: TemplateSource.imported,
+        category: _controller.category,
+      );
+      setState(() {
+        _controller.loadFromTemplate(template);
+        _syncHoleControllers();
+        _refreshTopFields();
+      });
+      _snack('Loaded ${template.name}');
+    } catch (e) {
+      _snack('Failed to load: $e');
+    }
+  }
+
   Future<void> _exportJson() async {
     final template = _controller.toTemplate();
     final bytes = utf8.encode(const JsonEncoder.withIndent('  ').convert(template.toJson()));
@@ -245,6 +275,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
         actions: [
           TextButton.icon(onPressed: _newTemplate, icon: const Icon(Icons.add), label: const Text('New')),
           TextButton.icon(onPressed: _loadJson, icon: const Icon(Icons.folder_open), label: const Text('Load JSON')),
+          TextButton.icon(onPressed: _loadDxf, icon: const Icon(Icons.folder_open), label: const Text('Load DXF')),
           TextButton.icon(onPressed: _exportJson, icon: const Icon(Icons.save_alt), label: const Text('Export JSON')),
           if (widget.library != null)
             TextButton.icon(

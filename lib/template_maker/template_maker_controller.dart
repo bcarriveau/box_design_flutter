@@ -239,44 +239,61 @@ class TemplateMakerController extends ChangeNotifier {
     );
   }
 
-  /// Loads an existing template back into editable fields: the
-  /// largest-area entity becomes the outline (matching how the rest of the
-  /// app picks out a template's own outline vs. its baked-in holes); every
-  /// [DxfCircle] elsewhere becomes an editable round hole, and every
-  /// 4-vertex closed polyline matching this tool's own stadium bulge
-  /// pattern (bulge 1.0 on vertices 0 and 2, matching [stadiumVertices])
-  /// becomes an editable slot. Any other entity shape (arcs, non-rectangular
-  /// outlines, lines, a slot built some other way) is dropped silently --
-  /// this tool only ever produces the shapes above, so round-tripping a
-  /// template it didn't create is best-effort.
+  /// True for an entity this tool would itself only ever produce as a hole:
+  /// a round [DxfCircle], or a 4-vertex closed polyline matching its own
+  /// stadium bulge pattern (bulge 1.0 on vertices 0 and 2, matching
+  /// [stadiumVertices]). Everything else -- lines, arcs, any other
+  /// polyline -- is outline material.
+  static bool _looksLikeHole(DxfEntity e) {
+    if (e is DxfCircle) return true;
+    if (e is DxfPolyline && e.closed && e.vertices.length == 4) {
+      final bulges = e.vertices.map((v) => v.bulge).toList();
+      return (bulges[0] - 1.0).abs() < 1e-6 &&
+          bulges[1] == 0 &&
+          (bulges[2] - 1.0).abs() < 1e-6 &&
+          bulges[3] == 0;
+    }
+    return false;
+  }
+
+  /// Loads an existing template back into editable fields. The outline's
+  /// size is the bounding box of every non-hole entity merged together --
+  /// not just the single largest one -- since some exporters (e.g. the
+  /// KiCad plugin) emit a board outline as separate line segments rather
+  /// than one closed polyline, and each such segment's own bounding box is
+  /// degenerate (zero width or height). Every [DxfCircle] becomes an
+  /// editable round hole, and every stadium-shaped polyline becomes an
+  /// editable slot. Any other entity shape (arcs, a slot built some other
+  /// way) is dropped silently -- this tool only ever produces the shapes
+  /// above, so round-tripping a template it didn't create is best-effort.
   void loadFromTemplate(ControllerTemplate template) {
     id = template.id;
     name = template.name;
     category = template.category;
 
-    DxfEntity? outlineEntity;
-    var bestArea = 0.0;
-    for (final e in template.entities) {
-      final b = e.boundingBox;
-      final area = b.width * b.height;
-      if (area > bestArea) {
-        bestArea = area;
-        outlineEntity = e;
-      }
+    final outlineEntities = template.entities.where((e) => !_looksLikeHole(e)).toList();
+    // If literally everything looked like a hole (shouldn't happen for a
+    // real template), fall back to treating every entity as outline
+    // material instead of showing an empty 0x0 outline.
+    final outlineSource = outlineEntities.isEmpty ? template.entities : outlineEntities;
+
+    BoundingBox? outlineBox;
+    for (final e in outlineSource) {
+      outlineBox = BoundingBox.merge(outlineBox, e.boundingBox);
     }
+
     cornerRadius = 0;
     cornerCutSize = 0;
-    if (outlineEntity != null) {
-      final b = outlineEntity.boundingBox;
-      outlineWidth = b.width;
-      outlineHeight = b.height;
-      // This tool's own filleted/notched outlines are always an 8- or
+    if (outlineBox != null) {
+      outlineWidth = outlineBox.width;
+      outlineHeight = outlineBox.height;
+      // This tool's own filleted/notched outlines are always a single 8- or
       // 12-vertex polyline in a fixed shape (see toTemplate) -- read the
-      // radius/cut size back off that shape. Any other rounded- or
-      // notched-corner encoding isn't recognized and comes back in as
-      // sharp corners instead.
-      if (outlineEntity is DxfPolyline) {
-        final verts = outlineEntity.vertices;
+      // radius/cut size back off that shape when the outline is exactly one
+      // such polyline. A multi-piece outline has no single shape to inspect
+      // and just comes back in with sharp corners, which is correct there.
+      if (outlineSource.length == 1 && outlineSource.first is DxfPolyline) {
+        final verts = (outlineSource.first as DxfPolyline).vertices;
         if (verts.length == 8 && verts.any((v) => v.bulge != 0)) {
           cornerRadius = verts.first.point.x.abs();
         } else if (verts.length == 12 && verts.every((v) => v.bulge == 0)) {
@@ -287,8 +304,10 @@ class TemplateMakerController extends ChangeNotifier {
 
     holes.clear();
     _nextHoleSeq = 1;
-    for (final e in template.entities) {
-      if (identical(e, outlineEntity)) continue;
+    // In the fallback case above (nothing looked like a hole) there's
+    // nothing left to extract as a hole either.
+    final holeSource = outlineEntities.isEmpty ? const <DxfEntity>[] : template.entities.where(_looksLikeHole);
+    for (final e in holeSource) {
       if (e is DxfCircle) {
         holes.add(TemplateMakerHole(
           id: 'hole${_nextHoleSeq++}',
@@ -296,15 +315,7 @@ class TemplateMakerController extends ChangeNotifier {
           y: e.center.y,
           diameter: e.radius * 2,
         ));
-        continue;
-      }
-      if (e is DxfPolyline && e.closed && e.vertices.length == 4) {
-        final bulges = e.vertices.map((v) => v.bulge).toList();
-        final isStadium = (bulges[0] - 1.0).abs() < 1e-6 &&
-            bulges[1] == 0 &&
-            (bulges[2] - 1.0).abs() < 1e-6 &&
-            bulges[3] == 0;
-        if (!isStadium) continue;
+      } else if (e is DxfPolyline) {
         final v0 = e.vertices[0].point;
         final v1 = e.vertices[1].point;
         final v2 = e.vertices[2].point;

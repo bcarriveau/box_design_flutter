@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:box_design_flutter/models/controller_template.dart';
 import 'package:box_design_flutter/models/dxf_entity.dart';
+import 'package:box_design_flutter/models/vec2.dart';
 import 'package:box_design_flutter/template_maker/template_maker_controller.dart';
 
 void main() {
@@ -157,6 +158,40 @@ void main() {
     final slotEntity = controller.toTemplate().entities.whereType<DxfPolyline>().last;
     expect(slotEntity.boundingBox.width, closeTo(6, 0.05));
     expect(slotEntity.boundingBox.height, closeTo(20, 0.05));
+  });
+
+  test('loadFromTemplate reads the outline size from separate line segments, not a single circle', () {
+    // Mirrors what the KiCad plugin exports for an Edge.Cuts rectangle drawn
+    // as four independent line segments (each with a degenerate, zero-area
+    // bounding box) plus round mounting holes -- the outline used to be
+    // picked as whichever single entity had the largest bounding-box area,
+    // which was one of the holes here since every line's own area is 0.
+    final template = ControllerTemplate(
+      id: 'pb_16',
+      name: 'PB_16',
+      source: TemplateSource.imported,
+      category: TemplateCategory.controller,
+      entities: [
+        DxfLine(const Vec2(148.6, 0), const Vec2(148.6, 76.4)),
+        DxfLine(const Vec2(0, 76.4), const Vec2(0, 0)),
+        DxfLine(const Vec2(148.6, 76.4), const Vec2(0, 76.4)),
+        DxfLine(const Vec2(148.6, 0), const Vec2(0, 0)),
+        DxfCircle(const Vec2(10.912, 71.5512), 1.85),
+        DxfCircle(const Vec2(137.912, 71.5512), 1.85),
+        DxfCircle(const Vec2(137.9266, 20.7512), 1.85),
+        DxfCircle(const Vec2(10.9266, 20.7512), 1.85),
+      ],
+    );
+
+    final loaded = TemplateMakerController()..loadFromTemplate(template);
+    expect(loaded.outlineWidth, closeTo(148.6, 1e-6));
+    expect(loaded.outlineHeight, closeTo(76.4, 1e-6));
+    expect(loaded.cornerRadius, 0);
+    expect(loaded.cornerCutSize, 0);
+    expect(loaded.holes, hasLength(4));
+    for (final hole in loaded.holes) {
+      expect(hole.diameter, closeTo(3.7, 1e-6));
+    }
   });
 
   test('loadFromTemplate round-trips a slot hole back to its length/width/rotation', () {
