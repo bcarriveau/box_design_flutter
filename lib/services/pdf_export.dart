@@ -31,9 +31,9 @@ Future<Uint8List> exportProjectAsPdfBytes(BoxProject project, TemplateLibrary li
             for (final entity in entities) {
               final points = entity.toPoints();
               if (points.isEmpty) continue;
-              _moveTo(canvas, points.first, size.y);
+              _moveTo(canvas, points.first);
               for (final p in points.skip(1)) {
-                _lineTo(canvas, p, size.y);
+                _lineTo(canvas, p);
               }
             }
             canvas.strokePath();
@@ -46,10 +46,15 @@ Future<Uint8List> exportProjectAsPdfBytes(BoxProject project, TemplateLibrary li
   return doc.save();
 }
 
-void _moveTo(PdfGraphics canvas, Vec2 p, double pageHeightPt) {
-  canvas.moveTo(p.x * _mmToPt, pageHeightPt - p.y * _mmToPt);
+// PdfGraphics's own coordinate system already puts the origin at the page's
+// bottom-left with Y increasing upward (see pw.CustomPaint, which passes the
+// canvas through untransformed apart from that origin translation) --
+// exactly mm-space's own Y-up convention, so points map straight across with
+// no flip.
+void _moveTo(PdfGraphics canvas, Vec2 p) {
+  canvas.moveTo(p.x * _mmToPt, p.y * _mmToPt);
 }
 
-void _lineTo(PdfGraphics canvas, Vec2 p, double pageHeightPt) {
-  canvas.lineTo(p.x * _mmToPt, pageHeightPt - p.y * _mmToPt);
+void _lineTo(PdfGraphics canvas, Vec2 p) {
+  canvas.lineTo(p.x * _mmToPt, p.y * _mmToPt);
 }

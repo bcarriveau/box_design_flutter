@@ -8,6 +8,7 @@ import 'services/template_library.dart';
 import 'widgets/left_palette.dart';
 import 'widgets/right_property_panel.dart';
 import 'widgets/top_toolbar.dart';
+import 'version.dart';
 
 void main() {
   runApp(const BoxDesignApp());
@@ -60,54 +61,68 @@ class _BoxDesignHomePageState extends State<BoxDesignHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: FutureBuilder<void>(
-          future: _initialLoad,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return Focus(
-              focusNode: _canvasFocusNode,
-              autofocus: true,
-              onKeyEvent: (node, event) => _handleKeyEvent(event),
-              child: Column(
-                children: [
-                  TopToolbar(controller: _controller),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 240,
-                          child: LeftPalette(
-                            library: _library,
-                            holePresetLibrary: _holePresetLibrary,
-                            controller: _controller,
-                          ),
-                        ),
-                        const VerticalDivider(width: 1),
-                        Expanded(
-                          child: ColoredBox(
-                            color: Colors.grey.shade200,
-                            child: BoxCanvas(
-                              controller: _controller,
-                              focusNode: _canvasFocusNode,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: FutureBuilder<void>(
+              future: _initialLoad,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                return Focus(
+                  focusNode: _canvasFocusNode,
+                  autofocus: true,
+                  onKeyEvent: (node, event) => _handleKeyEvent(event),
+                  child: Column(
+                    children: [
+                      TopToolbar(controller: _controller),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 240,
+                              child: LeftPalette(
+                                library: _library,
+                                holePresetLibrary: _holePresetLibrary,
+                                controller: _controller,
+                              ),
                             ),
-                          ),
+                            const VerticalDivider(width: 1),
+                            Expanded(
+                              child: ColoredBox(
+                                color: Colors.grey.shade200,
+                                child: BoxCanvas(
+                                  controller: _controller,
+                                  focusNode: _canvasFocusNode,
+                                ),
+                              ),
+                            ),
+                            const VerticalDivider(width: 1),
+                            SizedBox(
+                              width: 280,
+                              child: RightPropertyPanel(controller: _controller),
+                            ),
+                          ],
                         ),
-                        const VerticalDivider(width: 1),
-                        SizedBox(
-                          width: 280,
-                          child: RightPropertyPanel(controller: _controller),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                );
+              },
+            ),
+          ),
+          Positioned(
+            right: 6,
+            bottom: 4,
+            child: IgnorePointer(
+              child: Text(
+                'v$appVersion',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
               ),
-            );
-          },
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
