@@ -19,6 +19,24 @@ class HolePreset {
     this.slotWidth = 4,
   });
 
+  factory HolePreset.fromJson(Map<String, dynamic> json) => HolePreset(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        type: HoleType.values.byName(json['type'] as String),
+        diameter: (json['diameter'] as num?)?.toDouble() ?? 4.5,
+        slotLength: (json['slotLength'] as num?)?.toDouble() ?? 12,
+        slotWidth: (json['slotWidth'] as num?)?.toDouble() ?? 4,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'type': type.name,
+        'diameter': diameter,
+        'slotLength': slotLength,
+        'slotWidth': slotWidth,
+      };
+
   static const builtIns = <HolePreset>[
     HolePreset(id: 'screw_m3', name: 'M3 Screw (3.2mm)', type: HoleType.screw, diameter: 3.2),
     HolePreset(id: 'screw_m4', name: 'M4 Screw (4.5mm)', type: HoleType.screw, diameter: 4.5),
@@ -40,5 +58,10 @@ class HolePreset {
     HolePreset(id: 'rect_small', name: 'Small Rect Slot (10x6mm)', type: HoleType.rectangle, slotLength: 10, slotWidth: 6),
     HolePreset(id: 'rect_standard', name: 'Standard Rect Slot (16x8mm)', type: HoleType.rectangle, slotLength: 16, slotWidth: 8),
     HolePreset(id: 'rect_large', name: 'Large Rect Slot (24x12mm)', type: HoleType.rectangle, slotLength: 24, slotWidth: 12),
+    // 0.1"/2.54mm pitch 2-row shrouded box headers (ribbon/IDC connectors),
+    // sized to the header body's overall footprint plus a little cutout
+    // clearance so the shroud passes through a panel.
+    HolePreset(id: 'idc_24', name: '24-Pin IDC Slot (37x10mm)', type: HoleType.rectangle, slotLength: 37, slotWidth: 10),
+    HolePreset(id: 'idc_40', name: '40-Pin IDC Slot (57x10mm)', type: HoleType.rectangle, slotLength: 57, slotWidth: 10),
   ];
 }

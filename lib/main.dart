@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'design/design_controller.dart';
 import 'design/box_canvas.dart';
+import 'services/hole_preset_library.dart';
 import 'services/template_library.dart';
 import 'widgets/left_palette.dart';
 import 'widgets/right_property_panel.dart';
@@ -36,6 +37,7 @@ class BoxDesignHomePage extends StatefulWidget {
 
 class _BoxDesignHomePageState extends State<BoxDesignHomePage> {
   final TemplateLibrary _library = TemplateLibrary();
+  final HolePresetLibrary _holePresetLibrary = HolePresetLibrary();
   late final DesignController _controller = DesignController(_library);
   final FocusNode _canvasFocusNode = FocusNode();
   late final Future<void> _initialLoad = _library.loadBuiltIns().then((_) {
@@ -45,11 +47,13 @@ class _BoxDesignHomePageState extends State<BoxDesignHomePage> {
     // background once the UI is already up on the bundled templates, so a
     // slow or unreachable network never delays first paint.
     _library.loadRemoteDefaults();
+    _holePresetLibrary.loadRemoteDefaults();
   });
 
   @override
   void dispose() {
     _canvasFocusNode.dispose();
+    _holePresetLibrary.dispose();
     super.dispose();
   }
 
@@ -77,6 +81,7 @@ class _BoxDesignHomePageState extends State<BoxDesignHomePage> {
                           width: 240,
                           child: LeftPalette(
                             library: _library,
+                            holePresetLibrary: _holePresetLibrary,
                             controller: _controller,
                           ),
                         ),

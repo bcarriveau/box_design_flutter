@@ -4,16 +4,22 @@ import 'package:flutter/material.dart';
 
 import '../design/design_controller.dart';
 import '../models/controller_template.dart';
-import '../models/hole_preset.dart';
 import '../models/palette_drag_item.dart';
 import '../services/file_io.dart';
+import '../services/hole_preset_library.dart';
 import '../services/template_library.dart';
 
 class LeftPalette extends StatefulWidget {
   final TemplateLibrary library;
+  final HolePresetLibrary holePresetLibrary;
   final DesignController controller;
 
-  const LeftPalette({super.key, required this.library, required this.controller});
+  const LeftPalette({
+    super.key,
+    required this.library,
+    required this.holePresetLibrary,
+    required this.controller,
+  });
 
   @override
   State<LeftPalette> createState() => _LeftPaletteState();
@@ -50,7 +56,7 @@ class _LeftPaletteState extends State<LeftPalette> {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([widget.library, widget.controller]),
+      animation: Listenable.merge([widget.library, widget.holePresetLibrary, widget.controller]),
       builder: (context, _) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -174,7 +180,7 @@ class _LeftPaletteState extends State<LeftPalette> {
   }
 
   Widget _genericHolesSection({String filter = ''}) {
-    var presets = HolePreset.builtIns;
+    var presets = widget.holePresetLibrary.presets;
     if (filter.trim().isNotEmpty) {
       final needle = filter.trim().toLowerCase();
       presets = presets.where((p) => p.name.toLowerCase().contains(needle)).toList();
