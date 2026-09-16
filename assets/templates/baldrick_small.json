@@ -1,0 +1,57 @@
+{
+  "id": "baldrick_small",
+  "name": "Baldrick Small(BaldrickInput1)",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 75.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 75.0,
+          "y": 50.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 50.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 71.0,
+        "y": 23.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 71.0,
+        "y": 45.5
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 19.5,
+        "y": 45.5
+      },
+      "radius": 1.5
+    }
+  ]
+}

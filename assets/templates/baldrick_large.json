@@ -1,0 +1,81 @@
+{
+  "id": "baldrick_large",
+  "name": "Baldrick Large (Baldrick17)",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 115.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 115.0,
+          "y": 180.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 180.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 5.0,
+        "y": 23.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 110.0,
+        "y": 23.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 5.0,
+        "y": 97.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 110.0,
+        "y": 97.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 5.0,
+        "y": 175.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 110.0,
+        "y": 175.0
+      },
+      "radius": 1.5
+    }
+  ]
+}

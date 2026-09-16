@@ -1,5 +1,17 @@
 [
   {
+    "id": "baldrick_large",
+    "file": "baldrick_large.json"
+  },
+  {
+    "id": "baldrick_medium",
+    "file": "baldrick_medium.json"
+  },
+  {
+    "id": "baldrick_small",
+    "file": "baldrick_small.json"
+  },
+  {
     "id": "bud_nbf32016",
     "file": "bud_nbf32016.json"
   },

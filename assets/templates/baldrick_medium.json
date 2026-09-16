@@ -1,0 +1,65 @@
+{
+  "id": "baldrick_medium",
+  "name": "Baldrick Medium (Baldrick8)",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 118.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 118.0,
+          "y": 73.9,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 73.9,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 19.1,
+        "y": 5.6
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 99.1,
+        "y": 5.6
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 19.5,
+        "y": 69.1
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 99.1,
+        "y": 69.1
+      },
+      "radius": 1.5
+    }
+  ]
+}
