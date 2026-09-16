@@ -7,7 +7,7 @@ gen_placeholder_templates.dart:
     {
       "id": "...",
       "name": "...",
-      "category": "box" | "controller" | "powerSupply" | "receiver",
+      "category": "box" | "controller" | "controllerAddon" | "powerSupply" | "powerDistribution" | "receiver",
       "entities": [
         {"type": "line", "start": {"x":.., "y":..}, "end": {"x":.., "y":..}},
         {"type": "circle", "center": {"x":.., "y":..}, "radius": ..},
@@ -44,7 +44,15 @@ except ImportError:
     print("This script requires ezdxf: pip install ezdxf", file=sys.stderr)
     raise
 
-VALID_CATEGORIES = {"box", "controller", "powerSupply", "receiver"}
+# Must match TemplateCategory in lib/models/controller_template.dart.
+VALID_CATEGORIES = {
+    "box",
+    "controller",
+    "controllerAddon",
+    "powerSupply",
+    "powerDistribution",
+    "receiver",
+}
 
 # DXF entity types we flatten (via ezdxf) instead of translating directly.
 FLATTEN_TYPES = {"POLYLINE", "SPLINE", "ELLIPSE", "LWPOLYLINE_WITH_ARCS"}

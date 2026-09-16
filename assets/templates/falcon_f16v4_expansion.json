@@ -1,7 +1,7 @@
 {
   "id": "falcon_f16v4_expansion",
   "name": "Falcon F16v4 Expansion",
-  "category": "controller",
+  "category": "controllerAddon",
   "entities": [
     {
       "type": "polyline",

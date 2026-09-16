@@ -7,8 +7,12 @@ enum TemplateSource { builtIn, imported, remote }
 
 /// Which section of the palette a template belongs to. [box] templates are
 /// applied as the enclosure outline itself (one active at a time); the
-/// others are placed as items inside the box.
-enum TemplateCategory { box, controller, powerSupply, receiver }
+/// others are placed as items inside the box. [controllerAddon] is a
+/// daughterboard/expansion board that mounts alongside a controller (e.g. an
+/// output-expansion or differential board); [powerDistribution] is a
+/// terminal-block/fuse-style board that distributes power rather than a
+/// self-contained supply brick like [powerSupply].
+enum TemplateCategory { box, controller, controllerAddon, powerSupply, powerDistribution, receiver }
 
 /// A reusable footprint: a rigid-body bag of geometry (outline, mounting
 /// holes, silkscreen, whatever the source DXF contained), stored in the

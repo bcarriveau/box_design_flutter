@@ -1,7 +1,7 @@
 {
   "id": "falcon_f16v3_diff_expansion",
   "name": "Falcon F16v3 Differential Expansion",
-  "category": "controller",
+  "category": "controllerAddon",
   "entities": [
     {
       "type": "polyline",

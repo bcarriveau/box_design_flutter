@@ -78,17 +78,25 @@ List<List<Vec2>> _placedTemplateHoles(BoxProject project, TemplateLibrary librar
   return result;
 }
 
-/// Every round mounting hole on a placed controller or receiver template
-/// (not power supplies or the box's own holes), as a center + radius in
-/// absolute box-space mm — the candidates for [buildPlateMesh]'s
-/// `addStandoffs` option, since those are the boards that actually get
-/// screwed down onto raised standoffs.
+/// Every round mounting hole on a placed controller, controller add-on,
+/// receiver, or power-distribution template (not power-supply bricks, which
+/// come with their own mounting hardware, or the box's own holes), as a
+/// center + radius in absolute box-space mm — the candidates for
+/// [buildPlateMesh]'s `addStandoffs` option, since those are the boards that
+/// actually get screwed down onto raised standoffs.
+const _standoffEligibleCategories = {
+  TemplateCategory.controller,
+  TemplateCategory.controllerAddon,
+  TemplateCategory.receiver,
+  TemplateCategory.powerDistribution,
+};
+
 List<({Vec2 center, double radius})> _controllerReceiverMountingHoles(BoxProject project, TemplateLibrary library) {
   final result = <({Vec2 center, double radius})>[];
   for (final placed in project.placedTemplates) {
     final template = library.byId(placed.templateId);
     if (template == null) continue;
-    if (template.category != TemplateCategory.controller && template.category != TemplateCategory.receiver) continue;
+    if (!_standoffEligibleCategories.contains(template.category)) continue;
     for (final entity in placedTemplateEntities(template, placed)) {
       if (entity is! DxfCircle) continue;
       result.add((center: entity.center, radius: entity.radius));
