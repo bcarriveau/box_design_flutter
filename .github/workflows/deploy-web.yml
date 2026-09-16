@@ -28,7 +28,31 @@ jobs:
 
       - run: flutter pub get
 
-      - run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
+      # --pwa-strategy=none skips generating the offline-first service worker:
+      # with it, browsers keep serving a cached build (bundled templates
+      # included) until every tab is closed and reopened, not just refreshed.
+      - run: flutter build web --release --base-href "/${{ github.event.repository.name }}/" --pwa-strategy=none
+
+      # Visitors from before this change have the old offline-first service
+      # worker already installed; a missing/changed flutter_service_worker.js
+      # isn't enough to make it let go of its own cache. Publish a
+      # self-destructing worker at that same URL so the browser's routine
+      # update check picks it up, clears every cache, and unregisters --
+      # after which the site is served fresh, same as everyone else.
+      - name: Publish a self-unregistering service worker
+        run: |
+          cat > build/web/flutter_service_worker.js <<'EOF'
+          self.addEventListener('install', () => self.skipWaiting());
+          self.addEventListener('activate', (event) => {
+            event.waitUntil(
+              caches.keys()
+                .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
+                .then(() => self.registration.unregister())
+                .then(() => self.clients.matchAll())
+                .then((clients) => clients.forEach((client) => client.navigate(client.url)))
+            );
+          });
+          EOF
 
       - uses: actions/upload-pages-artifact@v3
         with:
