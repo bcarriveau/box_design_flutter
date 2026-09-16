@@ -1,6 +1,6 @@
 {
-  "id": "genius_gr4_receiver",
-  "name": "Genius Pixel GR4 Receiver (2024 Edition)",
+  "id": "genius_gr4_receiver_2022",
+  "name": "Genius Pixel GR4 Receiver (2022 Edition)",
   "category": "receiver",
   "entities": [
     {
@@ -13,22 +13,22 @@
           "bulge": 0.0
         },
         {
-          "x": 88.5,
+          "x": 72.5,
           "y": 0.0,
           "bulge": 0.4142135623730951
         },
         {
-          "x": 91.0,
+          "x": 75.0,
           "y": 2.5,
           "bulge": 0.0
         },
         {
-          "x": 91.0,
+          "x": 75.0,
           "y": 72.5,
           "bulge": 0.4142135623730951
         },
         {
-          "x": 88.5,
+          "x": 72.5,
           "y": 75.0,
           "bulge": 0.0
         },
@@ -52,7 +52,7 @@
     {
       "type": "circle",
       "center": {
-        "x": 5.0,
+        "x": 22.0,
         "y": 70.0
       },
       "radius": 1.85
@@ -60,24 +60,24 @@
     {
       "type": "circle",
       "center": {
-        "x": 86.0,
+        "x": 22.0,
+        "y": 24.0
+      },
+      "radius": 1.85
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 56.0,
+        "y": 24.0
+      },
+      "radius": 1.85
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 56.0,
         "y": 70.0
-      },
-      "radius": 1.85
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 5.0,
-        "y": 30.0
-      },
-      "radius": 1.85
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 86.0,
-        "y": 30.0
       },
       "radius": 1.85
     }

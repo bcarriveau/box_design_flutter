@@ -1,47 +1,43 @@
 [
   {
+    "id": "bud_nbf32016",
+    "file": "bud_nbf32016.json"
+  },
+  {
+    "id": "bud_nbf32022",
+    "file": "bud_nbf32022.json"
+  },
+  {
+    "id": "bud_nbf32226",
+    "file": "bud_nbf32226.json"
+  },
+  {
     "id": "cg1500_placeholder",
     "file": "cg1500_placeholder.json"
-  },
-  {
-    "id": "genius_gpx16_2023_controller",
-    "file": "genius_gpx16_2023_controller.json"
-  },
-  {
-    "id": "genius_glr_controller",
-    "file": "genius_glr_controller.json"
-  },
-  {
-    "id": "genius_gr16_receiver",
-    "file": "genius_gr16_receiver.json"
-  },
-  {
-    "id": "genius_gr4_receiver",
-    "file": "genius_gr4_receiver.json"
-  },
-  {
-    "id": "genius_pro32_controller",
-    "file": "genius_pro32_controller.json"
-  },
-  {
-    "id": "genius_pro16_controller",
-    "file": "genius_pro16_controller.json"
-  },
-  {
-    "id": "genius_pro_receiver",
-    "file": "genius_pro_receiver.json"
-  },
-  {
-    "id": "falcon_16v4_controller",
-    "file": "falcon_16v4_controller.json"
   },
   {
     "id": "falcon_16v3_controller",
     "file": "falcon_16v3_controller.json"
   },
   {
-    "id": "falcon_v2_receiver",
-    "file": "falcon_v2_receiver.json"
+    "id": "falcon_f16v3_diff_receiver",
+    "file": "falcon_f16v3_diff_receiver.json"
+  },
+  {
+    "id": "falcon_16v4_controller",
+    "file": "falcon_16v4_controller.json"
+  },
+  {
+    "id": "falcon_f16v4_expansion",
+    "file": "falcon_f16v4_expansion.json"
+  },
+  {
+    "id": "falcon_f48_v3_mount",
+    "file": "falcon_f48_v3_mount.json"
+  },
+  {
+    "id": "falcon_f48_v4_mount",
+    "file": "falcon_f48_v4_mount.json"
   },
   {
     "id": "falcon_srx2_receiver",
@@ -52,28 +48,88 @@
     "file": "falcon_srx4_receiver.json"
   },
   {
+    "id": "falcon_v2_receiver",
+    "file": "falcon_v2_receiver.json"
+  },
+  {
+    "id": "genius_glr_controller",
+    "file": "genius_glr_controller.json"
+  },
+  {
+    "id": "genius_gpx16_2023_controller",
+    "file": "genius_gpx16_2023_controller.json"
+  },
+  {
+    "id": "genius_gr16_receiver",
+    "file": "genius_gr16_receiver.json"
+  },
+  {
+    "id": "genius_gr4_receiver_2022",
+    "file": "genius_gr4_receiver_2022.json"
+  },
+  {
+    "id": "genius_gr4_receiver_2023",
+    "file": "genius_gr4_receiver_2023.json"
+  },
+  {
+    "id": "genius_gr4_receiver",
+    "file": "genius_gr4_receiver.json"
+  },
+  {
+    "id": "genius_pro16_controller",
+    "file": "genius_pro16_controller.json"
+  },
+  {
+    "id": "genius_pro32_controller",
+    "file": "genius_pro32_controller.json"
+  },
+  {
+    "id": "genius_pro_receiver",
+    "file": "genius_pro_receiver.json"
+  },
+  {
     "id": "holidaycoro_951_61_receiver",
     "file": "holidaycoro_951_61_receiver.json"
+  },
+  {
+    "id": "holidaycoro_hc2500",
+    "file": "holidaycoro_hc2500.json"
   },
   {
     "id": "kulp_k16_v4",
     "file": "kulp_k16_v4.json"
   },
   {
-    "id": "raspberry_pi_model_b",
-    "file": "raspberry_pi_model_b.json"
+    "id": "meanwell_lrs150_side_placeholder",
+    "file": "meanwell_lrs150_side_placeholder.json"
   },
   {
-    "id": "bud_nbf32022",
-    "file": "bud_nbf32022.json"
+    "id": "meanwell_lrs150_top_placeholder",
+    "file": "meanwell_lrs150_top_placeholder.json"
   },
   {
-    "id": "bud_nbf32016",
-    "file": "bud_nbf32016.json"
+    "id": "meanwell_lrs350_side_placeholder",
+    "file": "meanwell_lrs350_side_placeholder.json"
   },
   {
-    "id": "bud_nbf32226",
-    "file": "bud_nbf32226.json"
+    "id": "meanwell_lrs350_top",
+    "file": "meanwell_lrs350_top.json"
+  },
+  {
+    "id": "meanwell_lrs600_side_placeholder",
+    "file": "meanwell_lrs600_side_placeholder.json"
+  },
+  {
+    "id": "meanwell_lrs600_top",
+    "file": "meanwell_lrs600_top.json"
+  },
+  {
+    "id": "meanwell_rs25_side",
+    "file": "meanwell_rs25_side.json"
+  },
+  {
+    "id": "meanwell_rs25_top",
+    "file": "meanwell_rs25_top.json"
   },
   {
     "id": "pb16_receiver_out",
@@ -84,59 +140,11 @@
     "file": "pb16_controller.json"
   },
   {
-    "id": "meanwell_lrs350_top",
-    "file": "meanwell_lrs350_top.json"
-  },
-  {
-    "id": "meanwell_lrs350_side_placeholder",
-    "file": "meanwell_lrs350_side_placeholder.json"
-  },
-  {
-    "id": "meanwell_lrs150_top_placeholder",
-    "file": "meanwell_lrs150_top_placeholder.json"
-  },
-  {
-    "id": "meanwell_lrs150_side_placeholder",
-    "file": "meanwell_lrs150_side_placeholder.json"
-  },
-  {
-    "id": "meanwell_lrs600_top",
-    "file": "meanwell_lrs600_top.json"
-  },
-  {
-    "id": "meanwell_lrs600_side_placeholder",
-    "file": "meanwell_lrs600_side_placeholder.json"
-  },
-  {
-    "id": "meanwell_rs25_top",
-    "file": "meanwell_rs25_top.json"
-  },
-  {
-    "id": "meanwell_rs25_side",
-    "file": "meanwell_rs25_side.json"
+    "id": "raspberry_pi_model_b",
+    "file": "raspberry_pi_model_b.json"
   },
   {
     "id": "ticonn_mounting_plate",
     "file": "ticonn_mounting_plate.json"
-  },
-  {
-    "id": "holidaycoro_hc2500",
-    "file": "holidaycoro_hc2500.json"
-  },
-  {
-    "id": "falcon_f48_v4_mount",
-    "file": "falcon_f48_v4_mount.json"
-  },
-  {
-    "id": "falcon_f48_v3_mount",
-    "file": "falcon_f48_v3_mount.json"
-  },
-  {
-    "id": "falcon_f16v4_expansion",
-    "file": "falcon_f16v4_expansion.json"
-  },
-  {
-    "id": "falcon_f16v3_diff_receiver",
-    "file": "falcon_f16v3_diff_receiver.json"
   }
 ]
