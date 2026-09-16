@@ -64,3 +64,29 @@ jobs:
           files: |
             BoxDesign-portable-*.zip
             windows/installer/Output/*.exe
+
+      # Keeps a single "rolling" pre-release always pointing at the newest
+      # successful build (whether from a version tag or a plain push to
+      # main), so there's always somewhere to grab the latest exe without
+      # cutting a version release. Moving the tag ourselves (rather than
+      # relying on the release action to do it) guarantees it always lands
+      # on this build's commit, even though the tag already exists.
+      - name: Move rolling tag
+        shell: bash
+        run: |
+          git tag -f rolling
+          git push origin rolling --force
+
+      - name: Publish rolling release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: rolling
+          name: Rolling build
+          prerelease: true
+          body: |
+            Automatically updated on every successful build from `main`. Not a stable release -- see the versioned releases for that.
+
+            Built from commit ${{ github.sha }}.
+          files: |
+            BoxDesign-portable-*.zip
+            windows/installer/Output/*.exe
