@@ -2,7 +2,10 @@ name: Windows build
 
 on:
   push:
+    branches: [main]
     tags: ["v*"]
+    paths-ignore:
+      - "assets/templates/**"
   workflow_dispatch:
 
 permissions:
