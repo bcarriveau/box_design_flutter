@@ -2,14 +2,14 @@
 """Box Design template exporter -- a KiCad pcbnew Action Plugin.
 
 Generates a box_design_flutter template JSON (the same shape as the files in
-flutter_app/assets/templates/*.json, and produced by
-flutter_app/tool/dxf_to_json.py) directly from the board that's currently
-open in KiCad, instead of going through a DXF export/import round trip:
+assets/templates/*.json, and produced by tool/dxf_to_json.py) directly from
+the board that's currently open in KiCad, instead of going through a DXF
+export/import round trip:
 
     {
       "id": "...",
       "name": "...",
-      "category": "controller" | "receiver" | "powerSupply" | "box",
+      "category": "controller" | "controllerAddon" | "receiver" | "powerSupply" | "powerDistribution" | "box",
       "entities": [
         {"type": "line", "start": {"x":.., "y":..}, "end": {"x":.., "y":..}},
         {"type": "circle", "center": {"x":.., "y":..}, "radius": ..},
@@ -49,7 +49,8 @@ try:
 except ImportError:  # pure-geometry helpers below are still importable/testable
     pcbnew = None
 
-VALID_CATEGORIES = ("controller", "receiver", "powerSupply", "box")
+# Must match TemplateCategory in lib/models/controller_template.dart.
+VALID_CATEGORIES = ("controller", "controllerAddon", "receiver", "powerSupply", "powerDistribution", "box")
 
 PLUGIN_DIR = Path(__file__).resolve().parent
 

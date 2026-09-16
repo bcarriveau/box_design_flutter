@@ -2,9 +2,9 @@
 
 A KiCad pcbnew Action Plugin that exports the currently-open board's outline
 (Edge.Cuts) and mounting holes as a `box_design_flutter` template JSON --
-the same format used by `flutter_app/assets/templates/*.json` and produced
-by `flutter_app/tool/dxf_to_json.py`, just generated straight from the PCB
-instead of via a DXF export/import round trip. Good for turning a
+the same format used by `assets/templates/*.json` and produced by
+`tool/dxf_to_json.py`, just generated straight from the PCB instead of via a
+DXF export/import round trip. Good for turning a
 controller or receiver board's KiCad project into a droppable template for
 the box designer.
 
@@ -28,7 +28,8 @@ Tested against KiCad 9.
 3. Fill in:
    - **Name** / **Template ID** -- the ID auto-fills from the name
      (slugified) until you edit it directly.
-   - **Category** -- `controller`, `receiver`, `powerSupply`, or `box`.
+   - **Category** -- `controller`, `controllerAddon`, `receiver`, `powerSupply`,
+     `powerDistribution`, or `box`.
    - **Min hole diameter (mm)** -- round/slotted holes smaller than this
      are skipped (default 1.4mm), so component leads and vias don't get
      pulled in as if they were mounting holes.
@@ -40,7 +41,7 @@ Tested against KiCad 9.
      Leave this on unless you have a specific reason not to.
    - **Output file** -- if this plugin folder lives inside (or next to) a
      `box_design_flutter` checkout, it defaults straight into
-     `flutter_app/assets/templates/`.
+     `assets/templates/`.
    - **Add/update entry in index.json** -- registers the new template in
      `assets/templates/index.json` so the app's palette picks it up.
 4. Click **Export**. Any skipped/unsupported geometry (e.g. a Bezier curve
