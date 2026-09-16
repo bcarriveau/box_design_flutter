@@ -20,6 +20,10 @@
     "file": "cg1500_door.json"
   },
   {
+    "id": "digocta",
+    "file": "digocta.json"
+  },
+  {
     "id": "falcon_16v3_controller",
     "file": "falcon_16v3_controller.json"
   },
