@@ -1,6 +1,6 @@
 {
   "id": "falcon_16v3_controller",
-  "name": "Falcon F16V3 Controller",
+  "name": "Falcon F16V3",
   "category": "controller",
   "entities": [
     {

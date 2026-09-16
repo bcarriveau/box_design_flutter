@@ -1,6 +1,6 @@
 {
   "id": "genius_glr_controller",
-  "name": "Genius Long Range Controller (GLR)",
+  "name": "Genius Long Range (GLR)",
   "category": "controller",
   "entities": [
     {

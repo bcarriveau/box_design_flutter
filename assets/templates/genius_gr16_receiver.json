@@ -1,6 +1,6 @@
 {
   "id": "genius_gr16_receiver",
-  "name": "Genius Pixel GR16 Receiver (16 Port)",
+  "name": "Genius Pixel GR16 (16 Port)",
   "category": "receiver",
   "entities": [
     {
