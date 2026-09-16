@@ -148,7 +148,7 @@ void main() {
   // match the other bundled placeholders. Still an estimate, not a
   // measurement -- and every other hole in the real grid is omitted.
   writeTemplate(
-    'cg1500_placeholder.json',
+    'cg1500.json',
     'cg1500_placeholder',
     'CG-1500 Enclosure (estimated, placeholder)',
     'box',
@@ -710,7 +710,7 @@ void main() {
   // placeholder for the real 4-hole pattern. Check the datasheet before
   // fabrication if the side mount is actually being used.
   writeTemplate(
-    'meanwell_lrs350_side_placeholder.json',
+    'meanwell_lrs350_side.json',
     'meanwell_lrs350_side_placeholder',
     'Mean Well LRS-350 (side mount, 215x30mm, placeholder holes)',
     'powerSupply',
@@ -731,7 +731,7 @@ void main() {
   // drawing. Hole positions below are generic corner placeholders (not
   // measured) until a clearer drawing or real DXF is available.
   writeTemplate(
-    'meanwell_lrs150_top_placeholder.json',
+    'meanwell_lrs150_top.json',
     'meanwell_lrs150_top_placeholder',
     'Mean Well LRS-150 (top mount, 159x97mm, placeholder holes)',
     'powerSupply',
@@ -739,7 +739,7 @@ void main() {
   );
 
   writeTemplate(
-    'meanwell_lrs150_side_placeholder.json',
+    'meanwell_lrs150_side.json',
     'meanwell_lrs150_side_placeholder',
     'Mean Well LRS-150 (side mount, 159x30mm, placeholder holes)',
     'powerSupply',
@@ -775,7 +775,7 @@ void main() {
   // many as LRS-350's side pattern -- couldn't be read with confidence.
   // Placeholder holes only, like LRS-350's side mount.
   writeTemplate(
-    'meanwell_lrs600_side_placeholder.json',
+    'meanwell_lrs600_side.json',
     'meanwell_lrs600_side_placeholder',
     'Mean Well LRS-600 (side mount, 225x41mm, placeholder holes)',
     'powerSupply',
@@ -872,9 +872,9 @@ void main() {
   // not a plain rectangle -- two holes share an x-coordinate (the right
   // side), the other two don't.
   writeTemplate(
-    'falcon_f48_v4_mount.json',
-    'falcon_f48_v4_mount',
-    'Falcon F48 V4 Mount',
+    'falcon_f48_v4_controller.json',
+    'falcon_f48_v4_controller',
+    'Falcon F48 V4',
     'controller',
     roundedRectWithHoles(
       width: 207.0,
@@ -902,9 +902,9 @@ void main() {
   // (173 x 104.6mm) that aren't reproduced, same as the V4 mount's
   // omissions.
   writeTemplate(
-    'falcon_f48_v3_mount.json',
-    'falcon_f48_v3_mount',
-    'Falcon F48 V3 Mount',
+    'falcon_f48_v3_controller.json',
+    'falcon_f48_v3_controller',
+    'Falcon F48 V3',
     'controller',
     roundedRectWithHoles(
       width: 193.0,

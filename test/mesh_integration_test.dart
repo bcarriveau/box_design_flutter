@@ -178,7 +178,7 @@ void main() {
     // triangle — invisible in mm terms, but its two vertices round to the
     // *same* 6-decimal text in the exported ASCII STL, so the facet reads
     // back with two identical vertices and gets rejected as corrupt.
-    final assetJson = File('assets/templates/cg1500_placeholder.json').readAsStringSync();
+    final assetJson = File('assets/templates/cg1500.json').readAsStringSync();
     final decoded = jsonDecode(assetJson) as Map<String, dynamic>;
     final library = TemplateLibrary();
     library.importJson(assetJson);

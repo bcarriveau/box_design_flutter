@@ -18,7 +18,7 @@ import 'package:box_design_flutter/services/threemf_export.dart';
 
 void main() {
   test('exports a sample project to real .dxf and .pdf files', () async {
-    final assetJson = File('assets/templates/cg1500_placeholder.json').readAsStringSync();
+    final assetJson = File('assets/templates/cg1500.json').readAsStringSync();
     final library = TemplateLibrary();
     final template = library.importJson(assetJson);
 

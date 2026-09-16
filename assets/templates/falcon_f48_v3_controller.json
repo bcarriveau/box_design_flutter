@@ -1,0 +1,65 @@
+{
+  "id": "falcon_f48_v3_controller",
+  "name": "Falcon F48 V3",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 193.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 193.0,
+          "y": 134.644,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 134.644,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 20.05,
+        "y": 9.644
+      },
+      "radius": 1.85
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 172.05,
+        "y": 9.644
+      },
+      "radius": 1.85
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 33.05,
+        "y": 111.144
+      },
+      "radius": 1.85
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 160.05,
+        "y": 111.144
+      },
+      "radius": 1.85
+    }
+  ]
+}

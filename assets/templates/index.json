@@ -25,7 +25,7 @@
   },
   {
     "id": "cg1500_placeholder",
-    "file": "cg1500_placeholder.json"
+    "file": "cg1500.json"
   },
   {
     "id": "cg1500_door",
@@ -60,12 +60,12 @@
     "file": "falcon_f16v4_expansion.json"
   },
   {
-    "id": "falcon_f48_v3_mount",
-    "file": "falcon_f48_v3_mount.json"
+    "id": "falcon_f48_v3_controller",
+    "file": "falcon_f48_v3_controller.json"
   },
   {
-    "id": "falcon_f48_v4_mount",
-    "file": "falcon_f48_v4_mount.json"
+    "id": "falcon_f48_v4_controller",
+    "file": "falcon_f48_v4_controller.json"
   },
   {
     "id": "falcon_srx2_receiver",
@@ -104,16 +104,16 @@
     "file": "genius_gr4_receiver.json"
   },
   {
+    "id": "genius_pro_receiver",
+    "file": "genius_pro_receiver.json"
+  },
+  {
     "id": "genius_pro16_controller",
     "file": "genius_pro16_controller.json"
   },
   {
     "id": "genius_pro32_controller",
     "file": "genius_pro32_controller.json"
-  },
-  {
-    "id": "genius_pro_receiver",
-    "file": "genius_pro_receiver.json"
   },
   {
     "id": "holidaycoro_951_61_receiver",
@@ -137,15 +137,15 @@
   },
   {
     "id": "meanwell_lrs150_side_placeholder",
-    "file": "meanwell_lrs150_side_placeholder.json"
+    "file": "meanwell_lrs150_side.json"
   },
   {
     "id": "meanwell_lrs150_top_placeholder",
-    "file": "meanwell_lrs150_top_placeholder.json"
+    "file": "meanwell_lrs150_top.json"
   },
   {
     "id": "meanwell_lrs350_side_placeholder",
-    "file": "meanwell_lrs350_side_placeholder.json"
+    "file": "meanwell_lrs350_side.json"
   },
   {
     "id": "meanwell_lrs350_top",
@@ -153,7 +153,7 @@
   },
   {
     "id": "meanwell_lrs600_side_placeholder",
-    "file": "meanwell_lrs600_side_placeholder.json"
+    "file": "meanwell_lrs600_side.json"
   },
   {
     "id": "meanwell_lrs600_top",
@@ -168,8 +168,12 @@
     "file": "meanwell_rs25_top.json"
   },
   {
-    "id": "pb16_receiver_out",
-    "file": "pb16_receiver_out.json"
+    "id": "pb16_diff_expansion",
+    "file": "pb16_diff_expansion.json"
+  },
+  {
+    "id": "pb16_expansion",
+    "file": "pb16_expansion.json"
   },
   {
     "id": "pb16_controller",
@@ -182,5 +186,9 @@
   {
     "id": "ticonn_mounting_plate",
     "file": "ticonn_mounting_plate.json"
+  },
+  {
+    "id": "pb16_receiver_out",
+    "file": "pb16_receiver_out.json"
   }
 ]

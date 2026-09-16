@@ -1,7 +1,7 @@
 {
-  "id": "falcon_f48_v3_mount",
-  "name": "Falcon F48 V3",
-  "category": "controller",
+  "id": "pb16_diff_expansion",
+  "name": "PB16 Diff Expansion",
+  "category": "controllerAddon",
   "entities": [
     {
       "type": "polyline",
@@ -13,18 +13,18 @@
           "bulge": 0.0
         },
         {
-          "x": 193.0,
+          "x": 84.328,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 193.0,
-          "y": 134.644,
+          "x": 84.328,
+          "y": 84.328,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 134.644,
+          "y": 84.328,
           "bulge": 0.0
         }
       ]
@@ -32,32 +32,32 @@
     {
       "type": "circle",
       "center": {
-        "x": 20.05,
-        "y": 9.644
+        "x": 4.168,
+        "y": 4.132
       },
       "radius": 1.85
     },
     {
       "type": "circle",
       "center": {
-        "x": 172.05,
-        "y": 9.644
+        "x": 80.368,
+        "y": 4.132
       },
       "radius": 1.85
     },
     {
       "type": "circle",
       "center": {
-        "x": 33.05,
-        "y": 111.144
+        "x": 80.368,
+        "y": 80.332
       },
       "radius": 1.85
     },
     {
       "type": "circle",
       "center": {
-        "x": 160.05,
-        "y": 111.144
+        "x": 4.168,
+        "y": 80.332
       },
       "radius": 1.85
     }
