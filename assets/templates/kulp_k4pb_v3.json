@@ -1,7 +1,7 @@
 {
-  "id": "holidaycoro_951_61_receiver",
-  "name": "Holiday Coro AlphaPix Flex 951-61",
-  "category": "receiver",
+  "id": "kulp_k4pb_v3",
+  "name": "Kulp K4-PB v3",
+  "category": "controller",
   "entities": [
     {
       "type": "polyline",
@@ -13,18 +13,18 @@
           "bulge": 0.0
         },
         {
-          "x": 80.963,
+          "x": 71.0,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 80.963,
-          "y": 60.0,
+          "x": 71.0,
+          "y": 67.2,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 60.0,
+          "y": 67.2,
           "bulge": 0.0
         }
       ]
@@ -32,26 +32,26 @@
     {
       "type": "circle",
       "center": {
-        "x": 27.788999999999994,
-        "y": 12.220500000000001
+        "x": 17.5,
+        "y": 12.5
       },
-      "radius": 1.5
+      "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 27.788999999999994,
-        "y": 47.7795
+        "x": 53.1,
+        "y": 37.9
       },
-      "radius": 1.5
+      "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 53.174,
-        "y": 12.220500000000001
+        "x": 17.5,
+        "y": 37.9
       },
-      "radius": 1.5
+      "radius": 2.0
     }
   ]
 }

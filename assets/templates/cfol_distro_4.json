@@ -1,7 +1,7 @@
 {
-  "id": "holidaycoro_951_61_receiver",
-  "name": "Holiday Coro AlphaPix Flex 951-61",
-  "category": "receiver",
+  "id": "cfol_distro_4",
+  "name": "CFOL Power Distro 4",
+  "category": "powerDistribution",
   "entities": [
     {
       "type": "polyline",
@@ -13,18 +13,18 @@
           "bulge": 0.0
         },
         {
-          "x": 80.963,
+          "x": 53.339999999999996,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 80.963,
-          "y": 60.0,
+          "x": 53.339999999999996,
+          "y": 55.88,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 60.0,
+          "y": 55.88,
           "bulge": 0.0
         }
       ]
@@ -32,24 +32,32 @@
     {
       "type": "circle",
       "center": {
-        "x": 27.788999999999994,
-        "y": 12.220500000000001
+        "x": 4.319999999999997,
+        "y": 4.84
       },
       "radius": 1.5
     },
     {
       "type": "circle",
       "center": {
-        "x": 27.788999999999994,
-        "y": 47.7795
+        "x": 4.319999999999997,
+        "y": 51.040000000000006
       },
       "radius": 1.5
     },
     {
       "type": "circle",
       "center": {
-        "x": 53.174,
-        "y": 12.220500000000001
+        "x": 49.019999999999996,
+        "y": 4.84
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 49.019999999999996,
+        "y": 51.040000000000006
       },
       "radius": 1.5
     }

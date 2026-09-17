@@ -1,0 +1,81 @@
+{
+  "id": "sandevices_e682",
+  "name": "SanDevices E682",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 180.5,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 180.5,
+          "y": 114.3,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 114.3,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 6.0,
+        "y": 19.049999999999997
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 6.0,
+        "y": 95.25
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 133.0,
+        "y": 19.049999999999997
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 133.0,
+        "y": 95.3
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 158.4,
+        "y": 19.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 158.4,
+        "y": 95.3
+      },
+      "radius": 1.5
+    }
+  ]
+}

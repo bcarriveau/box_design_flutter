@@ -24,6 +24,14 @@
     "file": "bud_nbf32226.json"
   },
   {
+    "id": "cfol_distro_4",
+    "file": "cfol_distro_4.json"
+  },
+  {
+    "id": "cfol_distro_8",
+    "file": "cfol_distro_8.json"
+  },
+  {
     "id": "cg1500",
     "file": "cg1500.json"
   },
@@ -82,6 +90,10 @@
   {
     "id": "falcon_v2_receiver",
     "file": "falcon_v2_receiver.json"
+  },
+  {
+    "id": "falcon_reciever_v1",
+    "file": "falcon_reciever_v1.json"
   },
   {
     "id": "genius_glr_controller",
@@ -152,6 +164,10 @@
     "file": "kulp_k32max.json"
   },
   {
+    "id": "kulp_k4pb_v3",
+    "file": "kulp_k4pb_v3.json"
+  },
+  {
     "id": "kulp_k40",
     "file": "kulp_k40.json"
   },
@@ -220,11 +236,27 @@
     "file": "raspberry_pi_model_b.json"
   },
   {
+    "id": "rgb_duo_2",
+    "file": "rgb_duo_2.json"
+  },
+  {
+    "id": "sandevice_e6804",
+    "file": "sandevice_e6804.json"
+  },
+  {
+    "id": "sandevices_e682",
+    "file": "sandevices_e682.json"
+  },
+  {
     "id": "ticonn_mounting_plate",
     "file": "ticonn_mounting_plate.json"
   },
   {
     "id": "pb16_receiver_out",
     "file": "pb16_receiver_out.json"
+  },
+  {
+    "id": "wasatch_bong69",
+    "file": "wasatch_bong69.json"
   }
 ]

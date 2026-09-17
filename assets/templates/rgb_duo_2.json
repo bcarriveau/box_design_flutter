@@ -1,7 +1,7 @@
 {
-  "id": "holidaycoro_951_61_receiver",
-  "name": "Holiday Coro AlphaPix Flex 951-61",
-  "category": "receiver",
+  "id": "rgb_duo_2",
+  "name": "RGB Duo-2-Go",
+  "category": "controller",
   "entities": [
     {
       "type": "polyline",
@@ -13,18 +13,18 @@
           "bulge": 0.0
         },
         {
-          "x": 80.963,
+          "x": 75.5,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 80.963,
-          "y": 60.0,
+          "x": 75.5,
+          "y": 57.25,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 60.0,
+          "y": 57.25,
           "bulge": 0.0
         }
       ]
@@ -32,24 +32,32 @@
     {
       "type": "circle",
       "center": {
-        "x": 27.788999999999994,
-        "y": 12.220500000000001
+        "x": 6.0,
+        "y": 6.0
       },
       "radius": 1.5
     },
     {
       "type": "circle",
       "center": {
-        "x": 27.788999999999994,
-        "y": 47.7795
+        "x": 6.0,
+        "y": 51.25
       },
       "radius": 1.5
     },
     {
       "type": "circle",
       "center": {
-        "x": 53.174,
-        "y": 12.220500000000001
+        "x": 69.5,
+        "y": 6.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 69.5,
+        "y": 51.25
       },
       "radius": 1.5
     }

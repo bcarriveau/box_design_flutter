@@ -1,7 +1,7 @@
 {
-  "id": "holidaycoro_951_61_receiver",
-  "name": "Holiday Coro AlphaPix Flex 951-61",
-  "category": "receiver",
+  "id": "sandevice_e6804",
+  "name": "Sandevice E6804",
+  "category": "controller",
   "entities": [
     {
       "type": "polyline",
@@ -13,18 +13,18 @@
           "bulge": 0.0
         },
         {
-          "x": 80.963,
+          "x": 63.5,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 80.963,
-          "y": 60.0,
+          "x": 63.5,
+          "y": 101.6,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 60.0,
+          "y": 101.6,
           "bulge": 0.0
         }
       ]
@@ -32,26 +32,34 @@
     {
       "type": "circle",
       "center": {
-        "x": 27.788999999999994,
-        "y": 12.220500000000001
+        "x": 6.350000000000001,
+        "y": 12.700000000000003
       },
-      "radius": 1.5
+      "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 27.788999999999994,
-        "y": 47.7795
+        "x": 6.350000000000001,
+        "y": 88.89999999999999
       },
-      "radius": 1.5
+      "radius": 2.0
     },
     {
       "type": "circle",
       "center": {
-        "x": 53.174,
-        "y": 12.220500000000001
+        "x": 57.15,
+        "y": 12.700000000000003
       },
-      "radius": 1.5
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 57.15,
+        "y": 88.89999999999999
+      },
+      "radius": 2.0
     }
   ]
 }
