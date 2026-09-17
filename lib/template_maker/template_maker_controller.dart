@@ -226,6 +226,17 @@ class TemplateMakerController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Shifts every hole's position by ([dx], [dy]) mm, e.g. for nudging a
+  /// whole pattern after eyeballing it against a reference drawing.
+  void shiftAllHoles(double dx, double dy) {
+    if (dx == 0 && dy == 0) return;
+    for (final h in holes) {
+      h.x += dx;
+      h.y += dy;
+    }
+    notifyListeners();
+  }
+
   void newTemplate() {
     id = 'new_template';
     name = 'New Template';

@@ -44,6 +44,8 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   final _heightFocus = FocusNode();
   final _cornerSizeFocus = FocusNode();
 
+  final _shiftDistanceController = TextEditingController(text: '1');
+
   final Map<String, TextEditingController> _holeX = {};
   final Map<String, TextEditingController> _holeY = {};
   final Map<String, TextEditingController> _holeD = {};
@@ -86,6 +88,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     _widthController.dispose();
     _heightController.dispose();
     _cornerSizeController.dispose();
+    _shiftDistanceController.dispose();
     _widthFocus.dispose();
     _heightFocus.dispose();
     _cornerSizeFocus.dispose();
@@ -312,6 +315,18 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
 
   void _removeHole(String id) {
     setState(() => _controller.removeHole(id));
+  }
+
+  void _shiftAllHoles(double dx, double dy) {
+    final distance = tryEvalMath(_shiftDistanceController.text);
+    if (distance == null || distance <= 0) {
+      _snack('Enter a positive shift distance.');
+      return;
+    }
+    setState(() {
+      _controller.shiftAllHoles(dx * distance, dy * distance);
+      _refreshTopFields();
+    });
   }
 
   Future<void> _showQuickHoleDialog() async {
@@ -543,6 +558,42 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                         IconButton(onPressed: _addSlot, icon: const Icon(Icons.crop_7_5), tooltip: 'Add slot'),
                         IconButton(onPressed: _showQuickHoleDialog, icon: const Icon(Icons.grid_4x4), tooltip: 'Quick 4-hole pattern'),
                       ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Text('Shift all'),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 70,
+                      child: TextField(
+                        controller: _shiftDistanceController,
+                        decoration: const InputDecoration(labelText: 'mm', isDense: true, border: OutlineInputBorder()),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      ),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () => _shiftAllHoles(0, 1),
+                      icon: const Icon(Icons.arrow_upward),
+                      tooltip: 'Shift all holes up',
+                    ),
+                    IconButton(
+                      onPressed: () => _shiftAllHoles(0, -1),
+                      icon: const Icon(Icons.arrow_downward),
+                      tooltip: 'Shift all holes down',
+                    ),
+                    IconButton(
+                      onPressed: () => _shiftAllHoles(-1, 0),
+                      icon: const Icon(Icons.arrow_back),
+                      tooltip: 'Shift all holes left',
+                    ),
+                    IconButton(
+                      onPressed: () => _shiftAllHoles(1, 0),
+                      icon: const Icon(Icons.arrow_forward),
+                      tooltip: 'Shift all holes right',
                     ),
                   ],
                 ),
