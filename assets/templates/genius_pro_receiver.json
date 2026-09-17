@@ -96,6 +96,22 @@
         "y": 203.0
       },
       "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 18.9,
+        "y": 58.2
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 222.1,
+        "y": 58.2
+      },
+      "radius": 2.0
     }
   ]
 }
