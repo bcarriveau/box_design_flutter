@@ -5,6 +5,7 @@ import '../models/dxf_entity.dart';
 import '../models/hole.dart';
 import '../models/placed_template.dart';
 import '../models/vec2.dart';
+import '../services/simple_math.dart';
 
 class RightPropertyPanel extends StatefulWidget {
   final DesignController controller;
@@ -84,8 +85,8 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
   }
 
   void _applyPosition() {
-    final x = double.tryParse(_xController.text);
-    final y = double.tryParse(_yController.text);
+    final x = tryEvalMath(_xController.text);
+    final y = tryEvalMath(_yController.text);
     if (x == null || y == null) return;
     final placed = controller.selectedTemplate;
     final hole = controller.selectedHole;
@@ -133,7 +134,7 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
   }
 
   void _applyMountingHoleDiameter(PlacedTemplate placed) {
-    final d = double.tryParse(_mountingHoleController.text);
+    final d = tryEvalMath(_mountingHoleController.text);
     if (d == null || d <= 0) return;
     controller.setMountingHoleDiameter(placed.id, d);
   }
@@ -194,31 +195,31 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
           if (hole != null && hole.type == HoleType.screw) ...[
             const SizedBox(height: 12),
             _numberField('Diameter (mm)', _diameterController, _diameterFocus, () {
-              final d = double.tryParse(_diameterController.text);
+              final d = tryEvalMath(_diameterController.text);
               if (d != null) controller.updateHole(hole.id, (h) => h.copyWith(diameter: d));
             }),
           ],
           if (hole != null && hole.type == HoleType.zipTie) ...[
             const SizedBox(height: 12),
             _numberField('Hole spacing (mm)', _lengthController, _lengthFocus, () {
-              final v = double.tryParse(_lengthController.text);
+              final v = tryEvalMath(_lengthController.text);
               if (v != null) controller.updateHole(hole.id, (h) => h.copyWith(slotLength: v));
             }),
             const SizedBox(height: 8),
             _numberField('Hole diameter (mm)', _widthController, _widthFocus, () {
-              final v = double.tryParse(_widthController.text);
+              final v = tryEvalMath(_widthController.text);
               if (v != null) controller.updateHole(hole.id, (h) => h.copyWith(slotWidth: v));
             }),
           ],
           if (hole != null && (hole.type == HoleType.slot || hole.type == HoleType.rectangle)) ...[
             const SizedBox(height: 12),
-            _numberField(hole.type == HoleType.rectangle ? 'Length (mm)' : 'Slot length (mm)', _lengthController, _lengthFocus, () {
-              final v = double.tryParse(_lengthController.text);
+            _numberField('Width (mm)', _lengthController, _lengthFocus, () {
+              final v = tryEvalMath(_lengthController.text);
               if (v != null) controller.updateHole(hole.id, (h) => h.copyWith(slotLength: v));
             }),
             const SizedBox(height: 8),
-            _numberField(hole.type == HoleType.rectangle ? 'Width (mm)' : 'Slot width (mm)', _widthController, _widthFocus, () {
-              final v = double.tryParse(_widthController.text);
+            _numberField('Height (mm)', _widthController, _widthFocus, () {
+              final v = tryEvalMath(_widthController.text);
               if (v != null) controller.updateHole(hole.id, (h) => h.copyWith(slotWidth: v));
             }),
           ],
@@ -239,6 +240,13 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
       focusNode: focusNode,
       decoration: InputDecoration(labelText: label, isDense: true, border: const OutlineInputBorder()),
       keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+      // Commit on every keystroke, not just on blur/submit -- selecting a
+      // different item on the canvas (a plain tap or the start of a drag)
+      // calls DesignController.select() directly, which is not routed
+      // through this field's onTapOutside. Without a live commit here, an
+      // edit still in progress when that happens is silently discarded
+      // instead of saved, which reads as the field "reverting".
+      onChanged: (_) => onSubmit(),
       onSubmitted: (_) => onSubmit(),
       onEditingComplete: onSubmit,
       onTapOutside: (_) {

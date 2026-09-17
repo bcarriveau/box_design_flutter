@@ -7,15 +7,15 @@ import '../models/vec2.dart';
 import 'template_maker_controller.dart';
 
 /// Scale-to-fit preview of a template being built: the outline rectangle
-/// (optionally corner-filleted or corner-notched) plus every hole, round or
-/// slot, each labeled with its size. mm-space is math/Y-up (matching the
-/// rest of the app's DXF convention); the canvas is screen Y-down, so
-/// points are flipped in Y before drawing.
+/// (optionally corner-filleted, corner-chamfered, or corner-notched) plus
+/// every hole, round or slot, each labeled with its size. mm-space is
+/// math/Y-up (matching the rest of the app's DXF convention); the canvas is
+/// screen Y-down, so points are flipped in Y before drawing.
 class TemplateOutlinePainter extends CustomPainter {
   final double outlineWidth;
   final double outlineHeight;
-  final double cornerRadius;
-  final double cornerCutSize;
+  final TemplateMakerCornerStyle cornerStyle;
+  final double cornerSize;
   final List<
       ({
         TemplateMakerHoleShape shape,
@@ -29,8 +29,8 @@ class TemplateOutlinePainter extends CustomPainter {
   const TemplateOutlinePainter({
     required this.outlineWidth,
     required this.outlineHeight,
-    this.cornerRadius = 0,
-    this.cornerCutSize = 0,
+    this.cornerStyle = TemplateMakerCornerStyle.fillet,
+    this.cornerSize = 0,
     required this.holes,
   });
 
@@ -51,17 +51,18 @@ class TemplateOutlinePainter extends CustomPainter {
       ..color = Colors.black
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
-    final cut = cornerCutSize <= 0 ? 0.0 : math.min(cornerCutSize, math.min(outlineWidth, outlineHeight) / 2);
-    if (cut > 0) {
-      final pts = notchedRectVertices(outlineWidth, outlineHeight, cut).map((v) => toPx(v.point)).toList();
-      canvas.drawPath(Path()..addPolygon(pts, true), outlinePaint);
-    } else {
+    final cornerAmount = cornerSize <= 0 ? 0.0 : math.min(cornerSize, math.min(outlineWidth, outlineHeight) / 2);
+    if (cornerAmount <= 0) {
+      canvas.drawRect(Rect.fromPoints(toPx(const Vec2(0, 0)), toPx(Vec2(outlineWidth, outlineHeight))), outlinePaint);
+    } else if (cornerStyle == TemplateMakerCornerStyle.fillet) {
       final outlineRect = Rect.fromPoints(toPx(const Vec2(0, 0)), toPx(Vec2(outlineWidth, outlineHeight)));
-      if (cornerRadius > 0) {
-        canvas.drawRRect(RRect.fromRectAndRadius(outlineRect, Radius.circular(cornerRadius * scale)), outlinePaint);
-      } else {
-        canvas.drawRect(outlineRect, outlinePaint);
-      }
+      canvas.drawRRect(RRect.fromRectAndRadius(outlineRect, Radius.circular(cornerAmount * scale)), outlinePaint);
+    } else {
+      final vertices = cornerStyle == TemplateMakerCornerStyle.chamfer
+          ? chamferedRectVertices(outlineWidth, outlineHeight, cornerAmount)
+          : notchedRectVertices(outlineWidth, outlineHeight, cornerAmount);
+      final pts = vertices.map((v) => toPx(v.point)).toList();
+      canvas.drawPath(Path()..addPolygon(pts, true), outlinePaint);
     }
 
     final holePaint = Paint()
@@ -97,8 +98,8 @@ class TemplateOutlinePainter extends CustomPainter {
   bool shouldRepaint(covariant TemplateOutlinePainter oldDelegate) {
     return oldDelegate.outlineWidth != outlineWidth ||
         oldDelegate.outlineHeight != outlineHeight ||
-        oldDelegate.cornerRadius != cornerRadius ||
-        oldDelegate.cornerCutSize != cornerCutSize ||
+        oldDelegate.cornerStyle != cornerStyle ||
+        oldDelegate.cornerSize != cornerSize ||
         oldDelegate.holes != holes;
   }
 }

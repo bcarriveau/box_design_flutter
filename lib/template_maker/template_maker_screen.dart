@@ -39,12 +39,10 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   late final _nameController = TextEditingController(text: _controller.name);
   late final _widthController = TextEditingController(text: _fmt(_controller.outlineWidth));
   late final _heightController = TextEditingController(text: _fmt(_controller.outlineHeight));
-  late final _cornerRadiusController = TextEditingController(text: _fmt(_controller.cornerRadius));
-  late final _cornerCutController = TextEditingController(text: _fmt(_controller.cornerCutSize));
+  late final _cornerSizeController = TextEditingController(text: _fmt(_controller.cornerSize));
   final _widthFocus = FocusNode();
   final _heightFocus = FocusNode();
-  final _cornerRadiusFocus = FocusNode();
-  final _cornerCutFocus = FocusNode();
+  final _cornerSizeFocus = FocusNode();
 
   final Map<String, TextEditingController> _holeX = {};
   final Map<String, TextEditingController> _holeY = {};
@@ -87,12 +85,10 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     _nameController.dispose();
     _widthController.dispose();
     _heightController.dispose();
-    _cornerRadiusController.dispose();
-    _cornerCutController.dispose();
+    _cornerSizeController.dispose();
     _widthFocus.dispose();
     _heightFocus.dispose();
-    _cornerRadiusFocus.dispose();
-    _cornerCutFocus.dispose();
+    _cornerSizeFocus.dispose();
     for (final c in [
       ..._holeX.values,
       ..._holeY.values,
@@ -153,8 +149,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     _nameController.text = _controller.name;
     _widthController.text = _fmt(_controller.outlineWidth);
     _heightController.text = _fmt(_controller.outlineHeight);
-    _cornerRadiusController.text = _fmt(_controller.cornerRadius);
-    _cornerCutController.text = _fmt(_controller.cornerCutSize);
+    _cornerSizeController.text = _fmt(_controller.cornerSize);
     for (final h in _controller.holes) {
       _holeX[h.id]?.text = _fmt(h.x);
       _holeY[h.id]?.text = _fmt(h.y);
@@ -486,69 +481,52 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                 ),
                 const SizedBox(height: 8),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: TextField(
-                        controller: _cornerRadiusController,
-                        focusNode: _cornerRadiusFocus,
-                        decoration: const InputDecoration(labelText: 'Corner radius (mm)', isDense: true, border: OutlineInputBorder()),
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      child: DropdownButtonFormField<TemplateMakerCornerStyle>(
+                        initialValue: _controller.cornerStyle,
+                        decoration: const InputDecoration(labelText: 'Corner style', isDense: true, border: OutlineInputBorder()),
+                        items: const [
+                          DropdownMenuItem(value: TemplateMakerCornerStyle.fillet, child: Text('Fillet')),
+                          DropdownMenuItem(value: TemplateMakerCornerStyle.chamfer, child: Text('Chamfer')),
+                          DropdownMenuItem(value: TemplateMakerCornerStyle.cornerCut, child: Text('Corner cut')),
+                        ],
                         onChanged: (v) {
-                          final parsed = tryEvalMath(v);
-                          if (parsed != null) {
-                            setState(() {
-                              _controller.setCornerRadius(parsed);
-                              _refreshTopFields();
-                            });
-                          }
-                        },
-                        onSubmitted: (_) => _commitMathField(_cornerRadiusController, (v) {
-                          _controller.setCornerRadius(v);
-                          _refreshTopFields();
-                        }),
-                        onEditingComplete: () => _commitMathField(_cornerRadiusController, (v) {
-                          _controller.setCornerRadius(v);
-                          _refreshTopFields();
-                        }),
-                        onTapOutside: (_) {
-                          _commitMathField(_cornerRadiusController, (v) {
-                            _controller.setCornerRadius(v);
-                            _refreshTopFields();
-                          });
-                          _cornerRadiusFocus.unfocus();
+                          if (v != null) setState(() => _controller.setCornerStyle(v));
                         },
                       ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: TextField(
-                        controller: _cornerCutController,
-                        focusNode: _cornerCutFocus,
-                        decoration: const InputDecoration(labelText: 'Corner cut (mm)', isDense: true, border: OutlineInputBorder()),
+                        controller: _cornerSizeController,
+                        focusNode: _cornerSizeFocus,
+                        decoration: const InputDecoration(labelText: 'Size (mm)', isDense: true, border: OutlineInputBorder()),
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         onChanged: (v) {
                           final parsed = tryEvalMath(v);
                           if (parsed != null) {
                             setState(() {
-                              _controller.setCornerCutSize(parsed);
+                              _controller.setCornerSize(parsed);
                               _refreshTopFields();
                             });
                           }
                         },
-                        onSubmitted: (_) => _commitMathField(_cornerCutController, (v) {
-                          _controller.setCornerCutSize(v);
+                        onSubmitted: (_) => _commitMathField(_cornerSizeController, (v) {
+                          _controller.setCornerSize(v);
                           _refreshTopFields();
                         }),
-                        onEditingComplete: () => _commitMathField(_cornerCutController, (v) {
-                          _controller.setCornerCutSize(v);
+                        onEditingComplete: () => _commitMathField(_cornerSizeController, (v) {
+                          _controller.setCornerSize(v);
                           _refreshTopFields();
                         }),
                         onTapOutside: (_) {
-                          _commitMathField(_cornerCutController, (v) {
-                            _controller.setCornerCutSize(v);
+                          _commitMathField(_cornerSizeController, (v) {
+                            _controller.setCornerSize(v);
                             _refreshTopFields();
                           });
-                          _cornerCutFocus.unfocus();
+                          _cornerSizeFocus.unfocus();
                         },
                       ),
                     ),
@@ -590,8 +568,8 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                         painter: TemplateOutlinePainter(
                           outlineWidth: _controller.outlineWidth,
                           outlineHeight: _controller.outlineHeight,
-                          cornerRadius: _controller.cornerRadius,
-                          cornerCutSize: _controller.cornerCutSize,
+                          cornerStyle: _controller.cornerStyle,
+                          cornerSize: _controller.cornerSize,
                           holes: [
                             for (final h in _controller.holes)
                               (

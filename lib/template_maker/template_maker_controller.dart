@@ -10,6 +10,12 @@ const _bulge90 = 0.4142135623730951; // tan(90deg / 4), quarter-circle bulge
 
 enum TemplateMakerHoleShape { round, slot }
 
+/// How each corner of the outline rectangle is treated. [size] (a separate
+/// field on the controller) is the fillet radius, chamfer cut, or notch cut
+/// depending on which style is selected; a size of 0 always yields a plain
+/// sharp-cornered rectangle regardless of style.
+enum TemplateMakerCornerStyle { fillet, chamfer, cornerCut }
+
 /// A single mounting hole in the template being built: either a round hole
 /// (sized by [diameter]) or an elongated slot (sized by [slotLength] /
 /// [slotWidth] and oriented by [rotationDeg]), with a center position in
@@ -59,6 +65,24 @@ List<PolyVertex> notchedRectVertices(double width, double height, double cut) {
   ];
 }
 
+/// A rectangle outline with a straight 45-degree cut across each corner
+/// (chamfer), as a single closed 8-vertex polygon -- no bulge, every edge
+/// straight. [cut] is clamped by the caller to at most half the shorter
+/// side.
+List<PolyVertex> chamferedRectVertices(double width, double height, double cut) {
+  final c = cut;
+  return [
+    PolyVertex(Vec2(c, 0)),
+    PolyVertex(Vec2(width - c, 0)),
+    PolyVertex(Vec2(width, c)),
+    PolyVertex(Vec2(width, height - c)),
+    PolyVertex(Vec2(width - c, height)),
+    PolyVertex(Vec2(c, height)),
+    PolyVertex(Vec2(0, height - c)),
+    PolyVertex(Vec2(0, c)),
+  ];
+}
+
 double _dist(Vec2 a, Vec2 b) {
   final dx = a.x - b.x, dy = a.y - b.y;
   return math.sqrt(dx * dx + dy * dy);
@@ -76,8 +100,8 @@ class TemplateMakerController extends ChangeNotifier {
   TemplateCategory category = TemplateCategory.box;
   double outlineWidth = 100;
   double outlineHeight = 100;
-  double cornerRadius = 0;
-  double cornerCutSize = 0;
+  TemplateMakerCornerStyle cornerStyle = TemplateMakerCornerStyle.fillet;
+  double cornerSize = 0;
   final List<TemplateMakerHole> holes = [];
 
   int _nextHoleSeq = 1;
@@ -109,23 +133,20 @@ class TemplateMakerController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Corner fillet radius in mm, 0 for sharp corners. Mutually exclusive
-  /// with [cornerCutSize] (setting one clears the other). Clamped to the
-  /// outline's own half-width/height when applied so it can never invert
-  /// the rectangle.
-  void setCornerRadius(double value) {
-    if (value < 0) return;
-    cornerRadius = value;
-    if (value > 0) cornerCutSize = 0;
+  /// Which corner treatment [cornerSize] applies as: fillet (rounded),
+  /// chamfer (straight 45-degree cut), or corner cut (square notch).
+  void setCornerStyle(TemplateMakerCornerStyle value) {
+    cornerStyle = value;
     notifyListeners();
   }
 
-  /// Square notch size in mm cut from each corner, 0 for plain sharp
-  /// corners. Mutually exclusive with [cornerRadius].
-  void setCornerCutSize(double value) {
+  /// Size in mm of the selected [cornerStyle]'s corner treatment -- fillet
+  /// radius, chamfer cut, or notch cut. 0 for plain sharp corners. Clamped
+  /// to the outline's own half-width/height when applied so it can never
+  /// invert the rectangle.
+  void setCornerSize(double value) {
     if (value < 0) return;
-    cornerCutSize = value;
-    if (value > 0) cornerRadius = 0;
+    cornerSize = value;
     notifyListeners();
   }
 
@@ -211,8 +232,8 @@ class TemplateMakerController extends ChangeNotifier {
     category = TemplateCategory.box;
     outlineWidth = 100;
     outlineHeight = 100;
-    cornerRadius = 0;
-    cornerCutSize = 0;
+    cornerStyle = TemplateMakerCornerStyle.fillet;
+    cornerSize = 0;
     holes.clear();
     _nextHoleSeq = 1;
     notifyListeners();
@@ -224,29 +245,36 @@ class TemplateMakerController extends ChangeNotifier {
   /// exactly the shape [ControllerTemplate.toJson] (and the rest of the
   /// app, e.g. mesh export's own-hole detection) expect.
   ControllerTemplate toTemplate() {
-    final r = cornerRadius <= 0 ? 0.0 : math.min(cornerRadius, math.min(outlineWidth, outlineHeight) / 2);
-    final cut = cornerCutSize <= 0 ? 0.0 : math.min(cornerCutSize, math.min(outlineWidth, outlineHeight) / 2);
+    final size = cornerSize <= 0 ? 0.0 : math.min(cornerSize, math.min(outlineWidth, outlineHeight) / 2);
     final List<PolyVertex> vertices;
-    if (cut > 0) {
-      vertices = notchedRectVertices(outlineWidth, outlineHeight, cut);
-    } else if (r > 0) {
-      vertices = [
-        PolyVertex(Vec2(r, 0)),
-        PolyVertex(Vec2(outlineWidth - r, 0), bulge: _bulge90),
-        PolyVertex(Vec2(outlineWidth, r)),
-        PolyVertex(Vec2(outlineWidth, outlineHeight - r), bulge: _bulge90),
-        PolyVertex(Vec2(outlineWidth - r, outlineHeight)),
-        PolyVertex(Vec2(r, outlineHeight), bulge: _bulge90),
-        PolyVertex(Vec2(0, outlineHeight - r)),
-        PolyVertex(Vec2(0, r), bulge: _bulge90),
-      ];
-    } else {
+    if (size <= 0) {
       vertices = [
         const PolyVertex(Vec2(0, 0)),
         PolyVertex(Vec2(outlineWidth, 0)),
         PolyVertex(Vec2(outlineWidth, outlineHeight)),
         PolyVertex(Vec2(0, outlineHeight)),
       ];
+    } else {
+      switch (cornerStyle) {
+        case TemplateMakerCornerStyle.cornerCut:
+          vertices = notchedRectVertices(outlineWidth, outlineHeight, size);
+          break;
+        case TemplateMakerCornerStyle.chamfer:
+          vertices = chamferedRectVertices(outlineWidth, outlineHeight, size);
+          break;
+        case TemplateMakerCornerStyle.fillet:
+          vertices = [
+            PolyVertex(Vec2(size, 0)),
+            PolyVertex(Vec2(outlineWidth - size, 0), bulge: _bulge90),
+            PolyVertex(Vec2(outlineWidth, size)),
+            PolyVertex(Vec2(outlineWidth, outlineHeight - size), bulge: _bulge90),
+            PolyVertex(Vec2(outlineWidth - size, outlineHeight)),
+            PolyVertex(Vec2(size, outlineHeight), bulge: _bulge90),
+            PolyVertex(Vec2(0, outlineHeight - size)),
+            PolyVertex(Vec2(0, size), bulge: _bulge90),
+          ];
+          break;
+      }
     }
     final entities = <DxfEntity>[
       DxfPolyline(vertices, closed: true),
@@ -309,22 +337,28 @@ class TemplateMakerController extends ChangeNotifier {
       outlineBox = BoundingBox.merge(outlineBox, e.boundingBox);
     }
 
-    cornerRadius = 0;
-    cornerCutSize = 0;
+    cornerStyle = TemplateMakerCornerStyle.fillet;
+    cornerSize = 0;
     if (outlineBox != null) {
       outlineWidth = outlineBox.width;
       outlineHeight = outlineBox.height;
-      // This tool's own filleted/notched outlines are always a single 8- or
-      // 12-vertex polyline in a fixed shape (see toTemplate) -- read the
-      // radius/cut size back off that shape when the outline is exactly one
-      // such polyline. A multi-piece outline has no single shape to inspect
-      // and just comes back in with sharp corners, which is correct there.
+      // This tool's own filleted/chamfered/notched outlines are always a
+      // single 8- or 12-vertex polyline in a fixed shape (see toTemplate) --
+      // read the style and size back off that shape when the outline is
+      // exactly one such polyline. A multi-piece outline has no single shape
+      // to inspect and just comes back in with sharp corners, which is
+      // correct there.
       if (outlineSource.length == 1 && outlineSource.first is DxfPolyline) {
         final verts = (outlineSource.first as DxfPolyline).vertices;
         if (verts.length == 8 && verts.any((v) => v.bulge != 0)) {
-          cornerRadius = verts.first.point.x.abs();
+          cornerStyle = TemplateMakerCornerStyle.fillet;
+          cornerSize = verts.first.point.x.abs();
+        } else if (verts.length == 8 && verts.every((v) => v.bulge == 0)) {
+          cornerStyle = TemplateMakerCornerStyle.chamfer;
+          cornerSize = verts.first.point.x.abs();
         } else if (verts.length == 12 && verts.every((v) => v.bulge == 0)) {
-          cornerCutSize = verts.first.point.x.abs();
+          cornerStyle = TemplateMakerCornerStyle.cornerCut;
+          cornerSize = verts.first.point.x.abs();
         }
       }
     }

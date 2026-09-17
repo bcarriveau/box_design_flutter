@@ -18,11 +18,12 @@ void main() {
     expect(outline.boundingBox.height, closeTo(50, 1e-9));
   });
 
-  test('a positive cornerRadius produces an 8-vertex filleted outline with the right bounding box', () {
+  test('a positive cornerSize with fillet style produces an 8-vertex filleted outline with the right bounding box', () {
     final controller = TemplateMakerController()
       ..setOutlineWidth(80)
       ..setOutlineHeight(50)
-      ..setCornerRadius(6);
+      ..setCornerStyle(TemplateMakerCornerStyle.fillet)
+      ..setCornerSize(6);
 
     final outline = controller.toTemplate().entities.first as DxfPolyline;
     expect(outline.vertices, hasLength(8));
@@ -33,38 +34,70 @@ void main() {
     expect(outline.boundingBox.height, closeTo(50, 0.05));
   });
 
-  test('cornerRadius is clamped so it can never exceed half the smaller side', () {
+  test('a positive cornerSize with chamfer style produces an 8-vertex chamfered outline with no bulge', () {
     final controller = TemplateMakerController()
       ..setOutlineWidth(80)
       ..setOutlineHeight(50)
-      ..setCornerRadius(1000);
+      ..setCornerStyle(TemplateMakerCornerStyle.chamfer)
+      ..setCornerSize(6);
+
+    final outline = controller.toTemplate().entities.first as DxfPolyline;
+    expect(outline.vertices, hasLength(8));
+    expect(outline.vertices.every((v) => v.bulge == 0), isTrue);
+    expect(outline.boundingBox.width, closeTo(80, 1e-9));
+    expect(outline.boundingBox.height, closeTo(50, 1e-9));
+  });
+
+  test('cornerSize is clamped so it can never exceed half the smaller side', () {
+    final controller = TemplateMakerController()
+      ..setOutlineWidth(80)
+      ..setOutlineHeight(50)
+      ..setCornerStyle(TemplateMakerCornerStyle.fillet)
+      ..setCornerSize(1000);
 
     final outline = controller.toTemplate().entities.first as DxfPolyline;
     // Half of the smaller side (50) is 25 -- the first vertex sits at (r, 0).
     expect(outline.vertices.first.point.x, closeTo(25, 1e-9));
   });
 
-  test('loadFromTemplate round-trips a filleted outline back to its corner radius', () {
+  test('loadFromTemplate round-trips a filleted outline back to its corner style and size', () {
     final original = TemplateMakerController()
       ..setOutlineWidth(80)
       ..setOutlineHeight(50)
-      ..setCornerRadius(6);
+      ..setCornerStyle(TemplateMakerCornerStyle.fillet)
+      ..setCornerSize(6);
     final template = original.toTemplate();
 
     final loaded = TemplateMakerController()..loadFromTemplate(template);
     expect(loaded.outlineWidth, closeTo(80, 1e-9));
     expect(loaded.outlineHeight, closeTo(50, 1e-9));
-    expect(loaded.cornerRadius, closeTo(6, 1e-9));
+    expect(loaded.cornerStyle, TemplateMakerCornerStyle.fillet);
+    expect(loaded.cornerSize, closeTo(6, 1e-9));
   });
 
-  test('loadFromTemplate reads back cornerRadius 0 for a plain rectangle', () {
+  test('loadFromTemplate round-trips a chamfered outline back to its corner style and size', () {
+    final original = TemplateMakerController()
+      ..setOutlineWidth(80)
+      ..setOutlineHeight(50)
+      ..setCornerStyle(TemplateMakerCornerStyle.chamfer)
+      ..setCornerSize(6);
+    final template = original.toTemplate();
+
+    final loaded = TemplateMakerController()..loadFromTemplate(template);
+    expect(loaded.outlineWidth, closeTo(80, 1e-9));
+    expect(loaded.outlineHeight, closeTo(50, 1e-9));
+    expect(loaded.cornerStyle, TemplateMakerCornerStyle.chamfer);
+    expect(loaded.cornerSize, closeTo(6, 1e-9));
+  });
+
+  test('loadFromTemplate reads back cornerSize 0 for a plain rectangle', () {
     final original = TemplateMakerController()
       ..setOutlineWidth(80)
       ..setOutlineHeight(50);
     final template = original.toTemplate();
 
     final loaded = TemplateMakerController()..loadFromTemplate(template);
-    expect(loaded.cornerRadius, 0);
+    expect(loaded.cornerSize, 0);
   });
 
   test('addQuickHolePattern places 4 round holes centered on the outline', () {
@@ -100,11 +133,12 @@ void main() {
     expect(template.entities.whereType<DxfCircle>(), hasLength(1));
   });
 
-  test('a positive cornerCutSize produces a 12-vertex notched outline with the right bounding box', () {
+  test('a positive cornerSize with cornerCut style produces a 12-vertex notched outline with the right bounding box', () {
     final controller = TemplateMakerController()
       ..setOutlineWidth(80)
       ..setOutlineHeight(50)
-      ..setCornerCutSize(8);
+      ..setCornerStyle(TemplateMakerCornerStyle.cornerCut)
+      ..setCornerSize(8);
 
     final outline = controller.toTemplate().entities.first as DxfPolyline;
     expect(outline.vertices, hasLength(12));
@@ -113,42 +147,44 @@ void main() {
     expect(outline.boundingBox.height, closeTo(50, 1e-9));
   });
 
-  test('cornerCutSize is clamped so it can never exceed half the smaller side', () {
+  test('cornerSize is clamped so it can never exceed half the smaller side (cornerCut style)', () {
     final controller = TemplateMakerController()
       ..setOutlineWidth(80)
       ..setOutlineHeight(50)
-      ..setCornerCutSize(1000);
+      ..setCornerStyle(TemplateMakerCornerStyle.cornerCut)
+      ..setCornerSize(1000);
 
     final outline = controller.toTemplate().entities.first as DxfPolyline;
     expect(outline.vertices.first.point.x, closeTo(25, 1e-9));
   });
 
-  test('cornerRadius and cornerCutSize are mutually exclusive', () {
+  test('changing cornerStyle swaps the outline shape produced for the same cornerSize', () {
     final controller = TemplateMakerController()
       ..setOutlineWidth(80)
       ..setOutlineHeight(50)
-      ..setCornerRadius(6);
-    expect(controller.cornerRadius, 6);
-    controller.setCornerCutSize(8);
-    expect(controller.cornerCutSize, 8);
-    expect(controller.cornerRadius, 0);
-    controller.setCornerRadius(5);
-    expect(controller.cornerRadius, 5);
-    expect(controller.cornerCutSize, 0);
+      ..setCornerStyle(TemplateMakerCornerStyle.fillet)
+      ..setCornerSize(6);
+    expect(controller.cornerStyle, TemplateMakerCornerStyle.fillet);
+    expect((controller.toTemplate().entities.first as DxfPolyline).vertices.any((v) => v.bulge != 0), isTrue);
+
+    controller.setCornerStyle(TemplateMakerCornerStyle.cornerCut);
+    expect(controller.cornerSize, 6);
+    expect((controller.toTemplate().entities.first as DxfPolyline).vertices, hasLength(12));
   });
 
   test('loadFromTemplate round-trips a notched outline back to its cut size', () {
     final original = TemplateMakerController()
       ..setOutlineWidth(80)
       ..setOutlineHeight(50)
-      ..setCornerCutSize(8);
+      ..setCornerStyle(TemplateMakerCornerStyle.cornerCut)
+      ..setCornerSize(8);
     final template = original.toTemplate();
 
     final loaded = TemplateMakerController()..loadFromTemplate(template);
     expect(loaded.outlineWidth, closeTo(80, 1e-9));
     expect(loaded.outlineHeight, closeTo(50, 1e-9));
-    expect(loaded.cornerCutSize, closeTo(8, 1e-9));
-    expect(loaded.cornerRadius, 0);
+    expect(loaded.cornerStyle, TemplateMakerCornerStyle.cornerCut);
+    expect(loaded.cornerSize, closeTo(8, 1e-9));
   });
 
   test('addSlot produces a closed stadium polyline with the right bounding box', () {
@@ -207,8 +243,7 @@ void main() {
     final loaded = TemplateMakerController()..loadFromTemplate(template);
     expect(loaded.outlineWidth, closeTo(148.6, 1e-6));
     expect(loaded.outlineHeight, closeTo(76.4, 1e-6));
-    expect(loaded.cornerRadius, 0);
-    expect(loaded.cornerCutSize, 0);
+    expect(loaded.cornerSize, 0);
     expect(loaded.holes, hasLength(4));
     for (final hole in loaded.holes) {
       expect(hole.diameter, closeTo(3.7, 1e-6));
