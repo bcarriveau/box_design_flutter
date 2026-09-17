@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.computergeek1523.box_design.box_design_flutter</id>
+  <!-- No LICENSE file exists in the repo yet; fill these in with the
+       project's actual SPDX license id once one is chosen. -->
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary</project_license>
+  <name>Box Design</name>
+  <summary>Lay out controller enclosures and export DXF/PDF/STL</summary>
+  <description>
+    <p>
+      Box Design is a tool for laying out controller enclosures. Pick a box,
+      drag controller boards and power supplies onto it, add screw holes and
+      zip-tie slots, then export the result as DXF (for CNC/laser cutting),
+      PDF (1:1 scale reference/print), or an STL/3MF solid plate for 3D
+      printing.
+    </p>
+  </description>
+  <launchable type="desktop-id">com.computergeek1523.box_design.box_design_flutter.desktop</launchable>
+  <url type="homepage">https://github.com/computergeek1507/box_design_flutter</url>
+  <content_rating type="oars-1.1" />
+</component>

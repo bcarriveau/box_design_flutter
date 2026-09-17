@@ -1,0 +1,60 @@
+app-id: com.computergeek1523.box_design.box_design_flutter
+runtime: org.gnome.Platform
+runtime-version: '46'
+sdk: org.gnome.Sdk
+command: box_design_flutter
+
+# This manifest is for building locally / in your own CI, not for a Flathub
+# submission: the build needs network access to fetch the Flutter SDK and
+# pub packages (Flathub's sandboxed build environment disallows that; a
+# Flathub-ready manifest would need all Dart/Flutter deps vendored offline
+# via a generator script and the Freedesktop Flutter BaseApp instead).
+build-options:
+  build-args:
+    - --share=network
+
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  # The app checks GitHub for template updates at runtime (see README) and
+  # file_picker's GTK dialog isn't portal-based, so it needs broad
+  # filesystem access to open/save files anywhere on the host.
+  - --share=network
+  - --filesystem=host
+
+modules:
+  - name: box_design_flutter
+    buildsystem: simple
+    build-commands:
+      - tar xf flutter_linux_3.47.4-stable.tar.xz
+      - >-
+        export PATH="$PWD/flutter/bin:$PATH" &&
+        flutter config --no-analytics --enable-linux-desktop &&
+        flutter pub get &&
+        flutter build linux --release
+      - install -d /app/box_design_flutter
+      - cp -r build/linux/x64/release/bundle/. /app/box_design_flutter/
+      - install -Dm755 box_design_flutter-wrapper.sh /app/bin/box_design_flutter
+      - install -Dm644 com.computergeek1523.box_design.box_design_flutter.desktop
+        /app/share/applications/com.computergeek1523.box_design.box_design_flutter.desktop
+      - install -Dm644 com.computergeek1523.box_design.box_design_flutter.metainfo.xml
+        /app/share/metainfo/com.computergeek1523.box_design.box_design_flutter.metainfo.xml
+      - install -Dm644 com.computergeek1523.box_design.box_design_flutter.png
+        /app/share/icons/hicolor/512x512/apps/com.computergeek1523.box_design.box_design_flutter.png
+    sources:
+      - type: archive
+        url: https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.47.4-stable.tar.xz
+        sha256: 5b45f0ceda99b9bebdc873e7e69f6450aeb4c30f454b505e2e62fc9255a907d3
+      - type: git
+        url: https://github.com/computergeek1507/box_design_flutter.git
+        branch: main
+      - type: file
+        path: box_design_flutter-wrapper.sh
+      - type: file
+        path: com.computergeek1523.box_design.box_design_flutter.desktop
+      - type: file
+        path: com.computergeek1523.box_design.box_design_flutter.metainfo.xml
+      - type: file
+        path: com.computergeek1523.box_design.box_design_flutter.png

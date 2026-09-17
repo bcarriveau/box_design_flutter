@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Box Design
+Comment=Lay out controller enclosures: place boards, add holes, export DXF/PDF/STL
+Exec=box_design_flutter
+Icon=com.computergeek1523.box_design.box_design_flutter
+Terminal=false
+Categories=Graphics;Engineering;
+StartupWMClass=com.computergeek1523.box_design.box_design_flutter
