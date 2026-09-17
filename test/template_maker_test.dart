@@ -67,6 +67,27 @@ void main() {
     expect(loaded.cornerRadius, 0);
   });
 
+  test('addQuickHolePattern places 4 round holes centered on the outline', () {
+    final controller = TemplateMakerController()
+      ..setOutlineWidth(100)
+      ..setOutlineHeight(60)
+      ..addQuickHolePattern(horizontalSpacing: 80, verticalSpacing: 40, diameter: 3.2);
+
+    expect(controller.holes, hasLength(4));
+    final positions = controller.holes.map((h) => (h.x, h.y)).toSet();
+    expect(
+      positions,
+      {
+        (10.0, 10.0),
+        (10.0, 50.0),
+        (90.0, 10.0),
+        (90.0, 50.0),
+      },
+    );
+    expect(controller.holes.every((h) => h.diameter == 3.2), isTrue);
+    expect(controller.holes.every((h) => h.shape == TemplateMakerHoleShape.round), isTrue);
+  });
+
   test('toTemplate carries category and holes through unchanged', () {
     final controller = TemplateMakerController()
       ..setOutlineWidth(80)

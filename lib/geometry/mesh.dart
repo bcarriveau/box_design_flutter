@@ -24,6 +24,39 @@ class Mesh {
   const Mesh(this.vertices, this.triangles);
 }
 
+bool _pointInPolygon(Vec2 p, List<Vec2> poly) {
+  var inside = false;
+  for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    final a = poly[i];
+    final b = poly[j];
+    if ((a.y > p.y) != (b.y > p.y) && p.x < (b.x - a.x) * (p.y - a.y) / (b.y - a.y) + a.x) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
+/// Drops every hole that sits entirely inside a strictly larger one (e.g. a
+/// box template's own small baked-in mounting hole landing inside a big
+/// user-drawn slot) -- cutting it would be redundant, since the larger hole
+/// already removes that material, and [mergeHolesIntoOuter] assumes holes
+/// don't overlap: bridging a nested hole to the boundary of the hole that
+/// contains it produces a self-intersecting polygon, corrupting the mesh.
+/// Comparing against strictly larger area (not just "contains") means two
+/// holes can never drop each other, even if identical.
+List<List<Vec2>> _dropNestedHoles(List<List<Vec2>> holesCcw) {
+  final areas = [for (final h in holesCcw) signedArea(h).abs()];
+  final kept = <List<Vec2>>[];
+  for (var i = 0; i < holesCcw.length; i++) {
+    final hole = holesCcw[i];
+    final containedInLarger = Iterable<int>.generate(holesCcw.length).any(
+      (j) => j != i && areas[j] > areas[i] && hole.every((p) => _pointInPolygon(p, holesCcw[j])),
+    );
+    if (!containedInLarger) kept.add(hole);
+  }
+  return kept;
+}
+
 /// Extrudes a flat [outer] boundary (with [holes] cut all the way through)
 /// into a solid plate of [thickness] mm, for 3D printing. Coordinates are
 /// mm; the result sits between z=0 and z=thickness.
@@ -35,10 +68,10 @@ Mesh extrudePlate({
   var outerCcw = List<Vec2>.from(outer);
   if (signedArea(outerCcw) < 0) outerCcw = outerCcw.reversed.toList();
 
-  final holesCcw = [
+  final holesCcw = _dropNestedHoles([
     for (final h in holes)
       if (h.length >= 3) (signedArea(h) < 0 ? h.reversed.toList() : List<Vec2>.from(h)),
-  ];
+  ]);
 
   final mergeResult = mergeHolesIntoOuter(outerCcw, holesCcw);
   final merged = mergeResult.polygon;

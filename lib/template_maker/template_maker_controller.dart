@@ -151,6 +151,33 @@ class TemplateMakerController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Adds a standard 4-hole rectangular mounting pattern -- one hole at each
+  /// corner of a [horizontalSpacing] x [verticalSpacing] rectangle centered
+  /// on the outline's own centerline, matching how a real board's 4-corner
+  /// mounting holes are usually specified (center-to-center spacing, not
+  /// absolute position).
+  void addQuickHolePattern({
+    required double horizontalSpacing,
+    required double verticalSpacing,
+    double diameter = 4,
+  }) {
+    final cx = outlineWidth / 2;
+    final cy = outlineHeight / 2;
+    final hx = horizontalSpacing / 2;
+    final hy = verticalSpacing / 2;
+    for (final dx in [-hx, hx]) {
+      for (final dy in [-hy, hy]) {
+        holes.add(TemplateMakerHole(
+          id: 'hole${_nextHoleSeq++}',
+          x: cx + dx,
+          y: cy + dy,
+          diameter: diameter,
+        ));
+      }
+    }
+    notifyListeners();
+  }
+
   void removeHole(String holeId) {
     holes.removeWhere((h) => h.id == holeId);
     notifyListeners();

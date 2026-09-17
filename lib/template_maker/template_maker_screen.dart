@@ -7,6 +7,7 @@ import '../dxf/dxf_parser.dart';
 import '../models/controller_template.dart';
 import '../models/vec2.dart';
 import '../services/file_io.dart';
+import '../services/simple_math.dart';
 import '../services/template_library.dart';
 import 'template_maker_controller.dart';
 import 'template_outline_painter.dart';
@@ -40,6 +41,10 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   late final _heightController = TextEditingController(text: _fmt(_controller.outlineHeight));
   late final _cornerRadiusController = TextEditingController(text: _fmt(_controller.cornerRadius));
   late final _cornerCutController = TextEditingController(text: _fmt(_controller.cornerCutSize));
+  final _widthFocus = FocusNode();
+  final _heightFocus = FocusNode();
+  final _cornerRadiusFocus = FocusNode();
+  final _cornerCutFocus = FocusNode();
 
   final Map<String, TextEditingController> _holeX = {};
   final Map<String, TextEditingController> _holeY = {};
@@ -47,6 +52,27 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   final Map<String, TextEditingController> _holeLen = {};
   final Map<String, TextEditingController> _holeWidth = {};
   final Map<String, TextEditingController> _holeRotation = {};
+  final Map<String, FocusNode> _holeXFocus = {};
+  final Map<String, FocusNode> _holeYFocus = {};
+  final Map<String, FocusNode> _holeDFocus = {};
+  final Map<String, FocusNode> _holeLenFocus = {};
+  final Map<String, FocusNode> _holeWidthFocus = {};
+  final Map<String, FocusNode> _holeRotationFocus = {};
+
+  /// Re-parses [controller]'s current text as a (possibly math-expression)
+  /// number and, if valid, applies it via [onCommit] and rewrites the field
+  /// to show the plain computed result -- so typing "55-23" and pressing
+  /// Enter or clicking away leaves "32.0" in the field instead of the raw
+  /// expression. Invalid/incomplete text is left alone (the model already
+  /// holds whatever the last valid keystroke committed via onChanged).
+  void _commitMathField(TextEditingController controller, void Function(double value) onCommit) {
+    final value = tryEvalMath(controller.text);
+    if (value == null) return;
+    setState(() {
+      onCommit(value);
+      controller.text = _fmt(value);
+    });
+  }
 
   String _fmt(double v) => v.toStringAsFixed(1);
 
@@ -63,6 +89,10 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     _heightController.dispose();
     _cornerRadiusController.dispose();
     _cornerCutController.dispose();
+    _widthFocus.dispose();
+    _heightFocus.dispose();
+    _cornerRadiusFocus.dispose();
+    _cornerCutFocus.dispose();
     for (final c in [
       ..._holeX.values,
       ..._holeY.values,
@@ -72,6 +102,16 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
       ..._holeRotation.values,
     ]) {
       c.dispose();
+    }
+    for (final f in [
+      ..._holeXFocus.values,
+      ..._holeYFocus.values,
+      ..._holeDFocus.values,
+      ..._holeLenFocus.values,
+      ..._holeWidthFocus.values,
+      ..._holeRotationFocus.values,
+    ]) {
+      f.dispose();
     }
     super.dispose();
   }
@@ -85,6 +125,13 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
         return stale;
       });
     }
+    for (final map in [_holeXFocus, _holeYFocus, _holeDFocus, _holeLenFocus, _holeWidthFocus, _holeRotationFocus]) {
+      map.removeWhere((id, f) {
+        final stale = !liveIds.contains(id);
+        if (stale) f.dispose();
+        return stale;
+      });
+    }
     for (final h in _controller.holes) {
       _holeX.putIfAbsent(h.id, () => TextEditingController(text: _fmt(h.x)));
       _holeY.putIfAbsent(h.id, () => TextEditingController(text: _fmt(h.y)));
@@ -92,6 +139,12 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
       _holeLen.putIfAbsent(h.id, () => TextEditingController(text: _fmt(h.slotLength)));
       _holeWidth.putIfAbsent(h.id, () => TextEditingController(text: _fmt(h.slotWidth)));
       _holeRotation.putIfAbsent(h.id, () => TextEditingController(text: _fmt(h.rotationDeg)));
+      _holeXFocus.putIfAbsent(h.id, () => FocusNode());
+      _holeYFocus.putIfAbsent(h.id, () => FocusNode());
+      _holeDFocus.putIfAbsent(h.id, () => FocusNode());
+      _holeLenFocus.putIfAbsent(h.id, () => FocusNode());
+      _holeWidthFocus.putIfAbsent(h.id, () => FocusNode());
+      _holeRotationFocus.putIfAbsent(h.id, () => FocusNode());
     }
   }
 
@@ -266,6 +319,75 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     setState(() => _controller.removeHole(id));
   }
 
+  Future<void> _showQuickHoleDialog() async {
+    final hCtrl = TextEditingController();
+    final vCtrl = TextEditingController();
+    final dCtrl = TextEditingController(text: '4');
+    try {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('Quick 4-Hole Pattern'),
+          content: SizedBox(
+            width: 280,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text('Places 4 round holes centered on the outline\'s centerline.'),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: hCtrl,
+                  autofocus: true,
+                  decoration: const InputDecoration(labelText: 'Horizontal spacing (mm)', isDense: true, border: OutlineInputBorder()),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: vCtrl,
+                  decoration: const InputDecoration(labelText: 'Vertical spacing (mm)', isDense: true, border: OutlineInputBorder()),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: dCtrl,
+                  decoration: const InputDecoration(labelText: 'Hole diameter (mm)', isDense: true, border: OutlineInputBorder()),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Cancel')),
+            FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('Add')),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+
+      final h = tryEvalMath(hCtrl.text);
+      final v = tryEvalMath(vCtrl.text);
+      final d = tryEvalMath(dCtrl.text);
+      if (h == null || v == null || h <= 0 || v <= 0) {
+        _snack('Enter a positive horizontal and vertical spacing.');
+        return;
+      }
+      setState(() {
+        _controller.addQuickHolePattern(
+          horizontalSpacing: h,
+          verticalSpacing: v,
+          diameter: (d != null && d > 0) ? d : 4,
+        );
+        _syncHoleControllers();
+        _refreshTopFields();
+      });
+    } finally {
+      hCtrl.dispose();
+      vCtrl.dispose();
+      dCtrl.dispose();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     _syncHoleControllers();
@@ -326,11 +448,18 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                     Expanded(
                       child: TextField(
                         controller: _widthController,
+                        focusNode: _widthFocus,
                         decoration: const InputDecoration(labelText: 'Width (mm)', isDense: true, border: OutlineInputBorder()),
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         onChanged: (v) {
-                          final parsed = double.tryParse(v);
+                          final parsed = tryEvalMath(v);
                           if (parsed != null) setState(() => _controller.setOutlineWidth(parsed));
+                        },
+                        onSubmitted: (_) => _commitMathField(_widthController, _controller.setOutlineWidth),
+                        onEditingComplete: () => _commitMathField(_widthController, _controller.setOutlineWidth),
+                        onTapOutside: (_) {
+                          _commitMathField(_widthController, _controller.setOutlineWidth);
+                          _widthFocus.unfocus();
                         },
                       ),
                     ),
@@ -338,11 +467,18 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                     Expanded(
                       child: TextField(
                         controller: _heightController,
+                        focusNode: _heightFocus,
                         decoration: const InputDecoration(labelText: 'Height (mm)', isDense: true, border: OutlineInputBorder()),
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         onChanged: (v) {
-                          final parsed = double.tryParse(v);
+                          final parsed = tryEvalMath(v);
                           if (parsed != null) setState(() => _controller.setOutlineHeight(parsed));
+                        },
+                        onSubmitted: (_) => _commitMathField(_heightController, _controller.setOutlineHeight),
+                        onEditingComplete: () => _commitMathField(_heightController, _controller.setOutlineHeight),
+                        onTapOutside: (_) {
+                          _commitMathField(_heightController, _controller.setOutlineHeight);
+                          _heightFocus.unfocus();
                         },
                       ),
                     ),
@@ -354,10 +490,11 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                     Expanded(
                       child: TextField(
                         controller: _cornerRadiusController,
+                        focusNode: _cornerRadiusFocus,
                         decoration: const InputDecoration(labelText: 'Corner radius (mm)', isDense: true, border: OutlineInputBorder()),
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         onChanged: (v) {
-                          final parsed = double.tryParse(v);
+                          final parsed = tryEvalMath(v);
                           if (parsed != null) {
                             setState(() {
                               _controller.setCornerRadius(parsed);
@@ -365,22 +502,53 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                             });
                           }
                         },
+                        onSubmitted: (_) => _commitMathField(_cornerRadiusController, (v) {
+                          _controller.setCornerRadius(v);
+                          _refreshTopFields();
+                        }),
+                        onEditingComplete: () => _commitMathField(_cornerRadiusController, (v) {
+                          _controller.setCornerRadius(v);
+                          _refreshTopFields();
+                        }),
+                        onTapOutside: (_) {
+                          _commitMathField(_cornerRadiusController, (v) {
+                            _controller.setCornerRadius(v);
+                            _refreshTopFields();
+                          });
+                          _cornerRadiusFocus.unfocus();
+                        },
                       ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: TextField(
                         controller: _cornerCutController,
+                        focusNode: _cornerCutFocus,
                         decoration: const InputDecoration(labelText: 'Corner cut (mm)', isDense: true, border: OutlineInputBorder()),
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         onChanged: (v) {
-                          final parsed = double.tryParse(v);
+                          final parsed = tryEvalMath(v);
                           if (parsed != null) {
                             setState(() {
                               _controller.setCornerCutSize(parsed);
                               _refreshTopFields();
                             });
                           }
+                        },
+                        onSubmitted: (_) => _commitMathField(_cornerCutController, (v) {
+                          _controller.setCornerCutSize(v);
+                          _refreshTopFields();
+                        }),
+                        onEditingComplete: () => _commitMathField(_cornerCutController, (v) {
+                          _controller.setCornerCutSize(v);
+                          _refreshTopFields();
+                        }),
+                        onTapOutside: (_) {
+                          _commitMathField(_cornerCutController, (v) {
+                            _controller.setCornerCutSize(v);
+                            _refreshTopFields();
+                          });
+                          _cornerCutFocus.unfocus();
                         },
                       ),
                     ),
@@ -395,6 +563,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                       children: [
                         IconButton(onPressed: _addHole, icon: const Icon(Icons.add_circle_outline), tooltip: 'Add round hole'),
                         IconButton(onPressed: _addSlot, icon: const Icon(Icons.crop_7_5), tooltip: 'Add slot'),
+                        IconButton(onPressed: _showQuickHoleDialog, icon: const Icon(Icons.grid_4x4), tooltip: 'Quick 4-hole pattern'),
                       ],
                     ),
                   ],
@@ -473,11 +642,18 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
               Expanded(
                 child: TextField(
                   controller: _holeX[holeId],
+                  focusNode: _holeXFocus[holeId],
                   decoration: const InputDecoration(labelText: 'X', isDense: true, border: OutlineInputBorder()),
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   onChanged: (v) {
-                    final parsed = double.tryParse(v);
+                    final parsed = tryEvalMath(v);
                     if (parsed != null) setState(() => _controller.updateHole(holeId, x: parsed));
+                  },
+                  onSubmitted: (_) => _commitMathField(_holeX[holeId]!, (v) => _controller.updateHole(holeId, x: v)),
+                  onEditingComplete: () => _commitMathField(_holeX[holeId]!, (v) => _controller.updateHole(holeId, x: v)),
+                  onTapOutside: (_) {
+                    _commitMathField(_holeX[holeId]!, (v) => _controller.updateHole(holeId, x: v));
+                    _holeXFocus[holeId]?.unfocus();
                   },
                 ),
               ),
@@ -485,11 +661,18 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
               Expanded(
                 child: TextField(
                   controller: _holeY[holeId],
+                  focusNode: _holeYFocus[holeId],
                   decoration: const InputDecoration(labelText: 'Y', isDense: true, border: OutlineInputBorder()),
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   onChanged: (v) {
-                    final parsed = double.tryParse(v);
+                    final parsed = tryEvalMath(v);
                     if (parsed != null) setState(() => _controller.updateHole(holeId, y: parsed));
+                  },
+                  onSubmitted: (_) => _commitMathField(_holeY[holeId]!, (v) => _controller.updateHole(holeId, y: v)),
+                  onEditingComplete: () => _commitMathField(_holeY[holeId]!, (v) => _controller.updateHole(holeId, y: v)),
+                  onTapOutside: (_) {
+                    _commitMathField(_holeY[holeId]!, (v) => _controller.updateHole(holeId, y: v));
+                    _holeYFocus[holeId]?.unfocus();
                   },
                 ),
               ),
@@ -498,11 +681,18 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                 Expanded(
                   child: TextField(
                     controller: _holeD[holeId],
+                    focusNode: _holeDFocus[holeId],
                     decoration: const InputDecoration(labelText: 'Dia', isDense: true, border: OutlineInputBorder()),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     onChanged: (v) {
-                      final parsed = double.tryParse(v);
+                      final parsed = tryEvalMath(v);
                       if (parsed != null) setState(() => _controller.updateHole(holeId, diameter: parsed));
+                    },
+                    onSubmitted: (_) => _commitMathField(_holeD[holeId]!, (v) => _controller.updateHole(holeId, diameter: v)),
+                    onEditingComplete: () => _commitMathField(_holeD[holeId]!, (v) => _controller.updateHole(holeId, diameter: v)),
+                    onTapOutside: (_) {
+                      _commitMathField(_holeD[holeId]!, (v) => _controller.updateHole(holeId, diameter: v));
+                      _holeDFocus[holeId]?.unfocus();
                     },
                   ),
                 ),
@@ -515,11 +705,18 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                 Expanded(
                   child: TextField(
                     controller: _holeLen[holeId],
+                    focusNode: _holeLenFocus[holeId],
                     decoration: const InputDecoration(labelText: 'Length', isDense: true, border: OutlineInputBorder()),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     onChanged: (v) {
-                      final parsed = double.tryParse(v);
+                      final parsed = tryEvalMath(v);
                       if (parsed != null) setState(() => _controller.updateHole(holeId, slotLength: parsed));
+                    },
+                    onSubmitted: (_) => _commitMathField(_holeLen[holeId]!, (v) => _controller.updateHole(holeId, slotLength: v)),
+                    onEditingComplete: () => _commitMathField(_holeLen[holeId]!, (v) => _controller.updateHole(holeId, slotLength: v)),
+                    onTapOutside: (_) {
+                      _commitMathField(_holeLen[holeId]!, (v) => _controller.updateHole(holeId, slotLength: v));
+                      _holeLenFocus[holeId]?.unfocus();
                     },
                   ),
                 ),
@@ -527,11 +724,18 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                 Expanded(
                   child: TextField(
                     controller: _holeWidth[holeId],
+                    focusNode: _holeWidthFocus[holeId],
                     decoration: const InputDecoration(labelText: 'Width', isDense: true, border: OutlineInputBorder()),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                     onChanged: (v) {
-                      final parsed = double.tryParse(v);
+                      final parsed = tryEvalMath(v);
                       if (parsed != null) setState(() => _controller.updateHole(holeId, slotWidth: parsed));
+                    },
+                    onSubmitted: (_) => _commitMathField(_holeWidth[holeId]!, (v) => _controller.updateHole(holeId, slotWidth: v)),
+                    onEditingComplete: () => _commitMathField(_holeWidth[holeId]!, (v) => _controller.updateHole(holeId, slotWidth: v)),
+                    onTapOutside: (_) {
+                      _commitMathField(_holeWidth[holeId]!, (v) => _controller.updateHole(holeId, slotWidth: v));
+                      _holeWidthFocus[holeId]?.unfocus();
                     },
                   ),
                 ),
@@ -539,11 +743,18 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                 Expanded(
                   child: TextField(
                     controller: _holeRotation[holeId],
+                    focusNode: _holeRotationFocus[holeId],
                     decoration: const InputDecoration(labelText: 'Rotation°', isDense: true, border: OutlineInputBorder()),
                     keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
                     onChanged: (v) {
-                      final parsed = double.tryParse(v);
+                      final parsed = tryEvalMath(v);
                       if (parsed != null) setState(() => _controller.updateHole(holeId, rotationDeg: parsed));
+                    },
+                    onSubmitted: (_) => _commitMathField(_holeRotation[holeId]!, (v) => _controller.updateHole(holeId, rotationDeg: v)),
+                    onEditingComplete: () => _commitMathField(_holeRotation[holeId]!, (v) => _controller.updateHole(holeId, rotationDeg: v)),
+                    onTapOutside: (_) {
+                      _commitMathField(_holeRotation[holeId]!, (v) => _controller.updateHole(holeId, rotationDeg: v));
+                      _holeRotationFocus[holeId]?.unfocus();
                     },
                   ),
                 ),

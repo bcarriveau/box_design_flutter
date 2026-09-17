@@ -134,6 +134,39 @@ void main() {
       _expectManifold(mesh);
     });
 
+    test('a small hole fully inside a larger one is dropped instead of corrupting the mesh', () {
+      // Regression test: a box template's own small baked-in mounting hole
+      // landing inside a big user-drawn slot used to make mergeHolesIntoOuter
+      // bridge the nested hole to the boundary of the hole containing it,
+      // producing a self-intersecting polygon (a corrupt STL).
+      final mesh = extrudePlate(
+        outer: _rect(30, 30),
+        holes: [
+          _circle(const Vec2(15, 15), 10, segments: 32), // the big slot/hole
+          _circle(const Vec2(15, 15), 2, segments: 24), // fully inside it
+        ],
+        thickness: 3,
+      );
+      _expectManifold(mesh);
+      // Only the big hole's area should be missing -- the nested one
+      // contributes nothing extra since it's already inside it.
+      final topFaceTris = mesh.triangles.where((t) => mesh.vertices[t[0]].z == 3).toList();
+      final area = _sumTriangleAreas(mesh.vertices.map((v) => Vec2(v.x, v.y)).toList(), topFaceTris);
+      expect(area, closeTo(900 - math.pi * 100, 2.5));
+    });
+
+    test('two identical holes at the same spot are both kept (never mutually dropped)', () {
+      // Same-area holes can never satisfy the *strictly* larger check, so a
+      // duplicate hole doesn't disappear -- only a genuinely nested, smaller
+      // one does.
+      final holes = [
+        _circle(const Vec2(5, 5), 2, segments: 24),
+        _circle(const Vec2(5, 5), 2, segments: 24),
+      ];
+      final mesh = extrudePlate(outer: _rect(10, 10), holes: holes, thickness: 3);
+      _expectManifold(mesh);
+    });
+
     test('produces a watertight mesh for a plate with no holes', () {
       final mesh = extrudePlate(outer: _rect(10, 10), holes: const [], thickness: 3);
       _expectManifold(mesh);
