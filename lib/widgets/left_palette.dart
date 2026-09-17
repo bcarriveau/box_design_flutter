@@ -45,20 +45,7 @@ class LeftPalette extends StatefulWidget {
 }
 
 class _LeftPaletteState extends State<LeftPalette> {
-  TemplateCategory _importCategory = TemplateCategory.controller;
   String _filter = '';
-
-  Future<void> _importDxf() async {
-    final picked = await pickFile(allowedExtensions: ['dxf'], dialogTitle: 'Import DXF Template');
-    if (picked == null) return;
-    final name = picked.name.replaceAll(RegExp(r'\.dxf$', caseSensitive: false), '');
-    widget.library.importDxf(
-      'imported-${DateTime.now().millisecondsSinceEpoch}',
-      name,
-      utf8.decode(picked.bytes),
-      _importCategory,
-    );
-  }
 
   Future<void> _importJson() async {
     final picked = await pickFile(allowedExtensions: ['json'], dialogTitle: 'Import Template JSON');
@@ -101,24 +88,6 @@ class _LeftPaletteState extends State<LeftPalette> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _filterField(),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<TemplateCategory>(
-                    initialValue: _importCategory,
-                    isDense: true,
-                    isExpanded: true,
-                    decoration: const InputDecoration(labelText: 'Import as', isDense: true, border: OutlineInputBorder()),
-                    items: const [
-                      DropdownMenuItem(value: TemplateCategory.box, child: Text('Box')),
-                      DropdownMenuItem(value: TemplateCategory.controller, child: Text('Controller')),
-                      DropdownMenuItem(value: TemplateCategory.controllerAddon, child: Text('Controller Add-on')),
-                      DropdownMenuItem(value: TemplateCategory.receiver, child: Text('Receiver')),
-                      DropdownMenuItem(value: TemplateCategory.powerSupply, child: Text('Power Supply')),
-                      DropdownMenuItem(value: TemplateCategory.powerDistribution, child: Text('Power Distribution')),
-                    ],
-                    onChanged: (v) => setState(() => _importCategory = v ?? TemplateCategory.controller),
-                  ),
-                  const SizedBox(height: 8),
-                  OutlinedButton(onPressed: _importDxf, child: const Text('Import DXF Template')),
                   const SizedBox(height: 8),
                   OutlinedButton(onPressed: _importJson, child: const Text('Import JSON Template')),
                 ],
