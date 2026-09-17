@@ -4,6 +4,15 @@ A tool for laying out controller enclosures (Web + Windows/Linux/macOS): pick a 
 
 **Try it live: [computergeek1507.github.io/box_design_flutter](https://computergeek1507.github.io/box_design_flutter/)**
 
+## Download (Windows)
+
+Grab a build from the [Releases page](https://github.com/computergeek1507/box_design_flutter/releases):
+
+- A **versioned release** (e.g. `v1.2.0`) is a stable tagged build — pick the installer (`.exe`, installs normally and adds a Start Menu shortcut) or the portable zip (`BoxDesign-portable-*.zip`, just extract and run, no install).
+- The **[`rolling`](https://github.com/computergeek1507/box_design_flutter/releases/tag/rolling)** pre-release is rebuilt automatically from the latest `main` on every push, so it always has the newest changes but isn't guaranteed stable.
+
+Both are built by [`.github/workflows/windows-installer.yml`](.github/workflows/windows-installer.yml).
+
 ## Features
 
 - **Box templates**: pick an enclosure from the palette; the canvas resizes to fit it.
@@ -32,6 +41,8 @@ flutter run -d chrome    # or: -d windows / -d linux / -d macos
 flutter test
 flutter analyze
 ```
+
+## Scripts
 
 `tool/gen_placeholder_templates.dart` regenerates the bundled placeholder templates under `assets/templates/`.
 
