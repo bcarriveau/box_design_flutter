@@ -47,9 +47,10 @@ jobs:
         with:
           files: BoxDesign-*.flatpak
 
-      # Mirrors windows-installer.yml's rolling release: the windows workflow
-      # is responsible for moving the "rolling" tag itself, so this just
-      # attaches the flatpak bundle to whatever release already exists there.
+      # Mirrors windows-installer.yml's rolling release (main pushes only --
+      # tag pushes go solely to their versioned release). The windows
+      # workflow is responsible for moving the "rolling" tag itself, so this
+      # just attaches the flatpak bundle to whatever release already exists.
       - name: Publish rolling release
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
