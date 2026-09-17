@@ -68,6 +68,10 @@
     "file": "falcon_f48_v4_controller.json"
   },
   {
+    "id": "falcon_f8_distro",
+    "file": "falcon_f8_distro.json"
+  },
+  {
     "id": "falcon_srx2_receiver",
     "file": "falcon_srx2_receiver.json"
   },
@@ -130,6 +134,10 @@
   {
     "id": "holidaycoro_flex_spi",
     "file": "holidaycoro_flex_spi.json"
+  },
+  {
+    "id": "jboard_8_port",
+    "file": "jboard_8_port.json"
   },
   {
     "id": "kulp_k16_v2",

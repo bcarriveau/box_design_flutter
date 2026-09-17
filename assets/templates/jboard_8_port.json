@@ -1,0 +1,65 @@
+{
+  "id": "jboard_8_port",
+  "name": "JBoard 8 Port",
+  "category": "powerDistribution",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 88.6,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 88.6,
+          "y": 51.6,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 51.6,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 6.0,
+        "y": 6.0
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 82.6,
+        "y": 6.0
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 6.0,
+        "y": 45.6
+      },
+      "radius": 2.0
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 82.6,
+        "y": 45.6
+      },
+      "radius": 2.0
+    }
+  ]
+}

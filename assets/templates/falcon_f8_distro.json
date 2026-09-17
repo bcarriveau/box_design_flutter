@@ -1,0 +1,65 @@
+{
+  "id": "falcon_f8_distro",
+  "name": "Falcon F8 Distro",
+  "category": "powerDistribution",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 94.4,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 94.4,
+          "y": 55.95,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 55.95,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 6.0,
+        "y": 12.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 88.4,
+        "y": 12.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 6.0,
+        "y": 49.95
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 88.4,
+        "y": 49.95
+      },
+      "radius": 1.5
+    }
+  ]
+}
