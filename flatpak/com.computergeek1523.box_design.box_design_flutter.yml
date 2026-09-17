@@ -30,11 +30,12 @@ modules:
     build-commands:
       - >-
         export PATH="$PWD/flutter/bin:$PATH" &&
+        cd src &&
         flutter config --no-analytics --enable-linux-desktop &&
         flutter pub get &&
         flutter build linux --release
       - install -d /app/box_design_flutter
-      - cp -r build/linux/x64/release/bundle/. /app/box_design_flutter/
+      - cp -r src/build/linux/x64/release/bundle/. /app/box_design_flutter/
       - install -Dm755 box_design_flutter-wrapper.sh /app/bin/box_design_flutter
       - install -Dm644 com.computergeek1523.box_design.box_design_flutter.desktop
         /app/share/applications/com.computergeek1523.box_design.box_design_flutter.desktop
@@ -49,6 +50,7 @@ modules:
       - type: git
         url: https://github.com/computergeek1507/box_design_flutter.git
         branch: main
+        dest: src
       - type: file
         path: box_design_flutter-wrapper.sh
       - type: file
