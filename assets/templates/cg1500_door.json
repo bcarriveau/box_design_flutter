@@ -50,36 +50,108 @@
       ]
     },
     {
-      "type": "circle",
-      "center": {
-        "x": 5.0,
-        "y": 5.0
-      },
-      "radius": 2.5
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 9.0,
+          "y": 2.5,
+          "bulge": 1.0
+        },
+        {
+          "x": 9.0,
+          "y": 7.5,
+          "bulge": 0.0
+        },
+        {
+          "x": 5.0,
+          "y": 7.5,
+          "bulge": 1.0
+        },
+        {
+          "x": 5.0,
+          "y": 2.5,
+          "bulge": 0.0
+        }
+      ]
     },
     {
-      "type": "circle",
-      "center": {
-        "x": 5.0,
-        "y": 205.0
-      },
-      "radius": 2.5
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 9.0,
+          "y": 202.5,
+          "bulge": 1.0
+        },
+        {
+          "x": 9.0,
+          "y": 207.5,
+          "bulge": 0.0
+        },
+        {
+          "x": 5.0,
+          "y": 207.5,
+          "bulge": 1.0
+        },
+        {
+          "x": 5.0,
+          "y": 202.5,
+          "bulge": 0.0
+        }
+      ]
     },
     {
-      "type": "circle",
-      "center": {
-        "x": 215.0,
-        "y": 5.0
-      },
-      "radius": 2.5
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 215.0,
+          "y": 2.5,
+          "bulge": 1.0
+        },
+        {
+          "x": 215.0,
+          "y": 7.5,
+          "bulge": 0.0
+        },
+        {
+          "x": 211.0,
+          "y": 7.5,
+          "bulge": 1.0
+        },
+        {
+          "x": 211.0,
+          "y": 2.5,
+          "bulge": 0.0
+        }
+      ]
     },
     {
-      "type": "circle",
-      "center": {
-        "x": 215.0,
-        "y": 205.0
-      },
-      "radius": 2.5
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 215.0,
+          "y": 202.5,
+          "bulge": 1.0
+        },
+        {
+          "x": 215.0,
+          "y": 207.5,
+          "bulge": 0.0
+        },
+        {
+          "x": 211.0,
+          "y": 207.5,
+          "bulge": 1.0
+        },
+        {
+          "x": 211.0,
+          "y": 202.5,
+          "bulge": 0.0
+        }
+      ]
     }
   ]
 }
