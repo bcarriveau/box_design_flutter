@@ -1,0 +1,64 @@
+name: Flatpak build
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+    paths-ignore:
+      - "assets/templates/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:gnome-46
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=0.0.0-dev" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: BoxDesign-${{ steps.version.outputs.version }}.flatpak
+          manifest-path: flatpak/com.computergeek1523.box_design.box_design_flutter.yml
+          cache-key: flatpak-builder-${{ github.sha }}
+
+      - name: Upload flatpak artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BoxDesign-flatpak
+          path: BoxDesign-*.flatpak
+
+      - name: Create GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: BoxDesign-*.flatpak
+
+      # Mirrors windows-installer.yml's rolling release: the windows workflow
+      # is responsible for moving the "rolling" tag itself, so this just
+      # attaches the flatpak bundle to whatever release already exists there.
+      - name: Publish rolling release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: rolling
+          name: Rolling build
+          prerelease: true
+          body: |
+            Automatically updated on every successful build from `main`. Not a stable release -- see the versioned releases for that.
+
+            Built from commit ${{ github.sha }}.
+          files: BoxDesign-*.flatpak
