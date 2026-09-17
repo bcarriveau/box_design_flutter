@@ -28,7 +28,6 @@ modules:
   - name: box_design_flutter
     buildsystem: simple
     build-commands:
-      - tar xf flutter_linux_3.47.4-stable.tar.xz
       - >-
         export PATH="$PWD/flutter/bin:$PATH" &&
         flutter config --no-analytics --enable-linux-desktop &&
