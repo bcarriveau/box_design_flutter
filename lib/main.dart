@@ -128,11 +128,13 @@ class _BoxDesignHomePageState extends State<BoxDesignHomePage> {
   }
 
   /// Delete/Backspace deletes the selected item; Ctrl/Cmd+C and Ctrl/Cmd+V
-  /// copy and paste it. A focused text field (e.g. a property panel number
-  /// field) consumes these keys itself for editing/text-clipboard use
-  /// before they ever reach here, so this only fires for the canvas.
+  /// copy and paste it. These only apply while the canvas itself holds
+  /// focus: on some platforms (e.g. Windows) a focused text field elsewhere
+  /// does not reliably consume the key event before it bubbles up here, so
+  /// we explicitly bail out rather than relying on that.
   KeyEventResult _handleKeyEvent(KeyEvent event) {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
+    if (!_canvasFocusNode.hasPrimaryFocus) return KeyEventResult.ignored;
 
     if (event.logicalKey == LogicalKeyboardKey.delete ||
         event.logicalKey == LogicalKeyboardKey.backspace) {
