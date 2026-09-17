@@ -1,0 +1,65 @@
+{
+  "id": "kulp_k8pb",
+  "name": "Kulp K8-PB V2",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 73.66,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 73.66,
+          "y": 97.2,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 97.2,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.85,
+        "y": 4.44
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.53,
+        "y": 92.67
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 69.89,
+        "y": 4.44
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 69.89,
+        "y": 92.67
+      },
+      "radius": 1.5
+    }
+  ]
+}

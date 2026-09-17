@@ -1,0 +1,65 @@
+{
+  "id": "kulp_k40",
+  "name": "Kulp K40-PB",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 102.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 102.0,
+          "y": 84.5,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 84.5,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 77.25,
+        "y": 5.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 24.75,
+        "y": 5.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 77.25,
+        "y": 79.5
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 24.75,
+        "y": 79.5
+      },
+      "radius": 1.5
+    }
+  ]
+}

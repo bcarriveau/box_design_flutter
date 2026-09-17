@@ -9,6 +9,25 @@ import '../services/file_io.dart';
 import '../services/hole_preset_library.dart';
 import '../services/template_library.dart';
 
+/// Compares two names the way a person would rather than plain lexicographic
+/// order, so e.g. "K8-Max" sorts before "K16" before "K40" (plain string
+/// comparison puts "K16" < "K32" < "K40" < "K8", since '1' < '3' < '4' < '8'
+/// as characters, regardless of how many digits follow). Splits each name
+/// into runs of digits vs. non-digits and compares digit runs numerically.
+int _naturalCompare(String a, String b) {
+  final aParts = RegExp(r'\d+|\D+').allMatches(a).map((m) => m.group(0)!).toList();
+  final bParts = RegExp(r'\d+|\D+').allMatches(b).map((m) => m.group(0)!).toList();
+  for (var i = 0; i < aParts.length && i < bParts.length; i++) {
+    final x = aParts[i];
+    final y = bParts[i];
+    final xIsNum = RegExp(r'^\d+$').hasMatch(x);
+    final yIsNum = RegExp(r'^\d+$').hasMatch(y);
+    final cmp = (xIsNum && yIsNum) ? int.parse(x).compareTo(int.parse(y)) : x.toLowerCase().compareTo(y.toLowerCase());
+    if (cmp != 0) return cmp;
+  }
+  return aParts.length.compareTo(bParts.length);
+}
+
 class LeftPalette extends StatefulWidget {
   final TemplateLibrary library;
   final HolePresetLibrary holePresetLibrary;
@@ -112,7 +131,7 @@ class _LeftPaletteState extends State<LeftPalette> {
   }
 
   Widget _boxSection() {
-    final boxes = widget.library.byCategory(TemplateCategory.box);
+    final boxes = widget.library.byCategory(TemplateCategory.box)..sort((a, b) => _naturalCompare(a.name, b.name));
     final activeId = widget.controller.project.boxTemplateId;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -157,6 +176,7 @@ class _LeftPaletteState extends State<LeftPalette> {
       final needle = filter.trim().toLowerCase();
       items = items.where((t) => t.name.toLowerCase().contains(needle)).toList();
     }
+    items.sort((a, b) => _naturalCompare(a.name, b.name));
     return ExpansionTile(
       title: Text(title),
       initiallyExpanded: true,

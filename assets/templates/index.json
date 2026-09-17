@@ -132,8 +132,36 @@
     "file": "holidaycoro_flex_spi.json"
   },
   {
+    "id": "kulp_k16_v2",
+    "file": "kulp_k16_v2.json"
+  },
+  {
     "id": "kulp_k16_v4",
     "file": "kulp_k16_v4.json"
+  },
+  {
+    "id": "kulp_k32max",
+    "file": "kulp_k32max.json"
+  },
+  {
+    "id": "kulp_k40",
+    "file": "kulp_k40.json"
+  },
+  {
+    "id": "kulp_k8max",
+    "file": "kulp_k8max.json"
+  },
+  {
+    "id": "kulp_k8pb",
+    "file": "kulp_k8pb.json"
+  },
+  {
+    "id": "kulp_pocket_scroller_v3",
+    "file": "kulp_pocket_scroller_v3.json"
+  },
+  {
+    "id": "kulp_ps16",
+    "file": "kulp_ps16.json"
   },
   {
     "id": "meanwell_lrs150_side_placeholder",

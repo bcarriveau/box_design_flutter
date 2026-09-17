@@ -1,0 +1,89 @@
+{
+  "id": "kulp_ps16",
+  "name": "Kulp PocketScroller-16 V3",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 121.92,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 121.92,
+          "y": 144.19,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 144.19,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.6,
+        "y": 82.25
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.6,
+        "y": 140.08
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.77,
+        "y": 4.02
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 60.24,
+        "y": 4.02
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 118.07,
+        "y": 4.02
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 118.07,
+        "y": 83.95
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 118.07,
+        "y": 140.25
+      },
+      "radius": 1.5
+    }
+  ]
+}

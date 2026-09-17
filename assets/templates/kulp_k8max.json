@@ -1,0 +1,81 @@
+{
+  "id": "kulp_k8max",
+  "name": "Kulp K8-Max V4",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 103.04,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 103.04,
+          "y": 129.37,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 129.37,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.94,
+        "y": 4.02
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 51.6,
+        "y": 4.02
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 99.27,
+        "y": 4.02
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.6,
+        "y": 125.26
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 99.02,
+        "y": 125.52
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 98.85,
+        "y": 72.18
+      },
+      "radius": 1.5
+    }
+  ]
+}

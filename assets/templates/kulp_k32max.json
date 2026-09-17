@@ -1,0 +1,105 @@
+{
+  "id": "kulp_k32max",
+  "name": "Kulp K32-Max V4",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 168.57,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 168.57,
+          "y": 202.78,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 202.78,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.81,
+        "y": 199.22
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.06,
+        "y": 144.19
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.57,
+        "y": 28.11
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.91,
+        "y": 90.17
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 84.92,
+        "y": 4.4
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 163.91,
+        "y": 28.11
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 164.42,
+        "y": 90.09
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 164.51,
+        "y": 144.1
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 164.51,
+        "y": 198.97
+      },
+      "radius": 1.5
+    }
+  ]
+}
