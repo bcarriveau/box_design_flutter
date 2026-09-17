@@ -1,6 +1,6 @@
 {
   "id": "falcon_v2_receiver",
-  "name": "Falcon V2/SRx1",
+  "name": "Falcon v2/SRx1",
   "category": "receiver",
   "entities": [
     {
