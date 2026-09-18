@@ -41,7 +41,8 @@ class _BoxDesignHomePageState extends State<BoxDesignHomePage> {
   final HolePresetLibrary _holePresetLibrary = HolePresetLibrary();
   late final DesignController _controller = DesignController(_library);
   final FocusNode _canvasFocusNode = FocusNode();
-  late final Future<void> _initialLoad = _library.loadBuiltIns().then((_) {
+  late final Future<void> _initialLoad = _library.loadBuiltIns().then((_) async {
+    await _library.loadUserTemplates();
     final defaultBox = _library.defaultBoxTemplate;
     if (defaultBox != null) _controller.applyBoxTemplate(defaultBox.id);
     // Fire-and-forget: refreshes/extends the bundled set from GitHub in the

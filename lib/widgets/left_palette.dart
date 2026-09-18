@@ -8,6 +8,7 @@ import '../models/palette_drag_item.dart';
 import '../services/file_io.dart';
 import '../services/hole_preset_library.dart';
 import '../services/template_library.dart';
+import '../template_maker/template_maker_screen.dart';
 
 /// Compares two names the way a person would rather than plain lexicographic
 /// order, so e.g. "K8-Max" sorts before "K16" before "K40" (plain string
@@ -116,6 +117,24 @@ class _LeftPaletteState extends State<LeftPalette> {
             selectedTileColor: Theme.of(context).colorScheme.primaryContainer,
             leading: Icon(box.id == activeId ? Icons.check_circle : Icons.circle_outlined),
             title: Text(box.name),
+            trailing: box.source == TemplateSource.userMade
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.person, size: 18),
+                      IconButton(
+                        icon: const Icon(Icons.edit, size: 18),
+                        tooltip: 'Edit template',
+                        onPressed: () => _editTemplate(box),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline, size: 18),
+                        tooltip: 'Remove template',
+                        onPressed: () => _removeUserTemplate(box),
+                      ),
+                    ],
+                  )
+                : null,
             onTap: () => widget.controller.applyBoxTemplate(box.id),
           ),
         if (boxes.isEmpty)
@@ -139,6 +158,28 @@ class _LeftPaletteState extends State<LeftPalette> {
     );
   }
 
+  void _editTemplate(ControllerTemplate template) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => TemplateMakerScreen(library: widget.library, initialTemplate: template),
+    ));
+  }
+
+  Future<void> _removeUserTemplate(ControllerTemplate template) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Remove template?'),
+        content: Text('This deletes "${template.name}" from your saved templates. This cannot be undone.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(dialogContext).pop(false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.of(dialogContext).pop(true), child: const Text('Remove')),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await widget.library.remove(template.id);
+  }
+
   Widget _categorySection(String title, TemplateCategory category, {String filter = ''}) {
     var items = widget.library.byCategory(category);
     if (filter.trim().isNotEmpty) {
@@ -154,7 +195,30 @@ class _LeftPaletteState extends State<LeftPalette> {
           Draggable<PaletteDragItem>(
             data: TemplateDragItem(template.id),
             feedback: _dragFeedback(template.name),
-            child: ListTile(dense: true, title: Text(template.name)),
+            child: ListTile(
+              dense: true,
+              leading: template.source == TemplateSource.userMade
+                  ? const Icon(Icons.person, size: 18)
+                  : null,
+              title: Text(template.name),
+              trailing: template.source == TemplateSource.userMade
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit, size: 18),
+                          tooltip: 'Edit template',
+                          onPressed: () => _editTemplate(template),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, size: 18),
+                          tooltip: 'Remove template',
+                          onPressed: () => _removeUserTemplate(template),
+                        ),
+                      ],
+                    )
+                  : null,
+            ),
           ),
         if (items.isEmpty)
           Padding(

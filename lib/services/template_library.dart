@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 import '../dxf/dxf_parser.dart';
 import '../models/controller_template.dart';
+import 'user_template_store.dart';
 
 /// Raw-content base URL for this project's own bundled templates —
 /// `loadRemoteDefaults` fetches `index.json` + each listed template from
@@ -19,8 +20,12 @@ const String defaultTemplateRepoUrl =
 /// remote repo.
 class TemplateLibrary extends ChangeNotifier {
   final List<ControllerTemplate> _templates = [];
+  final UserTemplateStore _userTemplateStore = UserTemplateStore();
 
   List<ControllerTemplate> get templates => List.unmodifiable(_templates);
+
+  List<ControllerTemplate> get userMadeTemplates =>
+      _templates.where((t) => t.source == TemplateSource.userMade).toList();
 
   ControllerTemplate? byId(String id) {
     for (final t in _templates) {
@@ -72,6 +77,54 @@ class TemplateLibrary extends ChangeNotifier {
     return template;
   }
 
+  /// Loads previously-saved user-made templates (see [saveUserTemplate])
+  /// from local storage -- call once at startup, alongside [loadBuiltIns].
+  Future<void> loadUserTemplates() async {
+    final saved = await _userTemplateStore.loadAll();
+    _templates.addAll(saved);
+    notifyListeners();
+  }
+
+  /// Saves [template] as a user-made template (from the Template Maker) and
+  /// persists the full user-made set to local storage so it survives an app
+  /// restart. Any template (built-in, remote, imported, or user-made) can be
+  /// opened in the Template Maker and re-saved this way, but its id must
+  /// stay unique: re-saving your own previously-saved user-made template
+  /// under the same id updates it in place, while saving under an id that
+  /// belongs to some *other* template (e.g. editing a copy of a bundled
+  /// template) is never allowed to collide with or replace that original --
+  /// it's suffixed (`_2`, `_3`, ...) into a fresh, unique id instead. Returns
+  /// the saved template, whose id may differ from [template]'s for that
+  /// reason.
+  Future<ControllerTemplate> saveUserTemplate(ControllerTemplate template) async {
+    final isOwnUpdate = _templates.any((t) => t.id == template.id && t.source == TemplateSource.userMade);
+
+    var id = template.id;
+    if (!isOwnUpdate) {
+      final existingIds = _templates.map((t) => t.id).toSet();
+      if (existingIds.contains(id)) {
+        var suffix = 2;
+        while (existingIds.contains('${template.id}_$suffix')) {
+          suffix++;
+        }
+        id = '${template.id}_$suffix';
+      }
+    }
+
+    _templates.removeWhere((t) => t.id == id && t.source == TemplateSource.userMade);
+    final saved = ControllerTemplate(
+      id: id,
+      name: template.name,
+      entities: template.entities,
+      source: TemplateSource.userMade,
+      category: template.category,
+    );
+    _templates.add(saved);
+    notifyListeners();
+    await _userTemplateStore.saveAll(userMadeTemplates);
+    return saved;
+  }
+
   /// Fetches `<repoBaseUrl>/index.json` — a JSON list of `{"id": ...,
   /// "file": ...}` entries (see `tool/gen_placeholder_templates.dart`'s
   /// `writeIndex`) — then GETs each `<repoBaseUrl>/<file>` template JSON
@@ -109,8 +162,12 @@ class TemplateLibrary extends ChangeNotifier {
     }
   }
 
-  void remove(String id) {
+  Future<void> remove(String id) async {
+    final wasUserMade = _templates.any((t) => t.id == id && t.source == TemplateSource.userMade);
     _templates.removeWhere((t) => t.id == id);
     notifyListeners();
+    if (wasUserMade) {
+      await _userTemplateStore.saveAll(userMadeTemplates);
+    }
   }
 }

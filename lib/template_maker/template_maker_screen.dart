@@ -38,7 +38,12 @@ const int _githubPrUrlWarnLength = 6000;
 class TemplateMakerScreen extends StatefulWidget {
   final TemplateLibrary? library;
 
-  const TemplateMakerScreen({super.key, this.library});
+  /// When set, the screen opens pre-loaded with this template's geometry
+  /// instead of a blank one -- used to re-edit an existing user-made
+  /// template from the palette.
+  final ControllerTemplate? initialTemplate;
+
+  const TemplateMakerScreen({super.key, this.library, this.initialTemplate});
 
   @override
   State<TemplateMakerScreen> createState() => _TemplateMakerScreenState();
@@ -47,6 +52,15 @@ class TemplateMakerScreen extends StatefulWidget {
 class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   final _controller = TemplateMakerController();
   String? _draggingHoleId;
+
+  @override
+  void initState() {
+    super.initState();
+    final initial = widget.initialTemplate;
+    if (initial != null) {
+      _controller.loadFromTemplate(initial);
+    }
+  }
 
   late final _idController = TextEditingController(text: _controller.id);
   late final _nameController = TextEditingController(text: _controller.name);
@@ -294,12 +308,24 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     _snack(result != null ? 'Template exported' : 'Export cancelled');
   }
 
-  void _addToLibrary() {
+  Future<void> _saveToLibrary() async {
     final library = widget.library;
     if (library == null) return;
     final template = _controller.toTemplate();
-    library.importJson(jsonEncode(template.toJson()));
-    _snack('Added "${template.name}" to the library');
+    final saved = await library.saveUserTemplate(template);
+    if (saved.id != template.id) {
+      // The id collided with some other template already in the library
+      // (e.g. this is an edited copy of a bundled/remote one) -- adopt the
+      // unique id the library picked so a subsequent save updates this same
+      // saved copy instead of colliding (and getting renamed) all over again.
+      setState(() {
+        _controller.setId(saved.id);
+        _idController.text = saved.id;
+      });
+      _snack('"${template.id}" was already in use -- saved as a new copy with id "${saved.id}"');
+    } else {
+      _snack('Saved "${saved.name}" to the library');
+    }
   }
 
   /// Opens GitHub's own "create new file" page, pre-filled with this
@@ -474,9 +500,9 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
           TextButton.icon(onPressed: _exportJson, icon: const Icon(Icons.save_alt), label: const Text('Export JSON')),
           if (widget.library != null)
             TextButton.icon(
-              onPressed: _addToLibrary,
+              onPressed: _saveToLibrary,
               icon: const Icon(Icons.library_add),
-              label: const Text('Add to Library'),
+              label: const Text('Save to Library'),
             ),
           TextButton.icon(
             onPressed: _openGitHubPr,

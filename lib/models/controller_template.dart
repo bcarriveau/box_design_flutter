@@ -3,7 +3,7 @@ import '../geometry/tessellate.dart';
 import 'dxf_entity.dart';
 import 'vec2.dart';
 
-enum TemplateSource { builtIn, imported, remote }
+enum TemplateSource { builtIn, imported, remote, userMade }
 
 /// Which section of the palette a template belongs to. [box] templates are
 /// applied as the enclosure outline itself (one active at a time); the

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:box_design_flutter/main.dart';
 
 void main() {
   testWidgets('App loads templates and shows the toolbar', (WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(const BoxDesignApp());
     await tester.pumpAndSettle();
 
