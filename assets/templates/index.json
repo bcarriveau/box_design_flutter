@@ -88,12 +88,12 @@
     "file": "falcon_srx4_receiver.json"
   },
   {
-    "id": "falcon_v2_receiver",
-    "file": "falcon_v2_receiver.json"
-  },
-  {
     "id": "falcon_reciever_v1",
     "file": "falcon_reciever_v1.json"
+  },
+  {
+    "id": "falcon_v2_receiver",
+    "file": "falcon_v2_receiver.json"
   },
   {
     "id": "genius_glr_controller",
@@ -230,6 +230,14 @@
   {
     "id": "pb16_controller",
     "file": "pb16_controller.json"
+  },
+  {
+    "id": "qilipsu_ql",
+    "file": "qilipsu_ql.json"
+  },
+  {
+    "id": "qilipsu_ul94",
+    "file": "qilipsu_ul94.json"
   },
   {
     "id": "raspberry_pi_model_b",
