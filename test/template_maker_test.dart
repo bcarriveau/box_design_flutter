@@ -121,6 +121,36 @@ void main() {
     expect(controller.holes.every((h) => h.shape == TemplateMakerHoleShape.round), isTrue);
   });
 
+  test('addQuickHolePattern with an outlineOffset resizes the outline to spacing + margin on each side', () {
+    final controller = TemplateMakerController()
+      ..setOutlineWidth(999) // any prior size -- should be fully overridden
+      ..setOutlineHeight(999)
+      ..addQuickHolePattern(horizontalSpacing: 80, verticalSpacing: 40, outlineOffset: 5);
+
+    expect(controller.outlineWidth, closeTo(90, 1e-9)); // 80 + 5*2
+    expect(controller.outlineHeight, closeTo(50, 1e-9)); // 40 + 5*2
+    final positions = controller.holes.map((h) => (h.x, h.y)).toSet();
+    expect(
+      positions,
+      {
+        (5.0, 5.0),
+        (5.0, 45.0),
+        (85.0, 5.0),
+        (85.0, 45.0),
+      },
+    );
+  });
+
+  test('addQuickHolePattern with no outlineOffset leaves the outline size untouched', () {
+    final controller = TemplateMakerController()
+      ..setOutlineWidth(200)
+      ..setOutlineHeight(150)
+      ..addQuickHolePattern(horizontalSpacing: 80, verticalSpacing: 40);
+
+    expect(controller.outlineWidth, closeTo(200, 1e-9));
+    expect(controller.outlineHeight, closeTo(150, 1e-9));
+  });
+
   test('toTemplate carries category and holes through unchanged', () {
     final controller = TemplateMakerController()
       ..setOutlineWidth(80)

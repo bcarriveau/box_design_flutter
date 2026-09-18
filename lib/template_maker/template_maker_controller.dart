@@ -177,11 +177,21 @@ class TemplateMakerController extends ChangeNotifier {
   /// on the outline's own centerline, matching how a real board's 4-corner
   /// mounting holes are usually specified (center-to-center spacing, not
   /// absolute position).
+  ///
+  /// If [outlineOffset] is given, the outline is resized first to exactly
+  /// fit the pattern plus that much margin on each side (width = spacing +
+  /// 2 x offset), so the board comes out sized to the mounting holes
+  /// instead of needing its own width/height set beforehand.
   void addQuickHolePattern({
     required double horizontalSpacing,
     required double verticalSpacing,
     double diameter = 4,
+    double? outlineOffset,
   }) {
+    if (outlineOffset != null) {
+      setOutlineWidth(horizontalSpacing + outlineOffset * 2);
+      setOutlineHeight(verticalSpacing + outlineOffset * 2);
+    }
     final cx = outlineWidth / 2;
     final cy = outlineHeight / 2;
     final hx = horizontalSpacing / 2;

@@ -376,6 +376,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     final hCtrl = TextEditingController();
     final vCtrl = TextEditingController();
     final dCtrl = TextEditingController(text: '4');
+    final offsetCtrl = TextEditingController();
     try {
       final confirmed = await showDialog<bool>(
         context: context,
@@ -407,6 +408,18 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                   decoration: const InputDecoration(labelText: 'Hole diameter (mm)', isDense: true, border: OutlineInputBorder()),
                   keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
                 ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: offsetCtrl,
+                  decoration: const InputDecoration(
+                    labelText: 'Outline offset (mm)',
+                    helperText: 'Sets outline size to spacing + this much margin on each side. Leave blank to keep the current outline size.',
+                    helperMaxLines: 3,
+                    isDense: true,
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                ),
               ],
             ),
           ),
@@ -425,11 +438,17 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
         _snack('Enter a positive horizontal and vertical spacing.');
         return;
       }
+      final offset = tryEvalMath(offsetCtrl.text);
+      if (offsetCtrl.text.trim().isNotEmpty && (offset == null || offset < 0)) {
+        _snack('Outline offset must be a non-negative number, or left blank.');
+        return;
+      }
       setState(() {
         _controller.addQuickHolePattern(
           horizontalSpacing: h,
           verticalSpacing: v,
           diameter: (d != null && d > 0) ? d : 4,
+          outlineOffset: offset,
         );
         _syncHoleControllers();
         _refreshTopFields();
@@ -437,6 +456,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     } finally {
       hCtrl.dispose();
       vCtrl.dispose();
+      offsetCtrl.dispose();
       dCtrl.dispose();
     }
   }
