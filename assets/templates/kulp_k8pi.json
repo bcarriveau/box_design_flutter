@@ -1,0 +1,65 @@
+{
+  "id": "kulp_k8pi",
+  "name": "Kulp K8-Pi V2.0.3",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 97.54,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 97.54,
+          "y": 105.66,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 105.66,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.02,
+        "y": 4.36
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.02,
+        "y": 45.0
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 92.92,
+        "y": 4.61
+      },
+      "radius": 1.5
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 93.43,
+        "y": 101.39
+      },
+      "radius": 1.5
+    }
+  ]
+}

@@ -101,6 +101,29 @@ def find_outline_rect(drawings, page_rect, max_page_fraction: float = 0.9):
     return best
 
 
+def _outline_bbox(horiz, vert):
+    """Envelope of every structural line's endpoints -- correct for a
+    non-rectangular (L-shaped/stepped/notched) board outline, where no
+    single pair of vertical lines spans the full width the way a plain
+    rectangle's would, so the cross-validated pairing in [find_outline]
+    below has nothing valid to match. Trades the exact notch shape for a
+    guaranteed-correct overall size, the same simplification already used
+    for boards whose outline [find_outline] can't otherwise trace (see
+    kulp_k8pb / kulp_ps16 in assets/templates -- both hand-finished this
+    same way).
+    """
+    xs, ys = [], []
+    for _length, y, lo, hi in horiz:
+        ys.append(y)
+        xs.extend((lo, hi))
+    for _length, x, lo, hi in vert:
+        xs.append(x)
+        ys.extend((lo, hi))
+    if not xs or not ys:
+        return None
+    return min(xs), min(ys), max(xs), max(ys)
+
+
 def find_outline(drawings, min_length_mm: float = 40.0):
     """Returns (x0, y0, x1, y1) in points for the board outline.
 
@@ -113,8 +136,14 @@ def find_outline(drawings, min_length_mm: float = 40.0):
     where the *other* axis's lines say the edge should be, so it loses the
     tie-break to whichever candidate both axes agree on.
 
+    Falls back to [_outline_bbox] (the envelope of every structural line)
+    when that cross-check fails to close within tolerance -- on a
+    non-rectangular outline, no vertical line spans the full width the
+    horizontal edges imply, so the pairing above finds nothing near enough
+    and would otherwise silently return a badly wrong (too-small) box.
+
     Returns None (instead of raising) if it can't find two distinct edges
-    per axis, so the caller can fall back to [find_outline_rect].
+    per axis at all, so the caller can fall back to [find_outline_rect].
     """
     horiz, vert = [], []
     for d in drawings:
@@ -164,17 +193,25 @@ def find_outline(drawings, min_length_mm: float = 40.0):
 
     # Prefer vertical lines that actually land at that x-span over whatever
     # merely tied/won on raw length -- see the docstring above.
-    x0 = (longest_line_near(vert, h_x_lo) or (None, min(v_xs)))[1]
-    x1 = (longest_line_near(vert, h_x_hi) or (None, max(v_xs)))[1]
+    near_lo = longest_line_near(vert, h_x_lo)
+    near_hi = longest_line_near(vert, h_x_hi)
 
     tol = 2.0  # pt
-    if abs(h_x_lo - x0) > tol or abs(h_x_hi - x1) > tol:
-        print(
-            f"Warning: outline edges don't close cleanly (horizontal span {h_x_lo:.2f}-{h_x_hi:.2f}pt "
-            f"vs closest vertical lines at {x0:.2f}/{x1:.2f}pt) -- double check the result.",
-            file=sys.stderr,
-        )
-    return x0, y0, x1, y1
+    if near_lo is None or near_hi is None or abs(h_x_lo - near_lo[1]) > tol or abs(h_x_hi - near_hi[1]) > tol:
+        bbox = _outline_bbox(horiz, vert)
+        if bbox is not None:
+            print(
+                "Warning: outline edges don't close into a plain rectangle (likely an L-shaped/notched "
+                "board) -- using the overall bounding box instead, so any notch/step in the real outline "
+                "is not represented. Double check the result.",
+                file=sys.stderr,
+            )
+            return bbox
+        x0 = near_lo[1] if near_lo else min(v_xs)
+        x1 = near_hi[1] if near_hi else max(v_xs)
+        return x0, y0, x1, y1
+
+    return near_lo[1], y0, near_hi[1], y1
 
 
 def find_circles(drawings):
