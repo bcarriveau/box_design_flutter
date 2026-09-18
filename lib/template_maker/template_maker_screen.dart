@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../dxf/dxf_parser.dart';
 import '../models/controller_template.dart';
@@ -14,6 +15,18 @@ import 'template_outline_painter.dart';
 
 const double _outlinePreviewMargin = 32.0;
 const double _holeDragHitPx = 14.0;
+
+// The repo the "Open PR on GitHub" button contributes a template to --
+// same one loadRemoteDefaults() (see template_library.dart) fetches
+// bundled templates from.
+const String _githubRepoOwner = 'computergeek1507';
+const String _githubRepoName = 'box_design_flutter';
+
+// GitHub's own "create new file" page (the target of the URL below) has no
+// documented length limit, but very long URLs risk being rejected by the
+// browser or GitHub's server before the page even loads -- comfortably
+// under that keeps every template this tool can produce well clear of it.
+const int _githubPrUrlWarnLength = 6000;
 
 /// A standalone screen for building a [ControllerTemplate] by hand: an
 /// outline rectangle sized by width/height fields, plus a list of round
@@ -289,6 +302,36 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     _snack('Added "${template.name}" to the library');
   }
 
+  /// Opens GitHub's own "create new file" page, pre-filled with this
+  /// template's JSON at the path it belongs in -- no GitHub token or API
+  /// calls needed in the app itself: for anyone without direct push access
+  /// (i.e. everyone but the repo's own maintainer), clicking "Propose new
+  /// file" there has GitHub fork the repo, create a branch, and open a pull
+  /// request, all under the contributor's own already-logged-in account.
+  Future<void> _openGitHubPr() async {
+    final template = _controller.toTemplate();
+    if (template.id.trim().isEmpty) {
+      _snack('Set a template Id first.');
+      return;
+    }
+    final json = const JsonEncoder.withIndent('  ').convert(template.toJson());
+    final path = 'assets/templates/${template.id}.json';
+    final url = Uri.https(
+      'github.com',
+      '/$_githubRepoOwner/$_githubRepoName/new/main',
+      {'filename': path, 'value': json},
+    );
+    if (url.toString().length > _githubPrUrlWarnLength) {
+      _snack('This template is large -- GitHub may not load it. If the page comes up empty, use Export JSON and attach the file to the PR by hand instead.');
+    }
+    final launched = await launchUrl(url, mode: LaunchMode.externalApplication);
+    if (!launched) {
+      _snack('Could not open a browser. Use Export JSON and open a pull request manually instead.');
+      return;
+    }
+    _snack('Opened GitHub in your browser -- review the file, then click "Propose new file" to open your pull request.');
+  }
+
   void _newTemplate() {
     setState(() {
       _controller.newTemplate();
@@ -415,6 +458,11 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
               icon: const Icon(Icons.library_add),
               label: const Text('Add to Library'),
             ),
+          TextButton.icon(
+            onPressed: _openGitHubPr,
+            icon: const Icon(Icons.merge_type),
+            label: const Text('Open PR on GitHub'),
+          ),
           const SizedBox(width: 8),
         ],
       ),

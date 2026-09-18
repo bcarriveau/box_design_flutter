@@ -1,14 +1,16 @@
 import 'dart:math' as math;
 
 import '../geometry/placed_entities.dart';
+import '../models/dxf_entity.dart';
 import '../models/vec2.dart';
 import 'design_controller.dart';
 
-/// Snaps [raw] (box-space mm) to the nearest hole center, placed-template
-/// origin, or point along any box/template edge within [toleranceMm] --
-/// lets the measure tool click precisely on existing geometry ("two lines
-/// or holes") instead of an approximate freehand point. Returns [raw]
-/// unchanged if nothing is within tolerance.
+/// Snaps [raw] (box-space mm) to the nearest hole center, round/arc center
+/// (e.g. a slot's rounded end, or a template's own baked-in mounting hole),
+/// placed-template origin, or point along any box/template edge within
+/// [toleranceMm] -- lets the measure tool click precisely on existing
+/// geometry ("two lines or holes") instead of an approximate freehand
+/// point. Returns [raw] unchanged if nothing is within tolerance.
 Vec2 snapPoint(Vec2 raw, DesignController controller, {double toleranceMm = 3.0}) {
   final project = controller.project;
   Vec2? best;
@@ -32,23 +34,85 @@ Vec2 snapPoint(Vec2 raw, DesignController controller, {double toleranceMm = 3.0}
     }
   }
 
+  void considerCenters(Iterable<DxfEntity> entities) {
+    for (final entity in entities) {
+      for (final center in _entityCenters(entity)) {
+        consider(center);
+      }
+    }
+  }
+
+  void considerEntities(Iterable<DxfEntity> entities) {
+    for (final entity in entities) {
+      considerEdges(entity.toPoints());
+    }
+    considerCenters(entities);
+  }
+
   for (final hole in project.holes) {
     consider(hole.position);
+    // Centers only, not the traced outline: a click anywhere inside a round
+    // hole should snap to its exact center, not to whichever point on its
+    // rim happens to be nearest. Still picks up e.g. a slot's two rounded
+    // end centers, or a zip-tie hole's individual circle centers, that
+    // [Hole.position] alone doesn't cover.
+    considerCenters(hole.toEntities());
   }
   for (final placed in project.placedTemplates) {
     consider(placed.position);
     final template = controller.library.byId(placed.templateId);
     if (template == null) continue;
-    final entities = placedTemplateEntities(template, placed);
-    for (final entity in entities) {
-      considerEdges(entity.toPoints());
-    }
+    considerEntities(placedTemplateEntities(template, placed));
   }
-  for (final entity in project.boxOutline) {
-    considerEdges(entity.toPoints());
-  }
+  considerEntities(project.boxOutline);
 
   return best ?? raw;
+}
+
+/// Circle/arc centers worth snapping to within [entity]: a whole circle's
+/// center, a standalone arc's center, or -- for a polyline -- the center of
+/// each bulge (arc) segment, e.g. a slot/stadium's two rounded end caps or a
+/// filleted outline corner. A hole's own [Hole.position] already covers its
+/// overall center (see [snapPoint]); this is what additionally lets you
+/// snap to "the center of that rounded end" on a slot, or to a mounting
+/// hole baked directly into a placed template's or the box outline's own
+/// geometry (which otherwise only offers points traced along its edge).
+Iterable<Vec2> _entityCenters(DxfEntity entity) sync* {
+  switch (entity) {
+    case DxfCircle e:
+      yield e.center;
+    case DxfArc e:
+      yield e.center;
+    case DxfPolyline e:
+      final segmentCount = e.closed ? e.vertices.length : e.vertices.length - 1;
+      for (var i = 0; i < segmentCount; i++) {
+        final a = e.vertices[i];
+        if (a.bulge == 0) continue;
+        final b = e.vertices[(i + 1) % e.vertices.length];
+        final center = _bulgeArcCenter(a.point, b.point, a.bulge);
+        if (center != null) yield center;
+      }
+    case DxfLine():
+      break;
+  }
+}
+
+/// Mirrors the arc-center step of DxfPolyline's own bulge-flattening (kept
+/// private to that file since it only needs the arc's *points* there) --
+/// same formula, duplicated here since this is the one place that needs the
+/// center itself. bulge = tan(includedAngle / 4).
+Vec2? _bulgeArcCenter(Vec2 from, Vec2 to, double bulge) {
+  final includedAngle = 4 * math.atan(bulge);
+  final dx = to.x - from.x;
+  final dy = to.y - from.y;
+  final chord = math.sqrt(dx * dx + dy * dy);
+  if (chord == 0 || includedAngle == 0) return null;
+  final radius = chord / (2 * math.sin(includedAngle.abs() / 2));
+  final perpX = -dy / chord;
+  final perpY = dx / chord;
+  final sign = bulge < 0 ? -1 : 1;
+  final centerDist = radius * math.cos(includedAngle.abs() / 2) * sign;
+  return Vec2((from.x + to.x) / 2 + perpX * centerDist, (from.y + to.y) / 2 + perpY * centerDist);
 }
 
 Vec2 _nearestOnSegment(Vec2 a, Vec2 b, Vec2 p) {
