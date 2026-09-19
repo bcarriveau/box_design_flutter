@@ -402,5 +402,25 @@
   {
     "id": "wasatch_bong69",
     "file": "wasatch_bong69.json"
+  },
+  {
+    "id": "yps_large_box",
+    "file": "yps_large_box.json"
+  },
+  {
+    "id": "yps_medium_box",
+    "file": "yps_medium_box.json"
+  },
+  {
+    "id": "yps_small_box",
+    "file": "yps_small_box.json"
+  },
+  {
+    "id": "yps_vbox",
+    "file": "yps_vbox.json"
+  },
+  {
+    "id": "yps_vbox_lr",
+    "file": "yps_vbox_lr.json"
   }
 ]
