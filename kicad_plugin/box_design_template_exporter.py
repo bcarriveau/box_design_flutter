@@ -343,7 +343,22 @@ def build_template(board, *, id_: str, name: str, category: str, opts: ExtractOp
         raise ValueError(f"category must be one of {VALID_CATEGORIES}, got {category!r}")
 
     warnings: list[str] = []
-    entities = extract_edge_cuts(board, opts, warnings) + extract_holes(board, opts, warnings)
+    edge_entities = extract_edge_cuts(board, opts, warnings)
+    hole_entities = extract_holes(board, opts, warnings)
+    if not hole_entities:
+        hints = []
+        if not opts.include_npth:
+            hints.append("NPTH (mounting) holes are excluded")
+        if not opts.include_pth:
+            hints.append("plated (PTH) holes are excluded")
+        if not opts.include_slots:
+            hints.append("slotted holes are excluded")
+        hints.append(f"holes under {opts.hole_min_mm:g} mm are ignored")
+        warnings.append(
+            "no mounting holes found -- the template will have only an outline. "
+            "Check that the board has NPTH/mechanical hole pads (" + "; ".join(hints) + ")."
+        )
+    entities = edge_entities + hole_entities
 
     if normalize:
         entities = normalize_entities(entities)
@@ -452,14 +467,14 @@ def _run_gui(board) -> None:
 
             sizer.Add(grid, flag=wx.EXPAND | wx.ALL, border=12)
 
-            self.warnings_ctrl = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 90))
-            sizer.Add(wx.StaticText(panel, label="Warnings:"), flag=wx.LEFT | wx.TOP, border=12)
-            sizer.Add(self.warnings_ctrl, flag=wx.EXPAND | wx.ALL, border=12)
+            self.log_ctrl = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 110))
+            sizer.Add(wx.StaticText(panel, label="Log:"), flag=wx.LEFT | wx.TOP, border=12)
+            sizer.Add(self.log_ctrl, flag=wx.EXPAND | wx.ALL, border=12)
 
             btn_sizer = wx.StdDialogButtonSizer()
             ok_btn = wx.Button(panel, wx.ID_OK, label="Export")
             ok_btn.SetDefault()
-            cancel_btn = wx.Button(panel, wx.ID_CANCEL)
+            cancel_btn = wx.Button(panel, wx.ID_CANCEL, label="Close")
             btn_sizer.AddButton(ok_btn)
             btn_sizer.AddButton(cancel_btn)
             btn_sizer.Realize()
@@ -477,6 +492,9 @@ def _run_gui(board) -> None:
             self.SetMinSize(self.GetSize())
 
             ok_btn.Bind(wx.EVT_BUTTON, self._on_export)
+
+        def _log(self, message: str) -> None:
+            self.log_ctrl.AppendText(message + "\n")
 
         def _on_name_changed(self, evt):
             if self._id_auto:
@@ -499,7 +517,7 @@ def _run_gui(board) -> None:
             try:
                 min_hole = float(self.min_hole_ctrl.GetValue())
             except ValueError:
-                wx.MessageBox("Min hole diameter must be a number.", "Invalid input", wx.OK | wx.ICON_ERROR)
+                self._log("ERROR: Min hole diameter must be a number.")
                 return
 
             opts = ExtractOptions(
@@ -519,25 +537,23 @@ def _run_gui(board) -> None:
                     normalize=self.normalize_ctrl.GetValue(),
                 )
             except Exception as exc:  # surface the failure instead of a silent no-op
-                wx.MessageBox(f"Export failed:\n{exc}", "Error", wx.OK | wx.ICON_ERROR)
+                self._log(f"ERROR: Export failed: {exc}")
                 return
 
-            if warnings:
-                self.warnings_ctrl.SetValue("\n".join(warnings))
+            for w in warnings:
+                self._log(f"WARNING: {w}")
 
             out_path = Path(self.output_ctrl.GetValue())
             try:
                 write_template(template, out_path, update_index=self.update_index_ctrl.GetValue())
             except OSError as exc:
-                wx.MessageBox(f"Could not write {out_path}:\n{exc}", "Error", wx.OK | wx.ICON_ERROR)
+                self._log(f"ERROR: Could not write {out_path}: {exc}")
                 return
 
-            msg = f"Wrote {out_path} ({len(template['entities'])} entities)."
+            summary = f"Wrote {out_path} ({len(template['entities'])} entities)"
             if warnings:
-                msg += f"\n\n{len(warnings)} warning(s) -- see the Warnings box."
-            wx.MessageBox(msg, "Export complete", wx.OK | wx.ICON_INFORMATION)
-            if not warnings:
-                self.EndModal(wx.ID_OK)
+                summary += f" with {len(warnings)} warning(s)"
+            self._log(summary + ".")
 
     dlg = ExportDialog(None, board)
     dlg.ShowModal()

@@ -15,6 +15,9 @@ import 'template_outline_painter.dart';
 
 const double _outlinePreviewMargin = 32.0;
 const double _holeDragHitPx = 14.0;
+const double _imageHandleHitPx = 12.0;
+
+enum _ImageDrag { none, move, corner }
 
 // The repo the "Open PR on GitHub" button contributes a template to --
 // same one loadRemoteDefaults() (see template_library.dart) fetches
@@ -52,6 +55,9 @@ class TemplateMakerScreen extends StatefulWidget {
 class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   final _controller = TemplateMakerController();
   String? _draggingHoleId;
+  _ImageDrag _imageDrag = _ImageDrag.none;
+  Vec2 _imageDragFixed = const Vec2(0, 0);
+  Vec2 _imageGrabOffset = const Vec2(0, 0);
 
   @override
   void initState() {
@@ -72,6 +78,15 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   final _cornerSizeFocus = FocusNode();
 
   final _shiftDistanceController = TextEditingController(text: '1');
+
+  final _imageXController = TextEditingController(text: '0.0');
+  final _imageYController = TextEditingController(text: '0.0');
+  final _imageWController = TextEditingController(text: '0.0');
+  final _imageHController = TextEditingController(text: '0.0');
+  final _imageXFocus = FocusNode();
+  final _imageYFocus = FocusNode();
+  final _imageWFocus = FocusNode();
+  final _imageHFocus = FocusNode();
 
   final Map<String, TextEditingController> _holeX = {};
   final Map<String, TextEditingController> _holeY = {};
@@ -116,6 +131,14 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     _heightController.dispose();
     _cornerSizeController.dispose();
     _shiftDistanceController.dispose();
+    for (final c in [_imageXController, _imageYController, _imageWController, _imageHController]) {
+      c.dispose();
+    }
+    for (final f in [_imageXFocus, _imageYFocus, _imageWFocus, _imageHFocus]) {
+      f.dispose();
+    }
+    _controller.refImage?.dispose();
+    _controller.refImage = null;
     _widthFocus.dispose();
     _heightFocus.dispose();
     _cornerSizeFocus.dispose();
@@ -174,6 +197,13 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     }
   }
 
+  void _refreshImageFields() {
+    _imageXController.text = _fmt(_controller.imageX);
+    _imageYController.text = _fmt(_controller.imageY);
+    _imageWController.text = _fmt(_controller.imageWidth);
+    _imageHController.text = _fmt(_controller.imageHeight);
+  }
+
   void _refreshTopFields() {
     _idController.text = _controller.id;
     _nameController.text = _controller.name;
@@ -223,7 +253,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
       final dx = h.x - mm.x;
       final dy = h.y - mm.y;
       final dist = math.sqrt(dx * dx + dy * dy);
-      final radiusMm = h.shape == TemplateMakerHoleShape.slot
+      final radiusMm = h.shape != TemplateMakerHoleShape.round
           ? math.max(h.slotLength, h.slotWidth) / 2
           : h.diameter / 2;
       if (dist <= math.max(radiusMm, hitToleranceMm) && dist < closestDist) {
@@ -237,12 +267,42 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   void _onPreviewPanStart(DragStartDetails details, Size size) {
     final scale = _previewScale(size);
     final mm = _previewPxToMm(details.localPosition, size);
+    _imageDrag = _ImageDrag.none;
     _draggingHoleId = _holeNear(mm, scale)?.id;
+    if (_draggingHoleId != null || _controller.refImage == null) return;
+
+    final c = _controller;
+    final left = c.imageX, right = c.imageX + c.imageWidth;
+    final bottom = c.imageY, top = c.imageY + c.imageHeight;
+    final hitMm = _imageHandleHitPx / scale;
+    for (final corner in [Vec2(left, bottom), Vec2(right, bottom), Vec2(left, top), Vec2(right, top)]) {
+      if ((corner.x - mm.x).abs() <= hitMm && (corner.y - mm.y).abs() <= hitMm) {
+        _imageDrag = _ImageDrag.corner;
+        _imageDragFixed = Vec2(corner.x == left ? right : left, corner.y == bottom ? top : bottom);
+        return;
+      }
+    }
+    if (mm.x >= left && mm.x <= right && mm.y >= bottom && mm.y <= top) {
+      _imageDrag = _ImageDrag.move;
+      _imageGrabOffset = Vec2(mm.x - left, mm.y - bottom);
+    }
   }
 
   void _onPreviewPanUpdate(DragUpdateDetails details, Size size) {
     final draggingId = _draggingHoleId;
-    if (draggingId == null) return;
+    if (draggingId == null) {
+      if (_imageDrag == _ImageDrag.none) return;
+      final pointer = _previewPxToMm(details.localPosition, size);
+      setState(() {
+        if (_imageDrag == _ImageDrag.move) {
+          _controller.setImagePosition(x: pointer.x - _imageGrabOffset.x, y: pointer.y - _imageGrabOffset.y);
+        } else {
+          _controller.scaleImageFromCorner(_imageDragFixed, pointer);
+        }
+        _refreshImageFields();
+      });
+      return;
+    }
     final mm = _previewPxToMm(details.localPosition, size);
     setState(() {
       _controller.updateHole(draggingId, x: mm.x, y: mm.y);
@@ -253,6 +313,178 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
 
   void _onPreviewPanEnd(DragEndDetails details) {
     _draggingHoleId = null;
+    _imageDrag = _ImageDrag.none;
+  }
+
+  Future<void> _autoFitImage() async {
+    final mismatch = await _controller.autoFitImageToOutline();
+    if (!mounted) return;
+    if (mismatch == null) {
+      _snack('Could not find a board outline in the image');
+      return;
+    }
+    setState(_refreshImageFields);
+    _snack(mismatch > 0.5
+        ? 'Fitted to outline. The image needed ${mismatch.toStringAsFixed(1)}% different X and Y scaling -- check the outline size.'
+        : 'Fitted image to outline');
+  }
+
+  Future<void> _detectHoles() async {
+    final added = await _controller.detectHolesFromImage();
+    if (!mounted) return;
+    setState(() {});
+    if (added == null) {
+      _snack('Could not analyse the image');
+    } else if (added == 0) {
+      _snack('No new holes found. Try "Auto-fit to outline" first.');
+    } else {
+      _snack('Added $added hole${added == 1 ? '' : 's'} -- check them against the image');
+    }
+  }
+
+  Future<void> _loadImage() async {
+    final picked = await pickFile(
+      allowedExtensions: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp'],
+      dialogTitle: 'Load Reference Image',
+    );
+    if (picked == null) return;
+    try {
+      await _controller.loadReferenceImage(picked.bytes, picked.name);
+      if (!mounted) return;
+      setState(_refreshImageFields);
+    } catch (e) {
+      _snack('Failed to load image: $e');
+    }
+  }
+
+  Widget _imageField(String label, TextEditingController controller, FocusNode focus, void Function(double) apply) {
+    void commit() => _commitMathField(controller, (v) {
+          apply(v);
+          _refreshImageFields();
+        });
+    return TextField(
+      controller: controller,
+      focusNode: focus,
+      decoration: InputDecoration(labelText: label, isDense: true, border: const OutlineInputBorder()),
+      keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+      onChanged: (v) {
+        final parsed = tryEvalMath(v);
+        if (parsed != null) setState(() => apply(parsed));
+      },
+      onSubmitted: (_) => commit(),
+      onEditingComplete: commit,
+      onTapOutside: (_) {
+        commit();
+        focus.unfocus();
+      },
+    );
+  }
+
+  Widget _referenceImageSection(BuildContext context) {
+    final c = _controller;
+    final loaded = c.refImage != null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Reference Image', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            OutlinedButton.icon(
+              onPressed: _loadImage,
+              icon: const Icon(Icons.image_outlined),
+              label: Text(loaded ? 'Replace' : 'Load Image'),
+            ),
+            const SizedBox(width: 8),
+            if (loaded)
+              OutlinedButton.icon(
+                onPressed: () => setState(c.clearReferenceImage),
+                icon: const Icon(Icons.close),
+                label: const Text('Remove'),
+              ),
+          ],
+        ),
+        if (loaded) ...[
+          const SizedBox(height: 4),
+          Text(c.refImageName ?? '', style: Theme.of(context).textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(child: _imageField('X (mm)', _imageXController, _imageXFocus, (v) => c.setImagePosition(x: v))),
+              const SizedBox(width: 8),
+              Expanded(child: _imageField('Y (mm)', _imageYController, _imageYFocus, (v) => c.setImagePosition(y: v))),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(child: _imageField('Width (mm)', _imageWController, _imageWFocus, (v) => c.setImageSize(width: v))),
+              const SizedBox(width: 8),
+              Expanded(child: _imageField('Height (mm)', _imageHController, _imageHFocus, (v) => c.setImageSize(height: v))),
+            ],
+          ),
+          CheckboxListTile(
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+            controlAffinity: ListTileControlAffinity.leading,
+            title: const Text('Lock aspect ratio'),
+            value: c.imageLockAspect,
+            onChanged: (v) => setState(() {
+              c.setImageLockAspect(v ?? true);
+              _refreshImageFields();
+            }),
+          ),
+          Row(
+            children: [
+              const Text('Opacity'),
+              Expanded(
+                child: Slider(
+                  value: c.imageOpacity,
+                  min: 0.05,
+                  max: 1,
+                  onChanged: (v) => setState(() => c.setImageOpacity(v)),
+                ),
+              ),
+            ],
+          ),
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: [
+              FilledButton.tonalIcon(
+                onPressed: _autoFitImage,
+                icon: const Icon(Icons.auto_fix_high),
+                label: const Text('Auto-fit to outline'),
+              ),
+              FilledButton.tonalIcon(
+                onPressed: _detectHoles,
+                icon: const Icon(Icons.search),
+                label: const Text('Find holes'),
+              ),
+              OutlinedButton(
+                onPressed: () => setState(() {
+                  c.fitImageToOutline();
+                  _refreshImageFields();
+                }),
+                child: const Text('Fit width to outline'),
+              ),
+              OutlinedButton(
+                onPressed: () => setState(() {
+                  c.fitImageToOutline(keepAspect: false);
+                  _refreshImageFields();
+                }),
+                child: const Text('Stretch to outline'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Drag the image to move it, or a corner handle to scale it. Holes are dragged first when they overlap.',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ],
+    );
   }
 
   void _snack(String message) {
@@ -642,6 +874,8 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                   ],
                 ),
                 const Divider(height: 32),
+                _referenceImageSection(context),
+                const Divider(height: 32),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -711,6 +945,10 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                       onPanEnd: _onPreviewPanEnd,
                       child: CustomPaint(
                         painter: TemplateOutlinePainter(
+                          image: _controller.refImage,
+                          imageRectMm: Rect.fromLTWH(
+                              _controller.imageX, _controller.imageY, _controller.imageWidth, _controller.imageHeight),
+                          imageOpacity: _controller.imageOpacity,
                           outlineWidth: _controller.outlineWidth,
                           outlineHeight: _controller.outlineHeight,
                           cornerStyle: _controller.cornerStyle,
@@ -742,7 +980,8 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
 
   Widget _holeRow(String holeId) {
     final hole = _controller.holes.firstWhere((h) => h.id == holeId);
-    final isSlot = hole.shape == TemplateMakerHoleShape.slot;
+    final isSlot = hole.shape != TemplateMakerHoleShape.round;
+    final isRect = hole.shape == TemplateMakerHoleShape.rect;
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Column(
@@ -750,12 +989,12 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
         children: [
           Row(
             children: [
-              Text(isSlot ? 'Slot' : 'Round hole', style: Theme.of(context).textTheme.labelMedium),
+              Text(isRect ? 'Rectangle' : isSlot ? 'Slot' : 'Round hole', style: Theme.of(context).textTheme.labelMedium),
               const Spacer(),
               IconButton(
                 onPressed: () => _removeHole(holeId),
                 icon: const Icon(Icons.delete_outline, size: 20),
-                tooltip: 'Remove ${isSlot ? 'slot' : 'hole'}',
+                tooltip: 'Remove ${isRect ? 'rectangle' : isSlot ? 'slot' : 'hole'}',
               ),
             ],
           ),

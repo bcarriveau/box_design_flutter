@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
@@ -26,7 +27,16 @@ class TemplateOutlinePainter extends CustomPainter {
         double rotationDeg,
       })> holes;
 
+  /// Optional tracing image, placed by [imageRectMm] (left/top = its
+  /// bottom-left corner in template mm, width/height = its size in mm).
+  final ui.Image? image;
+  final Rect imageRectMm;
+  final double imageOpacity;
+
   const TemplateOutlinePainter({
+    this.image,
+    this.imageRectMm = Rect.zero,
+    this.imageOpacity = 0.5,
     required this.outlineWidth,
     required this.outlineHeight,
     this.cornerStyle = TemplateMakerCornerStyle.fillet,
@@ -46,6 +56,27 @@ class TemplateOutlinePainter extends CustomPainter {
     final originY = (size.height - outlineHeight * scale) / 2;
 
     Offset toPx(Vec2 p) => Offset(originX + p.x * scale, originY + (outlineHeight - p.y) * scale);
+
+    final img = image;
+    if (img != null && imageRectMm.width > 0 && imageRectMm.height > 0) {
+      final dst = Rect.fromPoints(
+        toPx(Vec2(imageRectMm.left, imageRectMm.top)),
+        toPx(Vec2(imageRectMm.right, imageRectMm.bottom)),
+      );
+      canvas.drawImageRect(
+        img,
+        Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble()),
+        dst,
+        Paint()
+          ..color = Colors.white.withValues(alpha: imageOpacity)
+          ..filterQuality = FilterQuality.medium,
+      );
+      canvas.drawRect(dst, Paint()..color = Colors.teal..style = PaintingStyle.stroke..strokeWidth = 1);
+      final handlePaint = Paint()..color = Colors.teal;
+      for (final corner in [dst.topLeft, dst.topRight, dst.bottomLeft, dst.bottomRight]) {
+        canvas.drawRect(Rect.fromCenter(center: corner, width: 9, height: 9), handlePaint);
+      }
+    }
 
     final outlinePaint = Paint()
       ..color = Colors.black
@@ -76,8 +107,12 @@ class TemplateOutlinePainter extends CustomPainter {
         canvas.drawCircle(center, radiusPx, holePaint);
         _drawLabel(canvas, '⌀${hole.diameter.toStringAsFixed(1)}', center + Offset(radiusPx + 4, -radiusPx - 4));
       } else {
-        final outline = DxfPolyline(stadiumVertices(hole.slotLength, hole.slotWidth), closed: true)
-            .transformed(delta: hole.center, rotationDeg: hole.rotationDeg);
+        final outline = DxfPolyline(
+          hole.shape == TemplateMakerHoleShape.rect
+              ? rectVertices(hole.slotLength, hole.slotWidth)
+              : stadiumVertices(hole.slotLength, hole.slotWidth),
+          closed: true,
+        ).transformed(delta: hole.center, rotationDeg: hole.rotationDeg);
         final pts = outline.toPoints().map(toPx).toList();
         canvas.drawPath(Path()..addPolygon(pts, true), holePaint);
         final center = toPx(hole.center);
@@ -96,7 +131,10 @@ class TemplateOutlinePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant TemplateOutlinePainter oldDelegate) {
-    return oldDelegate.outlineWidth != outlineWidth ||
+    return oldDelegate.image != image ||
+        oldDelegate.imageRectMm != imageRectMm ||
+        oldDelegate.imageOpacity != imageOpacity ||
+        oldDelegate.outlineWidth != outlineWidth ||
         oldDelegate.outlineHeight != outlineHeight ||
         oldDelegate.cornerStyle != cornerStyle ||
         oldDelegate.cornerSize != cornerSize ||

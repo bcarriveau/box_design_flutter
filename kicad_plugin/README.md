@@ -45,7 +45,7 @@ Tested against KiCad 9.
    - **Add/update entry in index.json** -- registers the new template in
      `assets/templates/index.json` so the app's palette picks it up.
 4. Click **Export**. Any skipped/unsupported geometry (e.g. a Bezier curve
-   left on Edge.Cuts) is listed in the Warnings box.
+   left on Edge.Cuts) is listed in the Log box, along with a warning if no mounting holes were found. Results and errors appear there instead of in popups.
 
 ## Coordinate convention
 

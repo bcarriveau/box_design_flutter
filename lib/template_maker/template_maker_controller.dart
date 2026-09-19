@@ -1,14 +1,16 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 
 import '../models/controller_template.dart';
 import '../models/dxf_entity.dart';
 import '../models/vec2.dart';
+import 'image_detect.dart';
 
 const _bulge90 = 0.4142135623730951; // tan(90deg / 4), quarter-circle bulge
 
-enum TemplateMakerHoleShape { round, slot }
+enum TemplateMakerHoleShape { round, slot, rect }
 
 /// How each corner of the outline rectangle is treated. [size] (a separate
 /// field on the controller) is the fillet radius, chamfer cut, or notch cut
@@ -41,6 +43,18 @@ class TemplateMakerHole {
     this.slotWidth = 4,
     this.rotationDeg = 0,
   });
+}
+
+/// A [length] x [width] rectangle centered on the origin with its long axis
+/// along X, as a closed 4-vertex polygon (no bulge).
+List<PolyVertex> rectVertices(double length, double width) {
+  final hl = length / 2, hw = width / 2;
+  return [
+    PolyVertex(Vec2(-hl, -hw)),
+    PolyVertex(Vec2(hl, -hw)),
+    PolyVertex(Vec2(hl, hw)),
+    PolyVertex(Vec2(-hl, hw)),
+  ];
 }
 
 /// A rectangle outline with a square notch cut from each corner (e.g. for
@@ -103,6 +117,20 @@ class TemplateMakerController extends ChangeNotifier {
   TemplateMakerCornerStyle cornerStyle = TemplateMakerCornerStyle.fillet;
   double cornerSize = 0;
   final List<TemplateMakerHole> holes = [];
+
+  /// Optional tracing overlay (a screenshot/drawing to line the outline and
+  /// holes up against). Positioned by its bottom-left corner and sized in
+  /// template mm; never exported with the template.
+  ui.Image? refImage;
+  String? refImageName;
+  double imageX = 0;
+  double imageY = 0;
+  double imageWidth = 100;
+  double imageHeight = 100;
+  double imageOpacity = 0.5;
+  bool imageLockAspect = true;
+
+  Uint8List? _refPixels;
 
   int _nextHoleSeq = 1;
 
@@ -247,7 +275,171 @@ class TemplateMakerController extends ChangeNotifier {
     notifyListeners();
   }
 
+  double get _imageAspect => refImage == null ? 1 : refImage!.width / refImage!.height;
+
+  /// Decodes [bytes] as the reference image and drops it at the outline's
+  /// bottom-left, scaled to the outline's width (aspect preserved).
+  Future<void> loadReferenceImage(Uint8List bytes, String name) async {
+    final codec = await ui.instantiateImageCodec(bytes);
+    final frame = await codec.getNextFrame();
+    codec.dispose();
+    refImage?.dispose();
+    refImage = frame.image;
+    refImageName = name;
+    _refPixels = null;
+    fitImageToOutline(keepAspect: true);
+  }
+
+  void clearReferenceImage() {
+    refImage?.dispose();
+    refImage = null;
+    _refPixels = null;
+    refImageName = null;
+    notifyListeners();
+  }
+
+  /// Sizes the image to the outline's width and pins it to (0, 0); with
+  /// [keepAspect] false it is stretched to the outline's width *and* height.
+  void fitImageToOutline({bool keepAspect = true}) {
+    if (refImage == null) return;
+    imageX = 0;
+    imageY = 0;
+    imageWidth = outlineWidth;
+    imageHeight = keepAspect ? outlineWidth / _imageAspect : outlineHeight;
+    notifyListeners();
+  }
+
+  void setImagePosition({double? x, double? y}) {
+    if (x != null) imageX = x;
+    if (y != null) imageY = y;
+    notifyListeners();
+  }
+
+  /// Resizes the image; with [imageLockAspect] on, changing one dimension
+  /// derives the other from the image's own aspect ratio.
+  void setImageSize({double? width, double? height}) {
+    if (refImage == null) return;
+    if (width != null && width > 0) {
+      imageWidth = width;
+      if (imageLockAspect) imageHeight = width / _imageAspect;
+    } else if (height != null && height > 0) {
+      imageHeight = height;
+      if (imageLockAspect) imageWidth = height * _imageAspect;
+    }
+    notifyListeners();
+  }
+
+  void setImageLockAspect(bool value) {
+    imageLockAspect = value;
+    if (value && refImage != null) imageHeight = imageWidth / _imageAspect;
+    notifyListeners();
+  }
+
+  void setImageOpacity(double value) {
+    imageOpacity = value.clamp(0.05, 1.0);
+    notifyListeners();
+  }
+
+  /// Resizes by dragging a corner: [fixed] (the opposite corner) stays put
+  /// and [pointer] is where the dragged corner now is, both in template mm.
+  void scaleImageFromCorner(Vec2 fixed, Vec2 pointer) {
+    if (refImage == null) return;
+    final sx = pointer.x >= fixed.x ? 1.0 : -1.0;
+    final sy = pointer.y >= fixed.y ? 1.0 : -1.0;
+    var w = math.max((pointer.x - fixed.x).abs(), 1.0);
+    var h = math.max((pointer.y - fixed.y).abs(), 1.0);
+    if (imageLockAspect) h = w / _imageAspect;
+    imageWidth = w;
+    imageHeight = h;
+    imageX = sx > 0 ? fixed.x : fixed.x - w;
+    imageY = sy > 0 ? fixed.y : fixed.y - h;
+    notifyListeners();
+  }
+
+  Future<ImageDetection?> _detectInImage() async {
+    final img = refImage;
+    if (img == null) return null;
+    _refPixels ??= (await img.toByteData(format: ui.ImageByteFormat.rawRgba))?.buffer.asUint8List();
+    final pixels = _refPixels;
+    if (pixels == null) return null;
+    return detectBoardAndHoles(pixels, img.width, img.height, outlineWidthMm: outlineWidth, outlineHeightMm: outlineHeight);
+  }
+
+  /// Finds the board outline in the reference image and scales/moves the
+  /// image so that outline lands exactly on the template's outline. Returns
+  /// the X-vs-Y scale mismatch in percent (the image gets stretched
+  /// non-uniformly, with aspect lock turned off, when it isn't ~0), or null
+  /// if no outline could be found.
+  Future<double?> autoFitImageToOutline() async {
+    final img = refImage;
+    final det = await _detectInImage();
+    if (img == null || det == null) return null;
+    final o = det.outline;
+    final sx = outlineWidth / o.width;
+    final sy = outlineHeight / o.height;
+    imageWidth = img.width * sx;
+    imageHeight = img.height * sy;
+    imageX = -o.left * sx;
+    imageY = -(img.height - o.bottom) * sy;
+    final mismatch = (sx / sy - 1).abs() * 100;
+    if (mismatch > 0.5) imageLockAspect = false;
+    notifyListeners();
+    return mismatch;
+  }
+
+  /// Finds round holes, slots and rectangles enclosed by the outline in the
+  /// reference image (using the image's *current* position and size, so fit
+  /// it to the outline first) and adds them as holes, skipping any that
+  /// duplicate an existing hole. Returns how many were added, or null if the
+  /// image couldn't be analysed.
+  Future<int?> detectHolesFromImage() async {
+    final img = refImage;
+    final det = await _detectInImage();
+    if (img == null || det == null) return null;
+    final mmPerPxX = imageWidth / img.width;
+    final mmPerPxY = imageHeight / img.height;
+    final avg = math.sqrt(mmPerPxX * mmPerPxY);
+    double r1(double v) => (v * 10).round() / 10;
+
+    var added = 0;
+    for (final d in det.holes) {
+      final x = r1(imageX + d.cx * mmPerPxX);
+      final y = r1(imageY + imageHeight - d.cy * mmPerPxY);
+      if (x < 0 || y < 0 || x > outlineWidth || y > outlineHeight) continue;
+
+      final vertical = d.rotationDeg == 90;
+      final aligned = d.rotationDeg == 0 || vertical;
+      final lenMm = aligned ? d.length * (vertical ? mmPerPxY : mmPerPxX) : d.length * avg;
+      final widMm = aligned ? d.width * (vertical ? mmPerPxX : mmPerPxY) : d.width * avg;
+      final hole = TemplateMakerHole(
+        id: 'hole$_nextHoleSeq',
+        x: x,
+        y: y,
+        shape: switch (d.shape) {
+          DetectedHoleShape.round => TemplateMakerHoleShape.round,
+          DetectedHoleShape.slot => TemplateMakerHoleShape.slot,
+          DetectedHoleShape.rect => TemplateMakerHoleShape.rect,
+        },
+        diameter: r1(d.length * avg),
+        slotLength: r1(lenMm),
+        slotWidth: r1(widMm),
+        rotationDeg: d.rotationDeg.roundToDouble(),
+      );
+      final duplicate = holes.any((h) => (h.x - x).abs() < 1 && (h.y - y).abs() < 1);
+      if (duplicate) continue;
+      _nextHoleSeq++;
+      holes.add(hole);
+      added++;
+    }
+    notifyListeners();
+    return added;
+  }
+
   void newTemplate() {
+    refImage?.dispose();
+    refImage = null;
+    _refPixels = null;
+    refImageName = null;
     id = 'new_template';
     name = 'New Template';
     category = TemplateCategory.box;
@@ -303,8 +495,12 @@ class TemplateMakerController extends ChangeNotifier {
         if (h.shape == TemplateMakerHoleShape.round)
           DxfCircle(Vec2(h.x, h.y), h.diameter / 2)
         else
-          DxfPolyline(stadiumVertices(h.slotLength, h.slotWidth), closed: true)
-              .transformed(delta: Vec2(h.x, h.y), rotationDeg: h.rotationDeg),
+          DxfPolyline(
+            h.shape == TemplateMakerHoleShape.rect
+                ? rectVertices(h.slotLength, h.slotWidth)
+                : stadiumVertices(h.slotLength, h.slotWidth),
+            closed: true,
+          ).transformed(delta: Vec2(h.x, h.y), rotationDeg: h.rotationDeg),
     ];
     return ControllerTemplate(
       id: id,
@@ -332,6 +528,21 @@ class TemplateMakerController extends ChangeNotifier {
     return false;
   }
 
+  /// True for a plain 4-vertex rectangle that sits strictly inside [outer]'s
+  /// bounding box -- i.e. a rectangular hole, not the outline itself.
+  static bool _isInnerRect(DxfEntity e, BoundingBox outer) {
+    if (e is! DxfPolyline || !e.closed || e.vertices.length != 4) return false;
+    if (e.vertices.any((v) => v.bulge != 0)) return false;
+    final p = e.vertices.map((v) => v.point).toList();
+    final ab = Vec2(p[1].x - p[0].x, p[1].y - p[0].y);
+    final bc = Vec2(p[2].x - p[1].x, p[2].y - p[1].y);
+    final dot = ab.x * bc.x + ab.y * bc.y;
+    if (dot.abs() > 1e-6 * (_dist(p[0], p[1]) * _dist(p[1], p[2]) + 1)) return false;
+    final b = e.boundingBox;
+    const m = 0.01;
+    return b.minX > outer.minX + m && b.maxX < outer.maxX - m && b.minY > outer.minY + m && b.maxY < outer.maxY - m;
+  }
+
   /// Loads an existing template back into editable fields. The outline's
   /// size is the bounding box of every non-hole entity merged together --
   /// not just the single largest one -- since some exporters (e.g. the
@@ -347,7 +558,18 @@ class TemplateMakerController extends ChangeNotifier {
     name = template.name;
     category = template.category;
 
-    final outlineEntities = template.entities.where((e) => !_looksLikeHole(e)).toList();
+    BoundingBox? largest;
+    var largestArea = 0.0;
+    for (final e in template.entities) {
+      final b = e.boundingBox;
+      if (b.width * b.height > largestArea) {
+        largestArea = b.width * b.height;
+        largest = b;
+      }
+    }
+    bool isHole(DxfEntity e) => _looksLikeHole(e) || (largest != null && _isInnerRect(e, largest));
+
+    final outlineEntities = template.entities.where((e) => !isHole(e)).toList();
     // If literally everything looked like a hole (shouldn't happen for a
     // real template), fall back to treating every entity as outline
     // material instead of showing an empty 0x0 outline.
@@ -388,7 +610,7 @@ class TemplateMakerController extends ChangeNotifier {
     _nextHoleSeq = 1;
     // In the fallback case above (nothing looked like a hole) there's
     // nothing left to extract as a hole either.
-    final holeSource = outlineEntities.isEmpty ? const <DxfEntity>[] : template.entities.where(_looksLikeHole);
+    final holeSource = outlineEntities.isEmpty ? const <DxfEntity>[] : template.entities.where(isHole);
     for (final e in holeSource) {
       if (e is DxfCircle) {
         holes.add(TemplateMakerHole(
@@ -396,6 +618,17 @@ class TemplateMakerController extends ChangeNotifier {
           x: e.center.x,
           y: e.center.y,
           diameter: e.radius * 2,
+        ));
+      } else if (e is DxfPolyline && e.vertices.every((v) => v.bulge == 0)) {
+        final p = e.vertices.map((v) => v.point).toList();
+        holes.add(TemplateMakerHole(
+          id: 'hole${_nextHoleSeq++}',
+          x: (p[0].x + p[1].x + p[2].x + p[3].x) / 4,
+          y: (p[0].y + p[1].y + p[2].y + p[3].y) / 4,
+          shape: TemplateMakerHoleShape.rect,
+          slotLength: _dist(p[0], p[1]),
+          slotWidth: _dist(p[1], p[2]),
+          rotationDeg: math.atan2(p[1].y - p[0].y, p[1].x - p[0].x) * 180 / math.pi,
         ));
       } else if (e is DxfPolyline) {
         final v0 = e.vertices[0].point;
