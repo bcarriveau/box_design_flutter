@@ -336,6 +336,10 @@
     "file": "pb16_expansion.json"
   },
   {
+    "id": "pb16_mini",
+    "file": "pb16_mini.json"
+  },
+  {
     "id": "pb16_controller",
     "file": "pb16_controller.json"
   },
@@ -346,6 +350,10 @@
   {
     "id": "pixlite_4_controller",
     "file": "pixlite_4_controller.json"
+  },
+  {
+    "id": "pp16_four_out",
+    "file": "four_out.json"
   },
   {
     "id": "qilipsu_ql",
@@ -374,6 +382,14 @@
   {
     "id": "sandevices_e682",
     "file": "sandevices_e682.json"
+  },
+  {
+    "id": "sn_power_distribution",
+    "file": "sn_power_distribution.json"
+  },
+  {
+    "id": "sn_power_distribution_mini",
+    "file": "sn_power_distribution_mini.json"
   },
   {
     "id": "ticonn_mounting_plate",

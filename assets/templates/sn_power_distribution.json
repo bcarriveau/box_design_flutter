@@ -1,0 +1,51 @@
+{
+  "id": "sn_power_distribution",
+  "name": "SN Power_Distribution",
+  "category": "powerDistribution",
+  "entities": [
+    {
+      "type": "line",
+      "start": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "end": {
+        "x": 0.0,
+        "y": 59.0
+      }
+    },
+    {
+      "type": "line",
+      "start": {
+        "x": 84.5,
+        "y": 0.0
+      },
+      "end": {
+        "x": 0.0,
+        "y": 0.0
+      }
+    },
+    {
+      "type": "line",
+      "start": {
+        "x": 84.5,
+        "y": 59.0
+      },
+      "end": {
+        "x": 84.5,
+        "y": 0.0
+      }
+    },
+    {
+      "type": "line",
+      "start": {
+        "x": 84.5,
+        "y": 59.0
+      },
+      "end": {
+        "x": 0.0,
+        "y": 59.0
+      }
+    }
+  ]
+}
