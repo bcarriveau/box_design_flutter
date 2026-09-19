@@ -1,51 +1,57 @@
 {
   "id": "sn_power_distribution",
-  "name": "SN Power_Distribution",
+  "name": "SN Power Distribution",
   "category": "powerDistribution",
   "entities": [
     {
-      "type": "line",
-      "start": {
-        "x": 0.0,
-        "y": 0.0
-      },
-      "end": {
-        "x": 0.0,
-        "y": 59.0
-      }
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 84.5,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 84.5,
+          "y": 59.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 59.0,
+          "bulge": 0.0
+        }
+      ]
     },
     {
-      "type": "line",
-      "start": {
-        "x": 84.5,
-        "y": 0.0
+      "type": "circle",
+      "center": {
+        "x": 4.0,
+        "y": 55.0
       },
-      "end": {
-        "x": 0.0,
-        "y": 0.0
-      }
+      "radius": 1.75
     },
     {
-      "type": "line",
-      "start": {
-        "x": 84.5,
-        "y": 59.0
+      "type": "circle",
+      "center": {
+        "x": 4.0,
+        "y": 4.0
       },
-      "end": {
-        "x": 84.5,
-        "y": 0.0
-      }
+      "radius": 1.75
     },
     {
-      "type": "line",
-      "start": {
-        "x": 84.5,
-        "y": 59.0
+      "type": "circle",
+      "center": {
+        "x": 80.5,
+        "y": 55.0
       },
-      "end": {
-        "x": 0.0,
-        "y": 59.0
-      }
+      "radius": 1.75
     }
   ]
 }
