@@ -20,5 +20,11 @@
   {"id": "rect_standard", "name": "Standard Rect Slot (16x8mm)", "type": "rectangle", "slotLength": 16, "slotWidth": 8},
   {"id": "rect_large", "name": "Large Rect Slot (24x12mm)", "type": "rectangle", "slotLength": 24, "slotWidth": 12},
   {"id": "idc_24", "name": "24-Pin IDC Slot (37x10mm)", "type": "rectangle", "slotLength": 37, "slotWidth": 10},
-  {"id": "idc_40", "name": "40-Pin IDC Slot (57x10mm)", "type": "rectangle", "slotLength": 57, "slotWidth": 10}
+  {"id": "idc_40", "name": "40-Pin IDC Slot (57x10mm)", "type": "rectangle", "slotLength": 57, "slotWidth": 10},
+  {"id": "fan_40mm", "name": "40mm Fan Opening (39mm)", "type": "screw", "diameter": 39},
+  {"id": "arcade_button_24mm", "name": "Arcade Button 24mm (24.3mm)", "type": "screw", "diameter": 24.3},
+  {"id": "arcade_button_30mm", "name": "Arcade Button 30mm (30.3mm)", "type": "screw", "diameter": 30.3},
+  {"id": "pixel_hole_12mm", "name": "Pixel Hole 12mm (11.9mm)", "type": "screw", "diameter": 11.9},
+  {"id": "pg7_gland", "name": "PG7 Cable Gland (12.9mm)", "type": "screw", "diameter": 12.9},
+  {"id": "pg9_gland", "name": "PG9 Cable Gland (15.8mm)", "type": "screw", "diameter": 15.8}
 ]

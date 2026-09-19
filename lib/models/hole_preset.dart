@@ -63,5 +63,12 @@ class HolePreset {
     // clearance so the shroud passes through a panel.
     HolePreset(id: 'idc_24', name: '24-Pin IDC Slot (37x10mm)', type: HoleType.rectangle, slotLength: 37, slotWidth: 10),
     HolePreset(id: 'idc_40', name: '40-Pin IDC Slot (57x10mm)', type: HoleType.rectangle, slotLength: 57, slotWidth: 10),
+    // Round panel cutouts (fan opening, buttons, pixel holes, cable glands).
+    HolePreset(id: 'fan_40mm', name: '40mm Fan Opening (39mm)', type: HoleType.screw, diameter: 39),
+    HolePreset(id: 'arcade_button_24mm', name: 'Arcade Button 24mm (24.3mm)', type: HoleType.screw, diameter: 24.3),
+    HolePreset(id: 'arcade_button_30mm', name: 'Arcade Button 30mm (30.3mm)', type: HoleType.screw, diameter: 30.3),
+    HolePreset(id: 'pixel_hole_12mm', name: 'Pixel Hole 12mm (11.9mm)', type: HoleType.screw, diameter: 11.9),
+    HolePreset(id: 'pg7_gland', name: 'PG7 Cable Gland (12.9mm)', type: HoleType.screw, diameter: 12.9),
+    HolePreset(id: 'pg9_gland', name: 'PG9 Cable Gland (15.8mm)', type: HoleType.screw, diameter: 15.8),
   ];
 }

@@ -1,5 +1,21 @@
 [
   {
+    "id": "bus_bar_12port",
+    "file": "bus_bar_12port.json"
+  },
+  {
+    "id": "4_port_fuse_holder",
+    "file": "4_port_fuse_holder.json"
+  },
+  {
+    "id": "ah_power_distro_revb",
+    "file": "ah_power_distro_revb.json"
+  },
+  {
+    "id": "arduino_due",
+    "file": "arduino_due.json"
+  },
+  {
     "id": "baldrick_large",
     "file": "baldrick_large.json"
   },
@@ -10,6 +26,10 @@
   {
     "id": "baldrick_small",
     "file": "baldrick_small.json"
+  },
+  {
+    "id": "beagleboneblack",
+    "file": "beagleboneblack.json"
   },
   {
     "id": "bud_nbf32016",
@@ -52,6 +72,22 @@
     "file": "dig_uno_v2.json"
   },
   {
+    "id": "espixel_pops",
+    "file": "espixel_pops.json"
+  },
+  {
+    "id": "espixelstick_v2_0",
+    "file": "espixelstick_v2_0.json"
+  },
+  {
+    "id": "falcon_f16v2",
+    "file": "falcon_f16v2.json"
+  },
+  {
+    "id": "falcon_f16v2_expansion",
+    "file": "falcon_f16v2_expansion.json"
+  },
+  {
     "id": "falcon_16v3_controller",
     "file": "falcon_16v3_controller.json"
   },
@@ -74,6 +110,10 @@
   {
     "id": "falcon_f48_v4_controller",
     "file": "falcon_f48_v4_controller.json"
+  },
+  {
+    "id": "falcon_f4v3_v1",
+    "file": "falcon_f4v3_v1.json"
   },
   {
     "id": "falcon_f8_distro",
@@ -132,6 +172,10 @@
     "file": "genius_pro32_controller.json"
   },
   {
+    "id": "hanson_8port_distro",
+    "file": "hanson_8port_distro.json"
+  },
+  {
     "id": "holidaycoro_951_61_receiver",
     "file": "holidaycoro_951_61_receiver.json"
   },
@@ -148,8 +192,24 @@
     "file": "holidaycoro_flex_spi.json"
   },
   {
+    "id": "jboard_4_port",
+    "file": "jboard_4_port.json"
+  },
+  {
     "id": "jboard_8_port",
     "file": "jboard_8_port.json"
+  },
+  {
+    "id": "jboard_diff_to_port_v1",
+    "file": "jboard_diff_to_port_v1.json"
+  },
+  {
+    "id": "jboard_espixnode_v1",
+    "file": "jboard_espixnode_v1.json"
+  },
+  {
+    "id": "jboard_port_to_diff",
+    "file": "jboard_port_to_diff.json"
   },
   {
     "id": "kulp_k16_v2",
@@ -196,8 +256,24 @@
     "file": "kulp_pocket_scroller_v3.json"
   },
   {
+    "id": "kulp_pocketscroller_v2",
+    "file": "kulp_pocketscroller_v2.json"
+  },
+  {
     "id": "kulp_ps16",
     "file": "kulp_ps16.json"
+  },
+  {
+    "id": "lor_cmb24d_v6",
+    "file": "lor_cmb24d_v6.json"
+  },
+  {
+    "id": "pixcon_16",
+    "file": "pixcon_16.json"
+  },
+  {
+    "id": "meanwell_100_series",
+    "file": "meanwell_100_series.json"
   },
   {
     "id": "meanwell_lrs150_side_placeholder",
@@ -208,6 +284,10 @@
     "file": "meanwell_lrs150_top.json"
   },
   {
+    "id": "meanwell_lrs_35",
+    "file": "meanwell_lrs_35.json"
+  },
+  {
     "id": "meanwell_lrs350_side_placeholder",
     "file": "meanwell_lrs350_side.json"
   },
@@ -216,12 +296,28 @@
     "file": "meanwell_lrs350_top.json"
   },
   {
+    "id": "meanwell_50_series",
+    "file": "meanwell_50_series.json"
+  },
+  {
     "id": "meanwell_lrs600_side_placeholder",
     "file": "meanwell_lrs600_side.json"
   },
   {
     "id": "meanwell_lrs600_top",
     "file": "meanwell_lrs600_top.json"
+  },
+  {
+    "id": "meanwell_75_series",
+    "file": "meanwell_75_series.json"
+  },
+  {
+    "id": "meanwell_rs_15_series",
+    "file": "meanwell_rs_15_series.json"
+  },
+  {
+    "id": "meanwell_rt_50d",
+    "file": "meanwell_rt_50d.json"
   },
   {
     "id": "meanwell_rs25_side",
@@ -244,6 +340,14 @@
     "file": "pb16_controller.json"
   },
   {
+    "id": "pixel2ac9",
+    "file": "pixel2ac9.json"
+  },
+  {
+    "id": "pixlite_4_controller",
+    "file": "pixlite_4_controller.json"
+  },
+  {
     "id": "qilipsu_ql",
     "file": "qilipsu_ql.json"
   },
@@ -254,6 +358,10 @@
   {
     "id": "raspberry_pi_model_b",
     "file": "raspberry_pi_model_b.json"
+  },
+  {
+    "id": "raspberry_pi_zero",
+    "file": "raspberry_pi_zero.json"
   },
   {
     "id": "rgb_duo_2",
