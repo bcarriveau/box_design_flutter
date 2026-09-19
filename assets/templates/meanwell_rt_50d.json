@@ -1,0 +1,57 @@
+{
+  "id": "meanwell_rt_50d",
+  "name": "Mean Well RT-50D",
+  "category": "powerSupply",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 97.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 99.0001,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 99.0001,
+          "y": 97.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 75.5,
+        "y": 45.5
+      },
+      "radius": 1.4991
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 20.5,
+        "y": 45.5
+      },
+      "radius": 1.4991
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.5,
+        "y": 4.5
+      },
+      "radius": 1.7491
+    }
+  ]
+}

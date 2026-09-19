@@ -1,0 +1,81 @@
+{
+  "id": "pixel2ac9",
+  "name": "Pixel2AC9",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 86.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 150.0001,
+          "y": 86.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 150.0001,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 23.4989,
+        "y": 81.4996
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 23.4989,
+        "y": 55.999
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 23.4989,
+        "y": 5.0005
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 125.001,
+        "y": 81.4996
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 125.001,
+        "y": 55.999
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 125.001,
+        "y": 5.0005
+      },
+      "radius": 1.35
+    }
+  ]
+}

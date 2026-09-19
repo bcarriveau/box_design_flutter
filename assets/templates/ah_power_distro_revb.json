@@ -1,0 +1,65 @@
+{
+  "id": "ah_power_distro_revb",
+  "name": "Andy Harrison Power Distro Rev B",
+  "category": "powerDistribution",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 48.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 78.0,
+          "y": 48.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 78.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.0009,
+        "y": 42.4997
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.0009,
+        "y": 5.5003
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 73.9991,
+        "y": 42.4997
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 73.9991,
+        "y": 5.5003
+      },
+      "radius": 1.35
+    }
+  ]
+}

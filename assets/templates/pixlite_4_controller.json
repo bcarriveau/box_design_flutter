@@ -1,0 +1,65 @@
+{
+  "id": "pixlite_4_controller",
+  "name": "PixLite 4 Controller",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 69.1,
+          "bulge": 0.0
+        },
+        {
+          "x": 110.0,
+          "y": 69.1,
+          "bulge": 0.0
+        },
+        {
+          "x": 110.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 14.5002,
+        "y": 64.9004
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 14.5002,
+        "y": 4.1996
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 99.0002,
+        "y": 64.9004
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 99.0002,
+        "y": 4.1996
+      },
+      "radius": 1.35
+    }
+  ]
+}

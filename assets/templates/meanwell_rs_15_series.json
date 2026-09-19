@@ -1,0 +1,49 @@
+{
+  "id": "meanwell_rs_15_series",
+  "name": "Mean Well RS-15",
+  "category": "powerSupply",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 62.5,
+          "y": 51.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 51.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 62.5,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 8.75,
+        "y": 25.25
+      },
+      "radius": 1.4985
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 47.85,
+        "y": 25.25
+      },
+      "radius": 1.4991
+    }
+  ]
+}

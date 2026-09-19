@@ -1,0 +1,83 @@
+{
+  "id": "kulp_pocketscroller_v2",
+  "name": "Kulp PocketScroller v2.0",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0762,
+          "y": 71.2978,
+          "bulge": -0.42
+        },
+        {
+          "x": 1.3462,
+          "y": 72.5678,
+          "bulge": 0.0
+        },
+        {
+          "x": 59.7662,
+          "y": 72.5678,
+          "bulge": -0.41252
+        },
+        {
+          "x": 61.0362,
+          "y": 71.2978,
+          "bulge": 0.0
+        },
+        {
+          "x": 60.96,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 2.3251,
+        "y": 69.4827
+      },
+      "radius": 1.4361
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 57.5911,
+        "y": 60.1565
+      },
+      "radius": 1.4698
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 56.3211,
+        "y": 33.4865
+      },
+      "radius": 1.4698
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 5.5211,
+        "y": 32.2165
+      },
+      "radius": 1.4698
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 33.4611,
+        "y": 51.2665
+      },
+      "radius": 1.4698
+    }
+  ]
+}

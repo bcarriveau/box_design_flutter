@@ -1,0 +1,65 @@
+{
+  "id": "meanwell_100_series",
+  "name": "Mean Well LRS-100",
+  "category": "powerSupply",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 97.0001,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 129.0001,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 129.0001,
+          "y": 97.0001,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 78.0,
+        "y": 34.0
+      },
+      "radius": 1.4991
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 78.0,
+        "y": 67.0
+      },
+      "radius": 1.4991
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 127.0001,
+        "y": 6.5
+      },
+      "radius": 1.3493
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.5,
+        "y": 91.5001
+      },
+      "radius": 1.3487
+    }
+  ]
+}

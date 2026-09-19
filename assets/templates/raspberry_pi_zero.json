@@ -1,0 +1,65 @@
+{
+  "id": "raspberry_pi_zero",
+  "name": "Raspberry PI Zero",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 30.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 65.0,
+          "y": 30.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 65.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.499,
+        "y": 26.4988
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.499,
+        "y": 3.5012
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 61.501,
+        "y": 26.4988
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 61.501,
+        "y": 3.5012
+      },
+      "radius": 1.35
+    }
+  ]
+}

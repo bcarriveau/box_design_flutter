@@ -1,0 +1,65 @@
+{
+  "id": "lor_cmb24d_v6",
+  "name": "LOR CMB-24D - V6 24 Channel DC Output Card",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 102.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 188.0,
+          "y": 102.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 188.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.7506,
+        "y": 98.2493
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.7506,
+        "y": 4.3513
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 184.249,
+        "y": 98.2493
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 184.2494,
+        "y": 4.3513
+      },
+      "radius": 1.35
+    }
+  ]
+}

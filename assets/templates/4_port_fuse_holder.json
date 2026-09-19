@@ -1,0 +1,49 @@
+{
+  "id": "4_port_fuse_holder",
+  "name": "4 Port Fuse Holder",
+  "category": "powerDistribution",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 86.0,
+          "y": 53.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 53.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 86.0,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.75,
+        "y": 26.5
+      },
+      "radius": 1.7732
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 80.75,
+        "y": 26.5
+      },
+      "radius": 1.7738
+    }
+  ]
+}

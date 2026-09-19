@@ -1,0 +1,65 @@
+{
+  "id": "hanson_8port_distro",
+  "name": "Hanson 8 Port Distro",
+  "category": "powerDistribution",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 49.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 97.0001,
+          "y": 49.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 97.0001,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.5,
+        "y": 45.5
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.5,
+        "y": 3.5
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 93.5001,
+        "y": 45.5
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 93.5001,
+        "y": 3.5
+      },
+      "radius": 1.35
+    }
+  ]
+}

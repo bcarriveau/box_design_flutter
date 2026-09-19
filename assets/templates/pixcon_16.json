@@ -1,0 +1,81 @@
+{
+  "id": "pixcon_16",
+  "name": "LOR Pixcon 16",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 119.9991,
+          "bulge": 0.0
+        },
+        {
+          "x": 200.0012,
+          "y": 119.9991,
+          "bulge": 0.0
+        },
+        {
+          "x": 200.0012,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 12.0002,
+        "y": 108.0003
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 12.0002,
+        "y": 12.0015
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 157.9999,
+        "y": 108.0003
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 157.9999,
+        "y": 12.0015
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 188.001,
+        "y": 12.0015
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 188.001,
+        "y": 108.0003
+      },
+      "radius": 1.35
+    }
+  ]
+}

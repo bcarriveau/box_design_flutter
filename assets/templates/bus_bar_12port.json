@@ -1,0 +1,49 @@
+{
+  "id": "bus_bar_12port",
+  "name": "12 Port Terminal Bus Bar",
+  "category": "powerDistribution",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 20.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 183.0001,
+          "y": 20.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 183.0001,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 9.518,
+        "y": 10.5174
+      },
+      "radius": 1.8214
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 175.0176,
+        "y": 10.5177
+      },
+      "radius": 1.8215
+    }
+  ]
+}
