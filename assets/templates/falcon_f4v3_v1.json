@@ -1,7 +1,7 @@
 {
-  "id": "meanwell_lrs150_top_placeholder",
-  "name": "Mean Well LRS-150 (top mount)",
-  "category": "powerSupply",
+  "id": "falcon_f4v3_v1",
+  "name": "Falcon F4v3",
+  "category": "controller",
   "entities": [
     {
       "type": "polyline",
@@ -9,22 +9,22 @@
       "vertices": [
         {
           "x": 0.0,
-          "y": 0.0,
+          "y": 87.48,
           "bulge": 0.0
         },
         {
-          "x": 159.0,
-          "y": 0.0,
+          "x": 155.575,
+          "y": 87.48,
           "bulge": 0.0
         },
         {
-          "x": 159.0,
-          "y": 97.0,
+          "x": 155.575,
+          "y": 0.0,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 97.0,
+          "y": 0.0,
           "bulge": 0.0
         }
       ]
@@ -32,34 +32,34 @@
     {
       "type": "circle",
       "center": {
-        "x": 24.0,
-        "y": 32.0
+        "x": 27.8289,
+        "y": 81.5992
       },
-      "radius": 1.75
+      "radius": 1.35
     },
     {
       "type": "circle",
       "center": {
-        "x": 102.0,
-        "y": 32.0
+        "x": 27.8897,
+        "y": 5.4204
       },
-      "radius": 1.75
+      "radius": 1.35
     },
     {
       "type": "circle",
       "center": {
-        "x": 156.5,
-        "y": 6.5
+        "x": 129.1405,
+        "y": 81.6495
       },
-      "radius": 1.75
+      "radius": 1.35
     },
     {
       "type": "circle",
       "center": {
-        "x": 4.5,
-        "y": 91.5
+        "x": 129.1405,
+        "y": 5.4204
       },
-      "radius": 1.75
+      "radius": 1.35
     }
   ]
 }

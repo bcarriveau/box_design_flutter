@@ -1,0 +1,81 @@
+{
+  "id": "falcon_f16v2",
+  "name": "Falcon F16v2",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 129.8,
+          "bulge": 0.0
+        },
+        {
+          "x": 183.15,
+          "y": 129.8,
+          "bulge": 0.0
+        },
+        {
+          "x": 183.15,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 14.449,
+        "y": 124.3995
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 14.7003,
+        "y": 22.4503
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 167.2194,
+        "y": 124.3996
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 167.2088,
+        "y": 22.4503
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 131.3392,
+        "y": 110.6491
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 141.0494,
+        "y": 22.4502
+      },
+      "radius": 1.35
+    }
+  ]
+}

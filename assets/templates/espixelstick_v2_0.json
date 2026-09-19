@@ -1,0 +1,41 @@
+{
+  "id": "espixelstick_v2_0",
+  "name": "ESPixelStick",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 24.0,
+          "y": 50.6,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 50.6,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 24.0,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 12.0,
+        "y": 38.23
+      },
+      "radius": 1.3487
+    }
+  ]
+}

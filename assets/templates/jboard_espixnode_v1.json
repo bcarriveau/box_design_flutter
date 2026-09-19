@@ -1,0 +1,73 @@
+{
+  "id": "jboard_espixnode_v1",
+  "name": "JBoard ESPixNode",
+  "category": "controller",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 68.63,
+          "bulge": 0.0
+        },
+        {
+          "x": 26.67,
+          "y": 68.63,
+          "bulge": 0.0
+        },
+        {
+          "x": 26.67,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 2.6591,
+        "y": 66.5307
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 2.6591,
+        "y": 22.9008
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 23.9104,
+        "y": 66.5307
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 23.9104,
+        "y": 22.9008
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 13.29,
+        "y": 48.1501
+      },
+      "radius": 1.35
+    }
+  ]
+}
