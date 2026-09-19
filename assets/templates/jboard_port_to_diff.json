@@ -1,0 +1,65 @@
+{
+  "id": "jboard_port_to_diff",
+  "name": "JBoard Port To Diff",
+  "category": "controllerAddon",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 54.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 54.0,
+          "y": 54.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 54.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.9999,
+        "y": 49.0001
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.9999,
+        "y": 4.9999
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 49.0001,
+        "y": 49.0001
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 49.0001,
+        "y": 4.9999
+      },
+      "radius": 1.35
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "id": "jboard_diff_to_port_v1",
+  "name": "JBoard Diff Receiver",
+  "category": "receiver",
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 48.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 85.0,
+          "y": 48.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 85.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        }
+      ]
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.7518,
+        "y": 44.2936
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 3.7518,
+        "y": 3.7938
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 81.2536,
+        "y": 44.2936
+      },
+      "radius": 1.35
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 81.2536,
+        "y": 3.7938
+      },
+      "radius": 1.35
+    }
+  ]
+}
