@@ -272,6 +272,10 @@
     "file": "pixcon_16.json"
   },
   {
+    "id": "mattos_md1500",
+    "file": "mattos_md1500.json"
+  },
+  {
     "id": "meanwell_100_series",
     "file": "meanwell_100_series.json"
   },
@@ -376,6 +380,10 @@
     "file": "rgb_duo_2.json"
   },
   {
+    "id": "rni_1500",
+    "file": "rni_1500.json"
+  },
+  {
     "id": "sandevice_e6804",
     "file": "sandevice_e6804.json"
   },
@@ -414,10 +422,6 @@
   {
     "id": "yps_small_box",
     "file": "yps_small_box.json"
-  },
-  {
-    "id": "yps_vbox",
-    "file": "yps_vbox.json"
   },
   {
     "id": "yps_vbox_lr",
