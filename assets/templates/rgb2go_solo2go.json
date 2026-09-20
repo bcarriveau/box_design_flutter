@@ -1,6 +1,6 @@
 {
-  "id": "rgb_duo_2",
-  "name": "RGB2Go Duo2Go",
+  "id": "rgb2go_solo2go",
+  "name": "RGB2Go Solo2Go",
   "category": "controller",
   "entities": [
     {
@@ -13,18 +13,18 @@
           "bulge": 0.0
         },
         {
-          "x": 75.5,
+          "x": 103.6,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 75.5,
-          "y": 57.25,
+          "x": 103.6,
+          "y": 32.5,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 57.25,
+          "y": 32.5,
           "bulge": 0.0
         }
       ]
@@ -32,34 +32,18 @@
     {
       "type": "circle",
       "center": {
-        "x": 6.0,
-        "y": 6.0
+        "x": 11.6,
+        "y": 16.1
       },
-      "radius": 1.5
+      "radius": 1.6
     },
     {
       "type": "circle",
       "center": {
-        "x": 6.0,
-        "y": 51.25
+        "x": 92.8,
+        "y": 16.1
       },
-      "radius": 1.5
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 69.5,
-        "y": 6.0
-      },
-      "radius": 1.5
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 69.5,
-        "y": 51.25
-      },
-      "radius": 1.5
+      "radius": 1.6
     }
   ]
 }

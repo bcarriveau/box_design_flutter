@@ -376,8 +376,24 @@
     "file": "raspberry_pi_zero.json"
   },
   {
+    "id": "rgb2go_dmx2go",
+    "file": "rgb2go_dmx2go.json"
+  },
+  {
     "id": "rgb_duo_2",
     "file": "rgb_duo_2.json"
+  },
+  {
+    "id": "rgb2go_octa2go",
+    "file": "rgb2go_octa2go.json"
+  },
+  {
+    "id": "rgb2go_solo2go",
+    "file": "rgb2go_solo2go.json"
+  },
+  {
+    "id": "rgb2go_tetra2go",
+    "file": "rgb2go_tetra2go.json"
   },
   {
     "id": "rni_1500",
@@ -426,5 +442,13 @@
   {
     "id": "yps_vbox_lr",
     "file": "yps_vbox_lr.json"
+  },
+  {
+    "id": "yps_vbox_small",
+    "file": "yps_vbox_small.json"
+  },
+  {
+    "id": "yps_vivid8",
+    "file": "yps_vivid8.json"
   }
 ]

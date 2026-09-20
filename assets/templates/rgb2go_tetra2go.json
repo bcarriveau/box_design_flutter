@@ -1,6 +1,6 @@
 {
-  "id": "rgb_duo_2",
-  "name": "RGB2Go Duo2Go",
+  "id": "rgb2go_tetra2go",
+  "name": "RGB2Go Tetra2Go",
   "category": "controller",
   "entities": [
     {
@@ -13,18 +13,18 @@
           "bulge": 0.0
         },
         {
-          "x": 75.5,
+          "x": 115.2,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 75.5,
-          "y": 57.25,
+          "x": 115.2,
+          "y": 57.9,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 57.25,
+          "y": 57.9,
           "bulge": 0.0
         }
       ]
@@ -32,34 +32,34 @@
     {
       "type": "circle",
       "center": {
-        "x": 6.0,
-        "y": 6.0
+        "x": 5.2,
+        "y": 52.3
       },
-      "radius": 1.5
+      "radius": 1.55
     },
     {
       "type": "circle",
       "center": {
-        "x": 6.0,
-        "y": 51.25
+        "x": 110.2,
+        "y": 52.4
       },
-      "radius": 1.5
+      "radius": 1.55
     },
     {
       "type": "circle",
       "center": {
-        "x": 69.5,
-        "y": 6.0
+        "x": 5.2,
+        "y": 5.4
       },
-      "radius": 1.5
+      "radius": 1.55
     },
     {
       "type": "circle",
       "center": {
-        "x": 69.5,
-        "y": 51.25
+        "x": 110.2,
+        "y": 5.4
       },
-      "radius": 1.5
+      "radius": 1.55
     }
   ]
 }

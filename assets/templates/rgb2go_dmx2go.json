@@ -1,7 +1,7 @@
 {
-  "id": "rgb_duo_2",
-  "name": "RGB2Go Duo2Go",
-  "category": "controller",
+  "id": "rgb2go_dmx2go",
+  "name": "RGB2Go DMX2Go",
+  "category": "controllerAddon",
   "entities": [
     {
       "type": "polyline",
@@ -13,18 +13,18 @@
           "bulge": 0.0
         },
         {
-          "x": 75.5,
+          "x": 75.0,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 75.5,
-          "y": 57.25,
+          "x": 75.0,
+          "y": 20.0,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 57.25,
+          "y": 20.0,
           "bulge": 0.0
         }
       ]
@@ -32,32 +32,16 @@
     {
       "type": "circle",
       "center": {
-        "x": 6.0,
-        "y": 6.0
+        "x": 4.416499999999999,
+        "y": 10.0
       },
       "radius": 1.5
     },
     {
       "type": "circle",
       "center": {
-        "x": 6.0,
-        "y": 51.25
-      },
-      "radius": 1.5
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 69.5,
-        "y": 6.0
-      },
-      "radius": 1.5
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 69.5,
-        "y": 51.25
+        "x": 70.6,
+        "y": 10.0
       },
       "radius": 1.5
     }
