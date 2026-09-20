@@ -4,80 +4,30 @@
   "category": "controller",
   "entities": [
     {
-      "type": "line",
-      "start": {
-        "x": 0.0,
-        "y": 0.0
-      },
-      "end": {
-        "x": 0.0,
-        "y": 85.0
-      }
-    },
-    {
-      "type": "line",
-      "start": {
-        "x": 87.0,
-        "y": 85.0
-      },
-      "end": {
-        "x": 87.0,
-        "y": 0.0
-      }
-    },
-    {
-      "type": "line",
-      "start": {
-        "x": 87.0,
-        "y": 0.0
-      },
-      "end": {
-        "x": 0.0,
-        "y": 0.0
-      }
-    },
-    {
-      "type": "line",
-      "start": {
-        "x": 0.0,
-        "y": 85.0
-      },
-      "end": {
-        "x": 87.0,
-        "y": 85.0
-      }
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 7.9,
-        "y": 22.53
-      },
-      "radius": 1.65
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 7.9,
-        "y": 11.1
-      },
-      "radius": 1.65
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 8.05,
-        "y": 56.57
-      },
-      "radius": 1.6
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 8.05,
-        "y": 45.14
-      },
-      "radius": 1.6
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        {
+          "x": 0.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 87.0,
+          "y": 0.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 87.0,
+          "y": 85.0,
+          "bulge": 0.0
+        },
+        {
+          "x": 0.0,
+          "y": 85.0,
+          "bulge": 0.0
+        }
+      ]
     },
     {
       "type": "circle",
