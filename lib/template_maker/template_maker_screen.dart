@@ -56,6 +56,12 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   final _controller = TemplateMakerController();
   String? _draggingHoleId;
   _ImageDrag _imageDrag = _ImageDrag.none;
+  Rect? _frozenView;
+
+  /// While true the Id follows the Name (slugified); typing in the Id field
+  /// itself turns it off. Starts on only if the loaded Id already matches its
+  /// Name's slug.
+  bool _idAuto = true;
   Vec2 _imageDragFixed = const Vec2(0, 0);
   Vec2 _imageGrabOffset = const Vec2(0, 0);
 
@@ -65,8 +71,11 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
     final initial = widget.initialTemplate;
     if (initial != null) {
       _controller.loadFromTemplate(initial);
+      _resetIdAuto();
     }
   }
+
+  void _resetIdAuto() => _idAuto = _controller.id == _slugify(_controller.name);
 
   late final _idController = TextEditingController(text: _controller.id);
   late final _nameController = TextEditingController(text: _controller.name);
@@ -222,26 +231,47 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
 
   /// Mirrors [TemplateOutlinePainter]'s scale-to-fit transform so pointer
   /// positions in the preview can be mapped back to template mm-space.
+  /// The mm region the preview frames: the outline plus, when loaded, the
+  /// reference image -- so a large image (and its scale handles) always stays
+  /// on screen. Held fixed while a drag is in progress so the view doesn't
+  /// rescale under the pointer.
+  Rect _currentView() {
+    final frozen = _frozenView;
+    if (frozen != null) return frozen;
+    final c = _controller;
+    var left = 0.0, bottom = 0.0, right = c.outlineWidth, top = c.outlineHeight;
+    if (c.refImage != null) {
+      left = math.min(left, c.imageX);
+      bottom = math.min(bottom, c.imageY);
+      right = math.max(right, c.imageX + c.imageWidth);
+      top = math.max(top, c.imageY + c.imageHeight);
+    }
+    return Rect.fromLTRB(left, bottom, right, top);
+  }
+
   double _previewScale(Size size) {
     final availableW = size.width - _outlinePreviewMargin * 2;
     final availableH = size.height - _outlinePreviewMargin * 2;
     if (availableW <= 0 || availableH <= 0) return 1;
-    return math.min(availableW / _controller.outlineWidth, availableH / _controller.outlineHeight);
+    final view = _currentView();
+    return math.min(availableW / view.width, availableH / view.height);
   }
 
   Offset _previewOrigin(Size size, double scale) {
+    final view = _currentView();
     return Offset(
-      (size.width - _controller.outlineWidth * scale) / 2,
-      (size.height - _controller.outlineHeight * scale) / 2,
+      (size.width - view.width * scale) / 2,
+      (size.height - view.height * scale) / 2,
     );
   }
 
   Vec2 _previewPxToMm(Offset localPx, Size size) {
     final scale = _previewScale(size);
     final origin = _previewOrigin(size, scale);
+    final view = _currentView();
     return Vec2(
-      (localPx.dx - origin.dx) / scale,
-      _controller.outlineHeight - (localPx.dy - origin.dy) / scale,
+      view.left + (localPx.dx - origin.dx) / scale,
+      view.bottom - (localPx.dy - origin.dy) / scale,
     );
   }
 
@@ -265,6 +295,8 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   }
 
   void _onPreviewPanStart(DragStartDetails details, Size size) {
+    _frozenView = null;
+    _frozenView = _currentView();
     final scale = _previewScale(size);
     final mm = _previewPxToMm(details.localPosition, size);
     _imageDrag = _ImageDrag.none;
@@ -314,6 +346,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   void _onPreviewPanEnd(DragEndDetails details) {
     _draggingHoleId = null;
     _imageDrag = _ImageDrag.none;
+    setState(() => _frozenView = null);
   }
 
   Future<void> _autoFitImage() async {
@@ -500,6 +533,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
       final template = ControllerTemplate.fromJson(json, source: TemplateSource.imported);
       setState(() {
         _controller.loadFromTemplate(template);
+        _resetIdAuto();
         _syncHoleControllers();
         _refreshTopFields();
       });
@@ -524,6 +558,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
       );
       setState(() {
         _controller.loadFromTemplate(template);
+        _resetIdAuto();
         _syncHoleControllers();
         _refreshTopFields();
       });
@@ -593,6 +628,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   void _newTemplate() {
     setState(() {
       _controller.newTemplate();
+      _resetIdAuto();
       _syncHoleControllers();
       _refreshTopFields();
     });
@@ -755,14 +791,29 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                 const SizedBox(height: 8),
                 TextField(
                   controller: _idController,
-                  decoration: const InputDecoration(labelText: 'Id', isDense: true, border: OutlineInputBorder()),
-                  onChanged: _controller.setId,
+                  decoration: InputDecoration(
+                    labelText: 'Id',
+                    isDense: true,
+                    border: const OutlineInputBorder(),
+                    helperText: _idAuto ? 'Auto-set from Name' : null,
+                  ),
+                  onChanged: (v) => setState(() {
+                    _idAuto = false;
+                    _controller.setId(v);
+                  }),
                 ),
                 const SizedBox(height: 8),
                 TextField(
                   controller: _nameController,
                   decoration: const InputDecoration(labelText: 'Name', isDense: true, border: OutlineInputBorder()),
-                  onChanged: _controller.setName,
+                  onChanged: (v) => setState(() {
+                    _controller.setName(v);
+                    if (_idAuto) {
+                      final id = _slugify(v);
+                      _controller.setId(id);
+                      _idController.text = id;
+                    }
+                  }),
                 ),
                 const SizedBox(height: 8),
                 DropdownButtonFormField<TemplateCategory>(
@@ -945,6 +996,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                       onPanEnd: _onPreviewPanEnd,
                       child: CustomPaint(
                         painter: TemplateOutlinePainter(
+                          viewRectMm: _currentView(),
                           image: _controller.refImage,
                           imageRectMm: Rect.fromLTWH(
                               _controller.imageX, _controller.imageY, _controller.imageWidth, _controller.imageHeight),

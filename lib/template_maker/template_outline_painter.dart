@@ -33,7 +33,12 @@ class TemplateOutlinePainter extends CustomPainter {
   final Rect imageRectMm;
   final double imageOpacity;
 
+  /// The mm region shown (left/right = X range, top/bottom = min/max Y).
+  /// Rect.zero frames just the outline.
+  final Rect viewRectMm;
+
   const TemplateOutlinePainter({
+    this.viewRectMm = Rect.zero,
     this.image,
     this.imageRectMm = Rect.zero,
     this.imageOpacity = 0.5,
@@ -51,11 +56,12 @@ class TemplateOutlinePainter extends CustomPainter {
     final availableW = size.width - margin * 2;
     final availableH = size.height - margin * 2;
     if (availableW <= 0 || availableH <= 0) return;
-    final scale = (availableW / outlineWidth < availableH / outlineHeight) ? availableW / outlineWidth : availableH / outlineHeight;
-    final originX = (size.width - outlineWidth * scale) / 2;
-    final originY = (size.height - outlineHeight * scale) / 2;
+    final view = viewRectMm.isEmpty ? Rect.fromLTRB(0, 0, outlineWidth, outlineHeight) : viewRectMm;
+    final scale = math.min(availableW / view.width, availableH / view.height);
+    final originX = (size.width - view.width * scale) / 2;
+    final originY = (size.height - view.height * scale) / 2;
 
-    Offset toPx(Vec2 p) => Offset(originX + p.x * scale, originY + (outlineHeight - p.y) * scale);
+    Offset toPx(Vec2 p) => Offset(originX + (p.x - view.left) * scale, originY + (view.bottom - p.y) * scale);
 
     final img = image;
     if (img != null && imageRectMm.width > 0 && imageRectMm.height > 0) {
@@ -131,7 +137,8 @@ class TemplateOutlinePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant TemplateOutlinePainter oldDelegate) {
-    return oldDelegate.image != image ||
+    return oldDelegate.viewRectMm != viewRectMm ||
+        oldDelegate.image != image ||
         oldDelegate.imageRectMm != imageRectMm ||
         oldDelegate.imageOpacity != imageOpacity ||
         oldDelegate.outlineWidth != outlineWidth ||
