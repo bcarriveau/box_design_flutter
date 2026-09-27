@@ -37,6 +37,17 @@ class _BoxCanvasState extends State<BoxCanvas> {
       TransformationController();
   String? _draggingId;
 
+  /// The item's true drag target, tracked independently of the clamped
+  /// position the controller actually stores. Plate crossing on a dual-layer
+  /// box relies on this: [DesignController.movePlacedTemplate] pins the
+  /// stored position to the plate the item started on (no overhang between
+  /// plates), so accumulating deltas onto that stored position would cancel
+  /// out every tick and the item could never reach the other plate. Tracking
+  /// the raw target here lets it keep moving even while the visible item
+  /// stays pinned at the boundary, until it's far enough across for the
+  /// controller to reassign it to the other plate.
+  Vec2? _dragRawPosition;
+
   /// True while a background drag is panning the view.
   bool _panning = false;
 
@@ -46,7 +57,18 @@ class _BoxCanvasState extends State<BoxCanvas> {
   /// following the mouse.
   void _endDrags() {
     _draggingId = null;
+    _dragRawPosition = null;
     _panning = false;
+  }
+
+  Vec2? _currentPosition(String id) {
+    for (final p in controller.project.placedTemplates) {
+      if (p.id == id) return p.position;
+    }
+    for (final h in controller.project.holes) {
+      if (h.id == id) return h.position;
+    }
+    return null;
   }
 
   DesignController get controller => widget.controller;
@@ -228,6 +250,7 @@ class _BoxCanvasState extends State<BoxCanvas> {
         behavior: HitTestBehavior.opaque,
         onPanStart: (_) {
           _draggingId = id;
+          _dragRawPosition = _currentPosition(id);
           controller.select(id);
         },
         onPanUpdate: (details) {
@@ -236,30 +259,35 @@ class _BoxCanvasState extends State<BoxCanvas> {
             details.delta.dx / pixelsPerMm,
             -details.delta.dy / pixelsPerMm,
           );
-          _moveItem(id, deltaMm);
+          final raw = (_dragRawPosition ?? _currentPosition(id))?.add(deltaMm);
+          if (raw == null) return;
+          _dragRawPosition = raw;
+          _moveItem(id, raw);
         },
-        onPanEnd: (_) => _draggingId = null,
+        onPanEnd: (_) {
+          _draggingId = null;
+          _dragRawPosition = null;
+        },
         onPanCancel: () {
           if (_draggingId == id) _draggingId = null;
+          _dragRawPosition = null;
         },
         onTap: () => controller.select(id),
       ),
     );
   }
 
-  void _moveItem(String id, Vec2 deltaMm) {
+  void _moveItem(String id, Vec2 rawPosition) {
+    final snapped = controller.snapToGrid(rawPosition);
     for (final p in controller.project.placedTemplates) {
       if (p.id == id) {
-        controller.movePlacedTemplate(id, controller.snapToGrid(p.position.add(deltaMm)));
+        controller.movePlacedTemplate(id, snapped);
         return;
       }
     }
     for (final h in controller.project.holes) {
       if (h.id == id) {
-        controller.updateHole(
-          id,
-          (hole) => hole.copyWith(position: controller.snapToGrid(hole.position.add(deltaMm))),
-        );
+        controller.updateHole(id, (hole) => hole.copyWith(position: snapped));
         return;
       }
     }
