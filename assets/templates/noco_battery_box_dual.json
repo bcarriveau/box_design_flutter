@@ -2,6 +2,19 @@
   "id": "noco_battery_box_dual",
   "name": "NOCO Battery Box Dual",
   "category": "box",
+  "additionalHardware": [
+    {
+      "label": "Layer spacer (3D-printed, STL)",
+      "quantity": 4,
+      "assetPath": "assets/hardware/bolt_spacer.stl",
+      "assetFileName": "bolt_spacer.stl"
+    },
+    {
+      "label": "1/4 in x 6 in bolt",
+      "quantity": 4,
+      "url": "https://www.lowes.com/pd/Hillman-1-4-in-x-6-in-Zinc-Plated-Coarse-Thread-Carriage-Bolt/1000381949"
+    }
+  ],
   "url": "https://www.walmart.com/ip/NOCO-BG24-Group-24-Battery-Box/7329861905",
   "entities": [
     {
