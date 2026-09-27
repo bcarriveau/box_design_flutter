@@ -119,21 +119,21 @@ class _BoxCanvasState extends State<BoxCanvas> {
         final contentWidth = (project.boxWidth + 2 * _marginMm) * pixelsPerMm;
         final contentHeight = (project.boxHeight + 2 * _marginMm) * pixelsPerMm;
 
-        final itemOverlays = <Widget>[];
-        for (final placed in project.placedTemplates) {
-          final template = controller.library.byId(placed.templateId);
-          if (template == null) continue;
-          final entities = placedTemplateEntities(template, placed);
-          final rect = _mmBoxToScreenRect(
-            entitiesBoundingBox(entities),
-            boxHeightMm,
-          );
-          itemOverlays.add(_dragHandle(rect, placed.id, boxHeightMm));
-        }
-        for (final hole in project.holes) {
-          final rect = _mmBoxToScreenRect(hole.boundingBox, boxHeightMm);
-          itemOverlays.add(_dragHandle(rect, hole.id, boxHeightMm));
-        }
+        // Each item's hit area is its full (opaque) bounding-box rectangle,
+        // so a small item nested entirely inside a larger one's rectangle
+        // (e.g. a screw hole sitting on top of a placed template) needs to
+        // be on top for hit-testing or a tap/drag there can only ever reach
+        // the larger item underneath. A Stack hit-tests its children back
+        // to front (last child wins first), so sorting largest-area-first
+        // here -- smallest added last -- puts every smaller item above
+        // anything it's nested inside, regardless of placement order.
+        final itemRects = <(String id, Rect rect)>[
+          for (final placed in project.placedTemplates)
+            if (controller.library.byId(placed.templateId) case final template?)
+              (placed.id, _mmBoxToScreenRect(entitiesBoundingBox(placedTemplateEntities(template, placed)), boxHeightMm)),
+          for (final hole in project.holes) (hole.id, _mmBoxToScreenRect(hole.boundingBox, boxHeightMm)),
+        ]..sort((a, b) => (b.$2.width * b.$2.height).compareTo(a.$2.width * a.$2.height));
+        final itemOverlays = [for (final (id, rect) in itemRects) _dragHandle(rect, id, boxHeightMm)];
 
         return MouseRegion(
           onExit: (_) => _endDrags(),
