@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:url_launcher/url_launcher.dart';
 
 import '../design/design_controller.dart';
@@ -6,7 +7,28 @@ import '../models/dxf_entity.dart';
 import '../models/hole.dart';
 import '../models/placed_template.dart';
 import '../models/vec2.dart';
+import '../services/file_io.dart';
 import '../services/simple_math.dart';
+
+/// A piece of hardware suggested for a dual-layer plate build: a bundled
+/// asset the user can save to disk ([assetPath]), a purchase/reference link
+/// ([url]), or both.
+class _HardwareItem {
+  final String label;
+  final int quantity;
+  final String? assetPath;
+  final String? assetFileName;
+  final String? url;
+  const _HardwareItem({required this.label, required this.quantity, this.assetPath, this.assetFileName, this.url});
+
+  factory _HardwareItem.fromJson(Map<String, dynamic> json) => _HardwareItem(
+        label: json['label'] as String? ?? 'Hardware',
+        quantity: (json['quantity'] as num?)?.toInt() ?? 1,
+        assetPath: json['assetPath'] as String?,
+        assetFileName: json['assetFileName'] as String?,
+        url: json['url'] as String?,
+      );
+}
 
 class RightPropertyPanel extends StatefulWidget {
   final DesignController controller;
@@ -159,11 +181,12 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
               const SizedBox(height: 4),
               _linkRow(box.url!),
             ],
+            ..._hardwareSection(context, box?.additionalHardware),
           ],
         ),
       );
     }
-    final placedUrl = placed == null ? null : controller.library.byId(placed.templateId)?.url;
+    final placedTemplate = placed == null ? null : controller.library.byId(placed.templateId);
 
     return Padding(
       padding: const EdgeInsets.all(12),
@@ -171,13 +194,14 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            placed != null ? (controller.library.byId(placed.templateId)?.name ?? placed.templateId) : _holeTitle(hole!),
+            placed != null ? (placedTemplate?.name ?? placed.templateId) : _holeTitle(hole!),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          if (placedUrl != null && placedUrl.isNotEmpty) ...[
+          if ((placedTemplate?.url ?? '').isNotEmpty) ...[
             const SizedBox(height: 4),
-            _linkRow(placedUrl),
+            _linkRow(placedTemplate!.url!),
           ],
+          ..._hardwareSection(context, placedTemplate?.additionalHardware),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -253,7 +277,7 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
     );
   }
 
-  Widget _linkRow(String url) {
+  Widget _linkRow(String url, {String? label}) {
     return InkWell(
       onTap: () {
         final trimmed = url.trim();
@@ -262,17 +286,64 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
       },
       child: Row(
         children: [
-          const Icon(Icons.link, size: 16),
-          const SizedBox(width: 4),
+          if (label == null) ...[
+            const Icon(Icons.link, size: 16),
+            const SizedBox(width: 4),
+          ],
           Expanded(
             child: Text(
-              url,
+              label ?? url,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(color: Theme.of(context).colorScheme.primary, decoration: TextDecoration.underline),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  /// The "Additional Hardware" block for [hardware] (a template's own
+  /// `additionalHardware` JSON, or null/empty for none) -- usable for
+  /// whichever template is showing right now, box or placed item alike,
+  /// since any template can carry hardware notes.
+  List<Widget> _hardwareSection(BuildContext context, List<Map<String, dynamic>>? hardware) {
+    if (hardware == null || hardware.isEmpty) return const [];
+    return [
+      const SizedBox(height: 16),
+      const Text('Additional Hardware', style: TextStyle(fontWeight: FontWeight.bold)),
+      for (final item in hardware.map(_HardwareItem.fromJson)) ...[
+        const SizedBox(height: 8),
+        _hardwareRow(context, item),
+      ],
+    ];
+  }
+
+  Future<void> _downloadAsset(BuildContext context, String assetPath, String fileName) async {
+    final bytes = (await rootBundle.load(assetPath)).buffer.asUint8List();
+    final result = await saveBytes(fileName, bytes, dialogTitle: 'Save $fileName', mimeType: 'model/stl');
+    if (context.mounted) _snack(context, result != null ? 'Saved $fileName' : 'Save cancelled');
+  }
+
+  void _snack(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Widget _hardwareRow(BuildContext context, _HardwareItem item) {
+    final label = '${item.label} (×${item.quantity})';
+    final assetPath = item.assetPath;
+    if (assetPath != null) {
+      return OutlinedButton.icon(
+        onPressed: () => _downloadAsset(context, assetPath, item.assetFileName ?? assetPath.split('/').last),
+        icon: const Icon(Icons.download, size: 16),
+        label: Text(label, overflow: TextOverflow.ellipsis),
+      );
+    }
+    return Row(
+      children: [
+        const Icon(Icons.shopping_cart_outlined, size: 16),
+        const SizedBox(width: 4),
+        Expanded(child: _linkRow(item.url!, label: label)),
+      ],
     );
   }
 

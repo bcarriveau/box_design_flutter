@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../dxf/dxf_parser.dart';
 import '../models/annotation.dart';
 import '../models/controller_template.dart';
+import '../models/hardware_preset.dart';
 import '../models/vec2.dart';
 import '../services/file_io.dart';
 import '../services/simple_math.dart';
@@ -63,6 +64,17 @@ class TemplateMakerScreen extends StatefulWidget {
 
 class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   final _controller = TemplateMakerController();
+
+  /// Width of the left fields column, drag-resizable via the divider next
+  /// to it (see [_leftPanelDragHandle]) -- same range as the main design
+  /// screen's own resizable side panels.
+  double _fieldsPanelWidth = 340;
+  // 340 was this panel's old *fixed* width, so it's the only value already
+  // known not to overflow any field row (e.g. the Corner style/Size row) --
+  // shrinking below it isn't offered, only growing above it.
+  static const double _minFieldsPanelWidth = 340;
+  static const double _maxFieldsPanelWidth = 640;
+
   String? _draggingHoleId;
   _ImageDrag _imageDrag = _ImageDrag.none;
   Rect? _frozenView;
@@ -1834,7 +1846,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
       body: Row(
         children: [
           SizedBox(
-            width: 340,
+            width: _fieldsPanelWidth,
             child: ListView(
               padding: const EdgeInsets.all(12),
               children: [
@@ -1895,6 +1907,8 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                 _layerSelector(context),
                 if (_controller.layer == TemplateMakerLayer.drawing)
                   ..._drawingSectionWidgets(context)
+                else if (_controller.layer == TemplateMakerLayer.hardware)
+                  ..._hardwareSectionWidgets(context)
                 else ...[
                 const Divider(height: 32),
                 Text('Outline', style: Theme.of(context).textTheme.titleMedium),
@@ -2104,7 +2118,17 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
               ],
             ),
           ),
-          const VerticalDivider(width: 1),
+          MouseRegion(
+            cursor: SystemMouseCursors.resizeLeftRight,
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onHorizontalDragUpdate: (details) => setState(() {
+                _fieldsPanelWidth =
+                    (_fieldsPanelWidth + details.delta.dx).clamp(_minFieldsPanelWidth, _maxFieldsPanelWidth);
+              }),
+              child: const VerticalDivider(width: 5, thickness: 1),
+            ),
+          ),
           Expanded(
             child: ColoredBox(
               color: canvasBackground(context),
@@ -2288,6 +2312,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
             const ButtonSegment(value: TemplateMakerLayer.layer1, label: Text('Layer 1')),
             ButtonSegment(value: TemplateMakerLayer.layer2, label: const Text('Layer 2'), enabled: c.dualLayer),
             ButtonSegment(value: TemplateMakerLayer.drawing, label: const Text('Drawing'), enabled: !isBox),
+            const ButtonSegment(value: TemplateMakerLayer.hardware, label: Text('Hardware')),
           ],
           selected: {c.layer},
           onSelectionChanged: (selection) => setState(() {
@@ -2441,6 +2466,145 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
       onSubmitted: (_) => commit(),
       onEditingComplete: commit,
       onTapOutside: (_) => commit(),
+    );
+  }
+
+  /// Extra hardware needed to build this template (e.g. a two-layer plate's
+  /// joining spacers and bolts), shown in the app's properties panel. Each
+  /// row edits one entry's label/quantity/link; an entry with a bundled
+  /// asset (an `assetPath`/`assetFileName` set directly in the template's
+  /// JSON, not through this screen) shows that file read-only, since adding
+  /// one means shipping a new bundled asset file rather than something this
+  /// screen can do at runtime.
+  List<Widget> _hardwareSectionWidgets(BuildContext context) {
+    final items = _controller.additionalHardware ?? const [];
+    return [
+      const Divider(height: 32),
+      Text('Additional Hardware', style: Theme.of(context).textTheme.titleMedium),
+      const SizedBox(height: 4),
+      Text(
+        'Extra parts needed to build this template (e.g. a two-layer plate\'s joining spacers and bolts), '
+        'shown to whoever places it.',
+        style: Theme.of(context).textTheme.bodySmall,
+      ),
+      const SizedBox(height: 8),
+      for (var i = 0; i < items.length; i++) _hardwareItemCard(context, i, items[i]),
+      const SizedBox(height: 4),
+      Wrap(
+        spacing: 8,
+        runSpacing: 4,
+        children: [
+          PopupMenuButton<HardwarePreset>(
+            tooltip: 'Add a common item from the list',
+            onSelected: (preset) => setState(() => _controller.addHardwarePreset(preset)),
+            itemBuilder: (context) => [
+              for (final preset in HardwarePreset.builtIns)
+                PopupMenuItem(value: preset, child: Text(preset.label)),
+            ],
+            // Styled to look like an OutlinedButton, but with no gesture
+            // handling of its own -- an actual OutlinedButton here (even
+            // with a no-op onPressed) has its own InkWell, which wins the
+            // gesture arena and swallows the tap before PopupMenuButton's
+            // own tap handling ever sees it, so the menu never opens.
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+              decoration: BoxDecoration(
+                border: Border.all(color: Theme.of(context).colorScheme.outline),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.checklist, size: 18),
+                  const SizedBox(width: 8),
+                  Text('Add from list', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+                ],
+              ),
+            ),
+          ),
+          OutlinedButton.icon(
+            onPressed: () => setState(_controller.addHardwareItem),
+            icon: const Icon(Icons.add, size: 18),
+            label: const Text('Add custom item'),
+          ),
+        ],
+      ),
+    ];
+  }
+
+  Widget _hardwareItemCard(BuildContext context, int index, Map<String, dynamic> item) {
+    final assetFileName = item['assetFileName'] as String?;
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    key: ValueKey('hw-label-$index'),
+                    initialValue: item['label'] as String? ?? '',
+                    decoration: const InputDecoration(labelText: 'Label', isDense: true, border: OutlineInputBorder()),
+                    onChanged: (v) => _controller.updateHardwareItem(index, label: v),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 90,
+                  child: TextFormField(
+                    key: ValueKey('hw-qty-$index'),
+                    initialValue: '${item['quantity'] as int? ?? 1}',
+                    decoration: const InputDecoration(labelText: 'Qty', isDense: true, border: OutlineInputBorder()),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    onChanged: (v) {
+                      final n = int.tryParse(v);
+                      if (n != null && n > 0) _controller.updateHardwareItem(index, quantity: n);
+                    },
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Remove',
+                  icon: const Icon(Icons.close, size: 18),
+                  onPressed: () => setState(() => _controller.removeHardwareItem(index)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            TextFormField(
+              key: ValueKey('hw-url-$index'),
+              initialValue: item['url'] as String? ?? '',
+              decoration: const InputDecoration(
+                labelText: 'URL / link (optional)',
+                isDense: true,
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.url,
+              onChanged: (v) => _controller.updateHardwareItem(index, url: v),
+            ),
+            if (assetFileName != null) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(Icons.attach_file, size: 16),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      'Bundled file: $assetFileName (edit its JSON directly to change)',
+                      style: Theme.of(context).textTheme.bodySmall,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 

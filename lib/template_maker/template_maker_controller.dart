@@ -7,6 +7,7 @@ import '../design/snap.dart';
 import '../models/annotation.dart';
 import '../models/controller_template.dart';
 import '../models/dxf_entity.dart';
+import '../models/hardware_preset.dart';
 import '../models/vec2.dart';
 import 'image_detect.dart';
 
@@ -49,7 +50,7 @@ class TemplateMakerHole {
 
 /// Which layer of the template the maker is showing/editing: the first
 /// plate, the second plate of a two-layer box, or the drawing layer (notes).
-enum TemplateMakerLayer { layer1, layer2, drawing }
+enum TemplateMakerLayer { layer1, layer2, drawing, hardware }
 
 /// How a single custom-outline point's corner is treated -- unlike the
 /// parametric rectangle's single outline-wide [TemplateMakerCornerStyle],
@@ -518,6 +519,53 @@ class TemplateMakerController extends ChangeNotifier {
 
   /// Product/documentation link stored on the template (empty = none).
   String url = '';
+
+  /// Extra hardware suggested for building this template (e.g. dual-layer
+  /// spacers/bolts), edited on the Hardware tab and shown in the app's
+  /// properties panel. Each entry is `{label, quantity, url?, assetPath?,
+  /// assetFileName?}` -- `assetPath`/`assetFileName` (a bundled download,
+  /// e.g. an STL shipped in `assets/hardware/`) have no editor here since
+  /// adding one means shipping a new bundled asset file, not something this
+  /// screen can do at runtime; an item loaded with one keeps it untouched
+  /// through edits to its other fields.
+  List<Map<String, dynamic>>? additionalHardware;
+
+  void addHardwareItem() {
+    additionalHardware = [...?additionalHardware, {'label': 'New item', 'quantity': 1}];
+    notifyListeners();
+  }
+
+  /// Appends a copy of [preset] -- still a separate, independently
+  /// editable/removable entry afterward, same as one added blank.
+  void addHardwarePreset(HardwarePreset preset) {
+    additionalHardware = [...?additionalHardware, preset.toHardwareItemJson()];
+    notifyListeners();
+  }
+
+  void removeHardwareItem(int index) {
+    final items = additionalHardware;
+    if (items == null || index < 0 || index >= items.length) return;
+    final next = [...items]..removeAt(index);
+    additionalHardware = next.isEmpty ? null : next;
+    notifyListeners();
+  }
+
+  void updateHardwareItem(int index, {String? label, int? quantity, String? url}) {
+    final items = additionalHardware;
+    if (items == null || index < 0 || index >= items.length) return;
+    final item = {...items[index]};
+    if (label != null) item['label'] = label;
+    if (quantity != null) item['quantity'] = quantity;
+    if (url != null) {
+      if (url.trim().isEmpty) {
+        item.remove('url');
+      } else {
+        item['url'] = url.trim();
+      }
+    }
+    additionalHardware = [...items]..[index] = item;
+    notifyListeners();
+  }
 
   void setUrl(String value) {
     url = value;
@@ -1484,6 +1532,7 @@ class TemplateMakerController extends ChangeNotifier {
     id = 'new_template';
     name = 'New Template';
     url = '';
+    additionalHardware = null;
     category = TemplateCategory.box;
     outlineWidth = 100;
     outlineHeight = 100;
@@ -1532,6 +1581,7 @@ class TemplateMakerController extends ChangeNotifier {
       annotations: [for (final n in notes) n.toAnnotation()],
       layer2Entities: layer2,
       url: url.trim().isEmpty ? null : url.trim(),
+      additionalHardware: additionalHardware,
       templateMakerCustomOutline: customOutline1,
       templateMakerCustomOutlineLayer2: customOutline2,
     );
@@ -1771,6 +1821,7 @@ class TemplateMakerController extends ChangeNotifier {
     id = template.id;
     name = template.name;
     url = template.url ?? '';
+    additionalHardware = template.additionalHardware;
     category = template.category;
     holes.clear();
     selectedHoleId = null;

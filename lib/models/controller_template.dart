@@ -52,6 +52,14 @@ class ControllerTemplate {
   /// board, shown (clickable) in the properties panel.
   final String? url;
 
+  /// Extra hardware needed to build this template (e.g. a two-layer box's
+  /// layer spacers and joining bolts), shown in the properties panel when
+  /// this template is the active box. Each entry is `{label, quantity,
+  /// assetPath?, assetFileName?, url?}` -- `assetPath` is a bundled asset
+  /// (e.g. an STL) offered as a download, `url` a purchase/reference link;
+  /// an entry may have either or both.
+  final List<Map<String, dynamic>>? additionalHardware;
+
   ControllerTemplate({
     required this.id,
     required this.name,
@@ -63,6 +71,7 @@ class ControllerTemplate {
     this.templateMakerCustomOutline,
     this.templateMakerCustomOutlineLayer2,
     this.url,
+    this.additionalHardware,
   });
 
   BoundingBox get boundingBox => entitiesBoundingBox(entities);
@@ -72,6 +81,7 @@ class ControllerTemplate {
         'name': name,
         'category': category.name,
         if (url != null && url!.isNotEmpty) 'url': url,
+        if (additionalHardware != null && additionalHardware!.isNotEmpty) 'additionalHardware': additionalHardware,
         'entities': entitiesToJson(entities),
         if (layer2Entities != null) 'layer2Entities': entitiesToJson(layer2Entities!),
         if (annotations.isNotEmpty) 'annotations': [for (final a in annotations) a.toJson()],
@@ -87,6 +97,7 @@ class ControllerTemplate {
       source: source,
       category: TemplateCategory.values.byName(json['category'] as String? ?? 'controller'),
       url: json['url'] as String?,
+      additionalHardware: (json['additionalHardware'] as List<dynamic>?)?.map((e) => (e as Map).cast<String, dynamic>()).toList(),
       layer2Entities: json['layer2Entities'] == null ? null : entitiesFromJson(json['layer2Entities'] as List<dynamic>),
       annotations: [
         for (final a in json['annotations'] as List<dynamic>? ?? const [])
