@@ -516,6 +516,14 @@ class TemplateMakerController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Product/documentation link stored on the template (empty = none).
+  String url = '';
+
+  void setUrl(String value) {
+    url = value;
+    notifyListeners();
+  }
+
   void setName(String value) {
     name = value;
     notifyListeners();
@@ -1475,6 +1483,7 @@ class TemplateMakerController extends ChangeNotifier {
     refImageName = null;
     id = 'new_template';
     name = 'New Template';
+    url = '';
     category = TemplateCategory.box;
     outlineWidth = 100;
     outlineHeight = 100;
@@ -1522,6 +1531,7 @@ class TemplateMakerController extends ChangeNotifier {
       category: category,
       annotations: [for (final n in notes) n.toAnnotation()],
       layer2Entities: layer2,
+      url: url.trim().isEmpty ? null : url.trim(),
       templateMakerCustomOutline: customOutline1,
       templateMakerCustomOutlineLayer2: customOutline2,
     );
@@ -1658,6 +1668,16 @@ class TemplateMakerController extends ChangeNotifier {
     return DxfPolyline(_treatedOutlineVertices(customOutlinePoints), closed: true).toPoints();
   }
 
+  /// The plate NOT being edited (layer 2 while on layer 1, and vice versa),
+  /// as geometry the canvas draws faintly behind the live plate so the two
+  /// layers can be lined up. Empty for a single-layer template or on the
+  /// drawing layer.
+  List<DxfEntity> get otherLayerGhostEntities {
+    final other = _stored;
+    if (!dualLayer || other == null || layer == TemplateMakerLayer.drawing) return const [];
+    return _plateEntities(other);
+  }
+
   List<DxfEntity> _plateEntities(_Plate plate) {
     if (plate.useCustomOutline && plate.customOutlinePoints.length >= 3) {
       return <DxfEntity>[
@@ -1750,6 +1770,7 @@ class TemplateMakerController extends ChangeNotifier {
   void loadFromTemplate(ControllerTemplate template) {
     id = template.id;
     name = template.name;
+    url = template.url ?? '';
     category = template.category;
     holes.clear();
     selectedHoleId = null;

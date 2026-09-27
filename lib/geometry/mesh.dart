@@ -57,6 +57,24 @@ List<List<Vec2>> _dropNestedHoles(List<List<Vec2>> holesCcw) {
   return kept;
 }
 
+/// Snaps [pts] to a 1e-3 mm grid and drops consecutive repeats. Outlines that
+/// were translated/rotated (e.g. the second plate of a dual-layer sheet)
+/// pick up ~1e-5 mm float noise, leaving near-duplicate points (364.5 vs
+/// 364.50001) that aren't `==` but are degenerate to the triangulator,
+/// producing zero-area triangles and non-manifold edges.
+List<Vec2> _cleanLoop(List<Vec2> pts) {
+  double snap(double v) => (v * 1000).roundToDouble() / 1000;
+  final out = <Vec2>[];
+  for (final p in pts) {
+    final q = Vec2(snap(p.x), snap(p.y));
+    if (out.isEmpty || out.last != q) out.add(q);
+  }
+  while (out.length > 1 && out.first == out.last) {
+    out.removeLast();
+  }
+  return out;
+}
+
 /// Extrudes a flat [outer] boundary (with [holes] cut all the way through)
 /// into a solid plate of [thickness] mm, for 3D printing. Coordinates are
 /// mm; the result sits between z=0 and z=thickness.
@@ -65,6 +83,8 @@ Mesh extrudePlate({
   required List<List<Vec2>> holes,
   required double thickness,
 }) {
+  outer = _cleanLoop(outer);
+  holes = [for (final h in holes) _cleanLoop(h)];
   var outerCcw = List<Vec2>.from(outer);
   if (signedArea(outerCcw) < 0) outerCcw = outerCcw.reversed.toList();
 

@@ -52,56 +52,24 @@
     {
       "type": "circle",
       "center": {
-        "x": 4.116,
-        "y": 4.116
+        "x": 4.12,
+        "y": 4.12
       },
       "radius": 1.85
     },
     {
       "type": "circle",
       "center": {
-        "x": 112.654,
-        "y": 4.116
+        "x": 112.65,
+        "y": 4.12
       },
       "radius": 1.85
     },
     {
       "type": "circle",
       "center": {
-        "x": 221.087,
-        "y": 4.116
-      },
-      "radius": 1.85
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 329.52,
-        "y": 4.116
-      },
-      "radius": 1.85
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 4.116,
-        "y": 233.916
-      },
-      "radius": 1.85
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 112.654,
-        "y": 233.916
-      },
-      "radius": 1.85
-    },
-    {
-      "type": "circle",
-      "center": {
-        "x": 221.087,
-        "y": 233.916
+        "x": 221.09,
+        "y": 4.12
       },
       "radius": 1.85
     },
@@ -109,7 +77,39 @@
       "type": "circle",
       "center": {
         "x": 329.52,
-        "y": 233.916
+        "y": 4.12
+      },
+      "radius": 1.85
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 4.12,
+        "y": 233.92
+      },
+      "radius": 1.85
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 112.65,
+        "y": 233.92
+      },
+      "radius": 1.85
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 221.09,
+        "y": 233.92
+      },
+      "radius": 1.85
+    },
+    {
+      "type": "circle",
+      "center": {
+        "x": 329.52,
+        "y": 233.92
       },
       "radius": 1.85
     },
@@ -117,7 +117,7 @@
       "type": "circle",
       "center": {
         "x": 4.35,
-        "y": 119.016
+        "y": 119.02
       },
       "radius": 1.85
     },
@@ -125,7 +125,7 @@
       "type": "circle",
       "center": {
         "x": 329.65,
-        "y": 119.016
+        "y": 119.02
       },
       "radius": 1.85
     }

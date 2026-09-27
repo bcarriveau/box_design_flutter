@@ -188,6 +188,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
 
   late final _idController = TextEditingController(text: _controller.id);
   late final _nameController = TextEditingController(text: _controller.name);
+  late final _urlController = TextEditingController(text: _controller.url);
   late final _widthController = TextEditingController(text: _fmt(_controller.outlineWidth));
   late final _heightController = TextEditingController(text: _fmt(_controller.outlineHeight));
   late final _cornerSizeController = TextEditingController(text: _fmt(_controller.cornerSize));
@@ -252,6 +253,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   void dispose() {
     _idController.dispose();
     _nameController.dispose();
+    _urlController.dispose();
     _widthController.dispose();
     _heightController.dispose();
     _cornerSizeController.dispose();
@@ -344,6 +346,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
   void _refreshTopFields() {
     _idController.text = _controller.id;
     _nameController.text = _controller.name;
+    _urlController.text = _controller.url;
     _widthController.text = _fmt(_controller.outlineWidth);
     _heightController.text = _fmt(_controller.outlineHeight);
     _cornerSizeController.text = _fmt(_controller.cornerSize);
@@ -1864,6 +1867,13 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                   }),
                 ),
                 const SizedBox(height: 8),
+                TextField(
+                  controller: _urlController,
+                  decoration: const InputDecoration(labelText: 'URL / link (optional)', isDense: true, border: OutlineInputBorder()),
+                  keyboardType: TextInputType.url,
+                  onChanged: (v) => setState(() => _controller.setUrl(v)),
+                ),
+                const SizedBox(height: 8),
                 DropdownButtonFormField<TemplateCategory>(
                   isExpanded: true,
                   initialValue: _controller.category,
@@ -2173,6 +2183,7 @@ class _TemplateMakerScreenState extends State<TemplateMakerScreen> {
                                 : [for (final h in _controller.noteHandles(n)) h.point];
                           }(),
                           ghostNotes: _controller.layer != TemplateMakerLayer.drawing,
+                          ghostEntities: _controller.otherLayerGhostEntities,
                           showGrid: _controller.showGrid,
                           gridMm: _controller.gridMm,
                           guideX: _guideX,

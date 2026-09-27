@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../design/design_controller.dart';
 import '../models/dxf_entity.dart';
@@ -145,11 +146,24 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
     final hole = controller.selectedHole;
 
     if (placed == null && hole == null) {
-      return const Padding(
-        padding: EdgeInsets.all(16),
-        child: Text('Select an item to edit its properties.'),
+      final box = controller.project.boxTemplateId == null ? null : controller.library.byId(controller.project.boxTemplateId!);
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Select an item to edit its properties.'),
+            if (box != null && (box.url ?? '').isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text('Enclosure: ${box.name}', style: const TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 4),
+              _linkRow(box.url!),
+            ],
+          ],
+        ),
       );
     }
+    final placedUrl = placed == null ? null : controller.library.byId(placed.templateId)?.url;
 
     return Padding(
       padding: const EdgeInsets.all(12),
@@ -160,6 +174,10 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
             placed != null ? (controller.library.byId(placed.templateId)?.name ?? placed.templateId) : _holeTitle(hole!),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
+          if (placedUrl != null && placedUrl.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            _linkRow(placedUrl),
+          ],
           const SizedBox(height: 12),
           Row(
             children: [
@@ -229,6 +247,29 @@ class _RightPropertyPanelState extends State<RightPropertyPanel> {
             style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.errorContainer,
               foregroundColor: Theme.of(context).colorScheme.onErrorContainer),
             child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _linkRow(String url) {
+    return InkWell(
+      onTap: () {
+        final trimmed = url.trim();
+        final uri = Uri.tryParse(trimmed.contains('://') ? trimmed : 'https://$trimmed');
+        if (uri != null) launchUrl(uri, mode: LaunchMode.externalApplication);
+      },
+      child: Row(
+        children: [
+          const Icon(Icons.link, size: 16),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              url,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(color: Theme.of(context).colorScheme.primary, decoration: TextDecoration.underline),
+            ),
           ),
         ],
       ),

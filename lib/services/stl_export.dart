@@ -43,6 +43,31 @@ String meshToStlText(Mesh mesh, {String solidName = 'box_design'}) {
   return buffer.toString();
 }
 
+/// One STL per plate: a single entry for an ordinary project, two (layer 1,
+/// layer 2) for a dual-layer one, so each plate can be sliced and printed
+/// on its own.
+List<Uint8List> exportProjectAsStlPlateBytes(
+  BoxProject project,
+  TemplateLibrary library, {
+  double thicknessMm = 5.0,
+  bool addStandoffs = false,
+  double standoffHeight = 3,
+  double standoffWallThickness = 2,
+}) {
+  final meshes = buildPlateMeshes(
+    project,
+    library,
+    thicknessMm: thicknessMm,
+    addStandoffs: addStandoffs,
+    standoffHeight: standoffHeight,
+    standoffWallThickness: standoffWallThickness,
+  );
+  return [
+    for (var i = 0; i < meshes.length; i++)
+      Uint8List.fromList(utf8.encode(meshToStlText(meshes[i], solidName: meshes.length > 1 ? 'box_design_layer${i + 1}' : 'box_design'))),
+  ];
+}
+
 Uint8List exportProjectAsStlBytes(
   BoxProject project,
   TemplateLibrary library, {

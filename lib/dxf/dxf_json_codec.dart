@@ -23,20 +23,20 @@ Map<String, dynamic> _entityToJson(DxfEntity entity) {
     DxfCircle e => {
         'type': 'circle',
         'center': e.center.toJson(),
-        'radius': e.radius,
+        'radius': round2(e.radius),
       },
     DxfArc e => {
         'type': 'arc',
         'center': e.center.toJson(),
-        'radius': e.radius,
-        'startAngle': e.startAngleDeg,
-        'endAngle': e.endAngleDeg,
+        'radius': round2(e.radius),
+        'startAngle': round2(e.startAngleDeg),
+        'endAngle': round2(e.endAngleDeg),
       },
     DxfPolyline e => {
         'type': 'polyline',
         'closed': e.closed,
         'vertices': e.vertices
-            .map((v) => {'x': v.point.x, 'y': v.point.y, 'bulge': v.bulge})
+            .map((v) => {'x': round2(v.point.x), 'y': round2(v.point.y), 'bulge': v.bulge})
             .toList(),
       },
   };
@@ -52,19 +52,19 @@ DxfEntity _entityFromJson(Map<String, dynamic> json) {
     case 'circle':
       return DxfCircle(
         Vec2.fromJson(json['center'] as Map<String, dynamic>),
-        (json['radius'] as num).toDouble(),
+        round2((json['radius'] as num).toDouble()),
       );
     case 'arc':
       return DxfArc(
         Vec2.fromJson(json['center'] as Map<String, dynamic>),
-        (json['radius'] as num).toDouble(),
-        (json['startAngle'] as num).toDouble(),
-        (json['endAngle'] as num).toDouble(),
+        round2((json['radius'] as num).toDouble()),
+        round2((json['startAngle'] as num).toDouble()),
+        round2((json['endAngle'] as num).toDouble()),
       );
     case 'polyline':
       final vertices = (json['vertices'] as List<dynamic>)
           .map((v) => PolyVertex(
-                Vec2((v['x'] as num).toDouble(), (v['y'] as num).toDouble()),
+                Vec2(round2((v['x'] as num).toDouble()), round2((v['y'] as num).toDouble())),
                 bulge: ((v['bulge'] as num?) ?? 0).toDouble(),
               ))
           .toList();

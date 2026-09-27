@@ -1,5 +1,9 @@
 import 'dart:math' as math;
 
+/// Rounds [v] to 0.01 mm — the precision saved/loaded geometry is kept at, so
+/// float noise (e.g. 12.300000000000001) doesn't bloat or clutter the files.
+double round2(double v) => (v * 100).roundToDouble() / 100 + 0.0;
+
 /// A point/vector in millimeter space.
 class Vec2 {
   final double x;
@@ -27,10 +31,10 @@ class Vec2 {
     );
   }
 
-  Map<String, dynamic> toJson() => {'x': x, 'y': y};
+  Map<String, dynamic> toJson() => {'x': round2(x), 'y': round2(y)};
 
   factory Vec2.fromJson(Map<String, dynamic> json) =>
-      Vec2((json['x'] as num).toDouble(), (json['y'] as num).toDouble());
+      Vec2(round2((json['x'] as num).toDouble()), round2((json['y'] as num).toDouble()));
 
   @override
   String toString() => 'Vec2($x, $y)';

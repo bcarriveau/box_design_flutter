@@ -76,6 +76,10 @@ class TemplateOutlinePainter extends CustomPainter {
   /// reference (never selected, never hit-tested).
   final bool ghostNotes;
 
+  /// The other layer's outline and holes (two-layer plates), drawn faintly
+  /// behind the plate being edited for alignment.
+  final List<DxfEntity> ghostEntities;
+
   /// Grid lines every [gridMm] (major line every fifth), anchored at (0, 0),
   /// and the alignment guides ([guideX]/[guideY], template mm) shown while a
   /// dragged item is snapped to another object.
@@ -101,6 +105,7 @@ class TemplateOutlinePainter extends CustomPainter {
     this.noteHandles = const [],
     this.holeHandles = const [],
     this.ghostNotes = false,
+    this.ghostEntities = const [],
     this.showGrid = false,
     this.gridMm = 5,
     this.guideX,
@@ -169,6 +174,21 @@ class TemplateOutlinePainter extends CustomPainter {
 
     if (showGrid) _paintGrid(canvas, toPx, scale, visible);
     if (!drawingMode && ghostNotes) _paintNotes(canvas, toPx, scale, ghost: true);
+    if (ghostEntities.isNotEmpty) {
+      final ghostPaint = Paint()
+        ..color = Colors.orange.withValues(alpha: 0.55)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5;
+      final ghostFill = Paint()..color = Colors.orange.withValues(alpha: 0.08);
+      for (final e in ghostEntities) {
+        final pts = e.toPoints(arcSegments: 48).map(toPx).toList();
+        if (pts.length < 2) continue;
+        final closed = e is DxfCircle || (e is DxfPolyline && e.closed);
+        final path = Path()..addPolygon(pts, closed);
+        if (closed) canvas.drawPath(path, ghostFill);
+        canvas.drawPath(path, ghostPaint);
+      }
+    }
 
     final outlinePaint = Paint()
       ..color = (isDark ? Colors.white : Colors.black).withValues(alpha: drawingMode ? 0.3 : 1.0)
@@ -423,6 +443,7 @@ class TemplateOutlinePainter extends CustomPainter {
         oldDelegate.selectedNoteIds != selectedNoteIds ||
         oldDelegate.selectionRectMm != selectionRectMm ||
         oldDelegate.ghostNotes != ghostNotes ||
+        oldDelegate.ghostEntities != ghostEntities ||
         oldDelegate.showGrid != showGrid ||
         oldDelegate.gridMm != gridMm ||
         oldDelegate.guideX != guideX ||

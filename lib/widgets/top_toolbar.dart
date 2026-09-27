@@ -131,7 +131,7 @@ class _TopToolbarState extends State<TopToolbar> {
         final result = await saveBytes('${controller.project.name}.pdf', bytes, dialogTitle: 'Export PDF', mimeType: 'application/pdf');
         if (context.mounted) _snack(context, result != null ? 'PDF exported' : 'Export cancelled');
       case _ExportFormat.stl:
-        final bytes = exportProjectAsStlBytes(
+        final plates = exportProjectAsStlPlateBytes(
           controller.project,
           controller.library,
           thicknessMm: controller.project.plateThicknessMm,
@@ -139,8 +139,17 @@ class _TopToolbarState extends State<TopToolbar> {
           standoffHeight: controller.project.standoffHeightMm,
           standoffWallThickness: controller.project.standoffWallThicknessMm,
         );
-        final result = await saveBytes('${controller.project.name}.stl', bytes, dialogTitle: 'Export STL', mimeType: 'model/stl');
-        if (context.mounted) _snack(context, result != null ? 'STL exported' : 'Export cancelled');
+        var saved = 0;
+        for (var i = 0; i < plates.length; i++) {
+          final suffix = plates.length > 1 ? '_layer${i + 1}' : '';
+          final result = await saveBytes('${controller.project.name}$suffix.stl', plates[i],
+              dialogTitle: plates.length > 1 ? 'Export STL (layer ${i + 1} of ${plates.length})' : 'Export STL', mimeType: 'model/stl');
+          if (result == null) break;
+          saved++;
+        }
+        if (context.mounted) {
+          _snack(context, saved == plates.length ? (plates.length > 1 ? 'STL exported (${plates.length} files)' : 'STL exported') : 'Export cancelled');
+        }
       case _ExportFormat.threeMf:
         final bytes = exportProjectAs3mfBytes(
           controller.project,

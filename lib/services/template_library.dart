@@ -120,6 +120,7 @@ class TemplateLibrary extends ChangeNotifier {
       category: template.category,
       annotations: template.annotations,
       layer2Entities: template.layer2Entities,
+      url: template.url,
     );
     _templates.add(saved);
     notifyListeners();

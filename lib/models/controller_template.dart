@@ -48,6 +48,10 @@ class ControllerTemplate {
   final List<Map<String, dynamic>>? templateMakerCustomOutline;
   final List<Map<String, dynamic>>? templateMakerCustomOutlineLayer2;
 
+  /// Optional link to the product page / documentation for this enclosure or
+  /// board, shown (clickable) in the properties panel.
+  final String? url;
+
   ControllerTemplate({
     required this.id,
     required this.name,
@@ -58,6 +62,7 @@ class ControllerTemplate {
     this.layer2Entities,
     this.templateMakerCustomOutline,
     this.templateMakerCustomOutlineLayer2,
+    this.url,
   });
 
   BoundingBox get boundingBox => entitiesBoundingBox(entities);
@@ -66,6 +71,7 @@ class ControllerTemplate {
         'id': id,
         'name': name,
         'category': category.name,
+        if (url != null && url!.isNotEmpty) 'url': url,
         'entities': entitiesToJson(entities),
         if (layer2Entities != null) 'layer2Entities': entitiesToJson(layer2Entities!),
         if (annotations.isNotEmpty) 'annotations': [for (final a in annotations) a.toJson()],
@@ -80,6 +86,7 @@ class ControllerTemplate {
       entities: entitiesFromJson(json['entities'] as List<dynamic>),
       source: source,
       category: TemplateCategory.values.byName(json['category'] as String? ?? 'controller'),
+      url: json['url'] as String?,
       layer2Entities: json['layer2Entities'] == null ? null : entitiesFromJson(json['layer2Entities'] as List<dynamic>),
       annotations: [
         for (final a in json['annotations'] as List<dynamic>? ?? const [])

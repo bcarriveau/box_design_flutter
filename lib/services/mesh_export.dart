@@ -60,7 +60,7 @@ List<List<Vec2>> _holeBoundaries(List<Hole> holes) {
   return result;
 }
 
-/// Every round mounting hole baked into each placed controller/power-supply
+/// Every round or slotted mounting hole baked into each placed controller/power-supply
 /// template's own geometry (already transformed by that instance's
 /// position/rotation, and resized if it has a [PlacedTemplate.
 /// holeDiameterOverride]) — these get physically mounted to the plate, so
@@ -71,12 +71,21 @@ List<List<Vec2>> _placedTemplateHoles(BoxProject project, TemplateLibrary librar
     final template = library.byId(placed.templateId);
     if (template == null) continue;
     for (final entity in placedTemplateEntities(template, placed)) {
-      if (entity is! DxfCircle) continue;
+      if (!_isMountingCutout(entity)) continue;
       final pts = _closedLoopPoints(entity, arcSegments: 48);
       if (pts.length >= 3) result.add(pts);
     }
   }
   return result;
+}
+
+/// A round mounting hole, or a slotted one -- the closed stadium polyline
+/// (two semicircular, bulge-1 ends) the Template Maker draws for a slot, as
+/// on a power supply's mounting feet. Other closed shapes (the item's own
+/// outline, component silhouettes) are drawn, not cut.
+bool _isMountingCutout(DxfEntity entity) {
+  if (entity is DxfCircle) return true;
+  return entity is DxfPolyline && entity.closed && entity.vertices.any((v) => (v.bulge.abs() - 1).abs() < 1e-6);
 }
 
 /// Every round mounting hole on a placed controller, controller add-on,
