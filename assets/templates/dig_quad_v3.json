@@ -2,6 +2,7 @@
   "id": "dig_quad_v3",
   "name": "Dig-Quad v3",
   "category": "controller",
+  "url": "https://quinled.shop/product/dig-quad/",
   "entities": [
     {
       "type": "polyline",

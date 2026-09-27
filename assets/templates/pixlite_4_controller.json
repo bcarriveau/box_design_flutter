@@ -2,6 +2,7 @@
   "id": "pixlite_4_controller",
   "name": "PixLite 4 Controller",
   "category": "controller",
+  "url": "https://www.advateklighting.com/en-us/products/shop/pixlite-4-mk2",
   "entities": [
     {
       "type": "polyline",

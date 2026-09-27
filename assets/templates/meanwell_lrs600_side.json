@@ -2,6 +2,7 @@
   "id": "meanwell_lrs600_side_placeholder",
   "name": "Mean Well LRS-600 (side mount)",
   "category": "powerSupply",
+  "url": "https://yourpixelstore.com/product/meanwell-12v-600w-power-supply-lrs-600-12/",
   "entities": [
     {
       "type": "polyline",

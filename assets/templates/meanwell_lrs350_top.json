@@ -2,6 +2,7 @@
   "id": "meanwell_lrs350_top",
   "name": "Mean Well LRS-350 (top mount)",
   "category": "powerSupply",
+  "url": "https://www.amazon.com/dp/B07WHJF1Q8",
   "entities": [
     {
       "type": "polyline",

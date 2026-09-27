@@ -1,7 +1,8 @@
 {
   "id": "falcon_f16v3_diff_expansion",
-  "name": "Falcon F16v3/v4 Differential Expansion",
+  "name": "Falcon F16v3 Differential Expansion",
   "category": "controllerAddon",
+  "url": "https://pixelcontroller.com/store/main/44-f16v2-differential-expansion-board.html",
   "entities": [
     {
       "type": "polyline",

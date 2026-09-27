@@ -2,6 +2,7 @@
   "id": "falcon_f48_v3_controller",
   "name": "Falcon F48v3",
   "category": "controller",
+  "url": "https://pixelcontroller.com/store/discontinued-products/52-f16v2-beta-board.html",
   "entities": [
     {
       "type": "polyline",

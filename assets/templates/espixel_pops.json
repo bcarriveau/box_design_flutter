@@ -2,6 +2,7 @@
   "id": "espixel_pops",
   "name": "ESPixel Pops",
   "category": "controller",
+  "url": "https://zappedmyself.com/projects/espixelpops/",
   "entities": [
     {
       "type": "polyline",

@@ -2,6 +2,7 @@
   "id": "ezy_storage_5gal_dual",
   "name": "Ezy Storage 5Gal Dual",
   "category": "box",
+  "url": "https://www.walmart.com/ip/EZY-STORAGE-BUNKER-TOUGH-5GAL-19L-POLYCARB-LID/17833700077",
   "entities": [
     {
       "type": "polyline",

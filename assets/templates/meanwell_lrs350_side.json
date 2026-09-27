@@ -2,6 +2,7 @@
   "id": "meanwell_lrs350_side_placeholder",
   "name": "Mean Well LRS-350 (side mount)",
   "category": "powerSupply",
+  "url": "https://www.amazon.com/dp/B07WHJF1Q8",
   "entities": [
     {
       "type": "polyline",

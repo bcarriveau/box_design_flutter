@@ -2,6 +2,7 @@
   "id": "pb16_four_out",
   "name": "PB16 Four Out",
   "category": "controllerAddon",
+  "url": "https://github.com/computergeek1507/PB_16",
   "entities": [
     {
       "type": "polyline",

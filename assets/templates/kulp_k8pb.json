@@ -2,6 +2,7 @@
   "id": "kulp_k8pb",
   "name": "Kulp K8-PB v2",
   "category": "controller",
+  "url": "https://kulplights.com/product/k8-pb/",
   "entities": [
     {
       "type": "polyline",

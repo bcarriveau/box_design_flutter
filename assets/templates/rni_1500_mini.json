@@ -2,6 +2,7 @@
   "id": "rni_1500_mini",
   "name": "RNI-1500 Short",
   "category": "box",
+  "url": "https://wiredwatts.com/enrni1500",
   "entities": [
     {
       "type": "polyline",

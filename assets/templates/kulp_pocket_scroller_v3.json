@@ -2,6 +2,7 @@
   "id": "kulp_pocket_scroller_v3",
   "name": "Kulp Pocket Scroller v3",
   "category": "controller",
+  "url": "https://kulplights.com/product/pocketscroller-v3/",
   "entities": [
     {
       "type": "polyline",

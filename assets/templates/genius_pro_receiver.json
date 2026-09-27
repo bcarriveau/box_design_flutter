@@ -2,6 +2,7 @@
   "id": "genius_pro_receiver",
   "name": "Genius PRO (4/8/16 Port)",
   "category": "receiver",
+  "url": "https://store.experiencelights.com/genius-pro-4-port-receiver/",
   "entities": [
     {
       "type": "polyline",

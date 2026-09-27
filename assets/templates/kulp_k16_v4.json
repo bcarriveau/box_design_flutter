@@ -1,7 +1,8 @@
 {
   "id": "kulp_k16_v4",
-  "name": "Kulp K16 v4",
+  "name": "Kulp K16 Max/Pro v4",
   "category": "controller",
+  "url": "https://kulplights.com/product/k16-max/",
   "entities": [
     {
       "type": "polyline",

@@ -2,6 +2,7 @@
   "id": "yps_vivid8",
   "name": "YPS Vivid 8",
   "category": "controller",
+  "url": "https://yourpixelstore.com/product/yps-vivid-controller/",
   "entities": [
     {
       "type": "polyline",

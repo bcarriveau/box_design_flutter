@@ -2,6 +2,7 @@
   "id": "baldrick_medium",
   "name": "Baldrick Medium (Baldrick8)",
   "category": "controller",
+  "url": "https://www.baldrickboard.com/en/boards/baldrick8",
   "entities": [
     {
       "type": "polyline",

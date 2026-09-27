@@ -2,6 +2,7 @@
   "id": "pb16_expansion",
   "name": "PB16 Expansion",
   "category": "controllerAddon",
+  "url": "https://github.com/computergeek1507/PB_16",
   "entities": [
     {
       "type": "polyline",

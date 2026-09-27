@@ -2,6 +2,7 @@
   "id": "rgb2go_octa2go",
   "name": "RGB2Go Octa2Go",
   "category": "controller",
+  "url": "https://rgb2go.com/collections/controllers/products/octa2go-8-port-wi-fi-pixel-controller",
   "entities": [
     {
       "type": "polyline",

@@ -2,6 +2,7 @@
   "id": "falcon_v2_receiver",
   "name": "Falcon v2/SRx1",
   "category": "receiver",
+  "url": "https://pixelcontroller.com/store/accessories/86-srx1.html",
   "entities": [
     {
       "type": "polyline",

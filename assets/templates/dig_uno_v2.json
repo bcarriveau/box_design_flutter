@@ -2,6 +2,7 @@
   "id": "dig_uno_v2",
   "name": "Dig-Uno v2/v3",
   "category": "controller",
+  "url": "https://quinled.info/quinled-dig-uno/",
   "entities": [
     {
       "type": "polyline",

@@ -2,6 +2,7 @@
   "id": "dig_octa",
   "name": "Dig-Octa",
   "category": "controller",
+  "url": "https://quinled.info/quinled-dig-octa/",
   "entities": [
     {
       "type": "polyline",

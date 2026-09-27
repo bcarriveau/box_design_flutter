@@ -2,6 +2,7 @@
   "id": "pb16_mini",
   "name": "PB16 Mini",
   "category": "controller",
+  "url": "https://github.com/computergeek1507/PB_16",
   "entities": [
     {
       "type": "polyline",

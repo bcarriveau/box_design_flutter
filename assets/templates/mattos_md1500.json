@@ -2,6 +2,7 @@
   "id": "mattos_md1500",
   "name": "Mattos MD1500",
   "category": "box",
+  "url": "https://mattosdesigns.com/products/md1500",
   "entities": [
     {
       "type": "polyline",

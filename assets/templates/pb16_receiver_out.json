@@ -2,6 +2,7 @@
   "id": "pb16_receiver_out",
   "name": "Wally/PB16",
   "category": "receiver",
+  "url": "https://github.com/computergeek1507/PB_16",
   "entities": [
     {
       "type": "polyline",

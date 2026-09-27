@@ -2,6 +2,7 @@
   "id": "raspberry_pi_zero",
   "name": "Raspberry PI Zero",
   "category": "controller",
+  "url": "https://www.raspberrypi.com/products/raspberry-pi-zero/",
   "entities": [
     {
       "type": "polyline",

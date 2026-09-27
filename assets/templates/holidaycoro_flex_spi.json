@@ -2,6 +2,7 @@
   "id": "holidaycoro_flex_spi",
   "name": "Holidaycoro Flex 16 Output",
   "category": "controller",
+  "url": "https://www.holidaycoro.com/Flex-Modular-Lighting-Controller-System-p/951.htm",
   "entities": [
     {
       "type": "polyline",

@@ -2,6 +2,7 @@
   "id": "bud_nbf32022",
   "name": "BUD NBF-32022",
   "category": "box",
+  "url": "https://wiredwatts.com/ennbf32022",
   "entities": [
     {
       "type": "polyline",

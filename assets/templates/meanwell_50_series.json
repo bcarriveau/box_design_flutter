@@ -2,6 +2,7 @@
   "id": "meanwell_50_series",
   "name": "Mean Well LRS-50",
   "category": "powerSupply",
+  "url": "https://www.amazon.com/dp/B019GYOCMM",
   "entities": [
     {
       "type": "polyline",

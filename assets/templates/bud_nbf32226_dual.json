@@ -2,6 +2,7 @@
   "id": "bud_nbf32226_dual",
   "name": "BUD NBF-32226 Dual",
   "category": "box",
+  "url": "https://www.digikey.com/en/products/detail/bud-industries/NBF-32226/2328561",
   "entities": [
     {
       "type": "polyline",

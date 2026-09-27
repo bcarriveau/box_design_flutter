@@ -2,6 +2,7 @@
   "id": "rgb2go_tetra2go",
   "name": "RGB2Go Tetra2Go",
   "category": "controller",
+  "url": "https://rgb2go.com/products/tetra2go",
   "entities": [
     {
       "type": "polyline",

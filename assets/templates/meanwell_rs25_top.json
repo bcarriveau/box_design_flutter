@@ -2,6 +2,7 @@
   "id": "meanwell_rs25_top",
   "name": "Meanwell RS25 (Top)",
   "category": "powerSupply",
+  "url": "https://www.digikey.com/en/products/detail/mean-well-usa-inc/RS-25-5/7706180",
   "entities": [
     {
       "type": "polyline",

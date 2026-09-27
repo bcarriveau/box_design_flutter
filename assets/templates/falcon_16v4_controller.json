@@ -2,6 +2,7 @@
   "id": "falcon_16v4_controller",
   "name": "Falcon F16v4",
   "category": "controller",
+  "url": "https://pixelcontroller.com/store/diy-controllers/70-f16v4.html",
   "entities": [
     {
       "type": "polyline",

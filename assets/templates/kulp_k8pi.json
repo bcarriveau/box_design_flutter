@@ -2,6 +2,7 @@
   "id": "kulp_k8pi",
   "name": "Kulp K8-Pi v2",
   "category": "controller",
+  "url": "https://kulplights.com/product/k8-pi/",
   "entities": [
     {
       "type": "polyline",

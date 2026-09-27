@@ -2,6 +2,7 @@
   "id": "beagleboneblack",
   "name": "BeagleBone Black Revision C",
   "category": "controller",
+  "url": "https://www.beagleboard.org/boards/beaglebone-black",
   "entities": [
     {
       "type": "polyline",

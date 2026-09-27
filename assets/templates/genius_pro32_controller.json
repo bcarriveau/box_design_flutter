@@ -2,6 +2,7 @@
   "id": "genius_pro32_controller",
   "name": "Genius PRO 32-Port",
   "category": "controller",
+  "url": "https://store.experiencelights.com/genius-pro-32-port-controller/",
   "entities": [
     {
       "type": "polyline",

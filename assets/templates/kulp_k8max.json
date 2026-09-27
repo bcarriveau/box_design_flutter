@@ -2,6 +2,7 @@
   "id": "kulp_k8max",
   "name": "Kulp K8-Max v4",
   "category": "controller",
+  "url": "https://kulplights.com/product/k8-max/",
   "entities": [
     {
       "type": "polyline",

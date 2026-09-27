@@ -2,6 +2,7 @@
   "id": "sandevice_e6804",
   "name": "Sandevice E6804",
   "category": "controller",
+  "url": "https://sandevices.com/product/e6804-pixel-controller-assembled-tested/",
   "entities": [
     {
       "type": "polyline",

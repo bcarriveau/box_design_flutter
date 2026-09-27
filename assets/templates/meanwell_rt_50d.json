@@ -2,6 +2,7 @@
   "id": "meanwell_rt_50d",
   "name": "Mean Well RT-50D",
   "category": "powerSupply",
+  "url": "https://www.digikey.com/en/products/detail/mean-well-usa-inc/RT-50D/7706373",
   "entities": [
     {
       "type": "polyline",

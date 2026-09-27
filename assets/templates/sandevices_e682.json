@@ -2,6 +2,7 @@
   "id": "sandevices_e682",
   "name": "SanDevices E682",
   "category": "controller",
+  "url": "https://sandevices.com/product/e682-pixel-controller-assembled-and-tested/",
   "entities": [
     {
       "type": "polyline",

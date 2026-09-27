@@ -2,6 +2,7 @@
   "id": "yps_small_box",
   "name": "YPS Small Box",
   "category": "box",
+  "url": "https://yourpixelstore.com/product/yps-small-controller-enclosure/",
   "entities": [
     {
       "type": "polyline",

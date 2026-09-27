@@ -2,6 +2,7 @@
   "id": "rgb_duo_2",
   "name": "RGB2Go Duo2Go",
   "category": "controller",
+  "url": "https://rgb2go.com/products/duo2go",
   "entities": [
     {
       "type": "polyline",

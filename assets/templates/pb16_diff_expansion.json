@@ -2,6 +2,7 @@
   "id": "pb16_diff_expansion",
   "name": "PB16 Diff Expansion",
   "category": "controllerAddon",
+  "url": "https://github.com/computergeek1507/PB_16",
   "entities": [
     {
       "type": "polyline",

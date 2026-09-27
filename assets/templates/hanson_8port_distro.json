@@ -2,6 +2,7 @@
   "id": "hanson_8port_distro",
   "name": "Hanson 8 Port Distro",
   "category": "powerDistribution",
+  "url": "https://wiredwatts.com/hanpower8",
   "entities": [
     {
       "type": "polyline",

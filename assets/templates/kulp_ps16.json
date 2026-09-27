@@ -2,6 +2,7 @@
   "id": "kulp_ps16",
   "name": "Kulp PocketScroller-16 v3",
   "category": "controller",
+  "url": "https://kulplights.com/product/pocketscroller-16/",
   "entities": [
     {
       "type": "polyline",

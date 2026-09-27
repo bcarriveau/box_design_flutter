@@ -2,6 +2,7 @@
   "id": "baldrick_large",
   "name": "Baldrick Large (Baldrick17)",
   "category": "controller",
+  "url": "https://www.baldrickboard.com/en/boards/baldrick17",
   "entities": [
     {
       "type": "polyline",

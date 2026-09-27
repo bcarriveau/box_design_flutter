@@ -2,6 +2,7 @@
   "id": "rgb2go_solo2go",
   "name": "RGB2Go Solo2Go",
   "category": "controller",
+  "url": "https://rgb2go.com/collections/controllers/products/solo2go-1-port-wi-fi-pixel-controller",
   "entities": [
     {
       "type": "polyline",

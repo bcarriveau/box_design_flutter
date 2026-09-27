@@ -2,6 +2,7 @@
   "id": "falcon_f48_v4_controller",
   "name": "Falcon F48v4",
   "category": "controller",
+  "url": "https://pixelcontroller.com/store/discontinued-products/71-f48v4.html",
   "entities": [
     {
       "type": "polyline",

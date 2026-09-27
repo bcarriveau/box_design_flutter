@@ -2,6 +2,7 @@
   "id": "genius_pro16_controller",
   "name": "Genius PRO 16-Port",
   "category": "controller",
+  "url": "https://store.experiencelights.com/genius-pro-16-port-controller/",
   "entities": [
     {
       "type": "polyline",

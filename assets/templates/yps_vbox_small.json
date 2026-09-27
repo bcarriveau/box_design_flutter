@@ -2,6 +2,7 @@
   "id": "yps_vbox_small",
   "name": "YPS VBox Small",
   "category": "box",
+  "url": "https://yourpixelstore.com/product/yps-vbox-small/",
   "entities": [
     {
       "type": "polyline",

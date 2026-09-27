@@ -2,6 +2,7 @@
   "id": "genius_gr16_receiver",
   "name": "Genius Pixel GR16 (16 Port)",
   "category": "receiver",
+  "url": "https://store.experiencelights.com/16-output-long-range-pixel-genius-receiver/",
   "entities": [
     {
       "type": "polyline",

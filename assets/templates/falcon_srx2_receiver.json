@@ -2,6 +2,7 @@
   "id": "falcon_srx2_receiver",
   "name": "Falcon SRx2",
   "category": "receiver",
+  "url": "https://pixelcontroller.com/store/long-range-expansion/83-srx2.html",
   "entities": [
     {
       "type": "polyline",

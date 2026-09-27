@@ -2,6 +2,7 @@
   "id": "espixelstick_v2_0",
   "name": "ESPixelStick",
   "category": "controller",
+  "url": "https://forkineye.com/product/espixelstick-v3/",
   "entities": [
     {
       "type": "polyline",

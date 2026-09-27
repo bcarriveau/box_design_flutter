@@ -2,6 +2,7 @@
   "id": "baldrick_small",
   "name": "Baldrick Small (BaldrickInput1)",
   "category": "controller",
+  "url": "https://www.baldrickboard.com/en/boards/baldrickinput1",
   "entities": [
     {
       "type": "polyline",

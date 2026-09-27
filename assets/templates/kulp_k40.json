@@ -2,6 +2,7 @@
   "id": "kulp_k40",
   "name": "Kulp K40-PB",
   "category": "controller",
+  "url": "https://kulplights.com/product/k40d-pb/",
   "entities": [
     {
       "type": "polyline",

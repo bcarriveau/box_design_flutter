@@ -2,6 +2,7 @@
   "id": "genius_gpx16_2023_controller",
   "name": "Genius Pixel GPX16 (2023+)",
   "category": "controller",
+  "url": "https://store.experiencelights.com/16-output-pixel-genius-controller/",
   "entities": [
     {
       "type": "polyline",

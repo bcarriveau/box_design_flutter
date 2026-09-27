@@ -2,6 +2,7 @@
   "id": "noco_battery_box_dual",
   "name": "NOCO Battery Box Dual",
   "category": "box",
+  "url": "https://www.walmart.com/ip/NOCO-BG24-Group-24-Battery-Box/7329861905",
   "entities": [
     {
       "type": "polyline",

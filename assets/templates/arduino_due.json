@@ -2,6 +2,7 @@
   "id": "arduino_due",
   "name": "Arduino Due",
   "category": "controller",
+  "url": "https://docs.arduino.cc/hardware/due/",
   "entities": [
     {
       "type": "polyline",

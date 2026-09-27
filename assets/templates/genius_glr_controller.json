@@ -2,6 +2,7 @@
   "id": "genius_glr_controller",
   "name": "Genius Long Range (GLR)",
   "category": "controller",
+  "url": "https://store.experiencelights.com/long-range-genius-pixel-controller/",
   "entities": [
     {
       "type": "polyline",

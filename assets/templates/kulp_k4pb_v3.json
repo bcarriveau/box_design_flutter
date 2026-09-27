@@ -2,6 +2,7 @@
   "id": "kulp_k4pb_v3",
   "name": "Kulp K4-PB v3",
   "category": "controller",
+  "url": "https://kulplights.com/product/k4-pb/",
   "entities": [
     {
       "type": "polyline",

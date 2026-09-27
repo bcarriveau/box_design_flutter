@@ -2,6 +2,7 @@
   "id": "ticonn_mounting_plate",
   "name": "TICONN Enclosure",
   "category": "box",
+  "url": "https://www.amazon.com/dp/B0BZR4VPRF?th=1",
   "entities": [
     {
       "type": "polyline",

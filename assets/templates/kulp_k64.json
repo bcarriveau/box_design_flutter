@@ -2,6 +2,7 @@
   "id": "kulp_k64",
   "name": "Kulp K64",
   "category": "controller",
+  "url": "https://kulplights.com/product/k64d-b/",
   "entities": [
     {
       "type": "polyline",

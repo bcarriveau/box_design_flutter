@@ -2,6 +2,7 @@
   "id": "falcon_f16v3_expansion",
   "name": "Falcon F16v3 Expansion",
   "category": "controllerAddon",
+  "url": "https://pixelcontroller.com/store/short-range-expansion/40-f16v2-f16v3-expansion-board.html",
   "entities": [
     {
       "type": "polyline",

@@ -2,6 +2,7 @@
   "id": "yps_vbox_lr",
   "name": "YPS VBox Long Range",
   "category": "box",
+  "url": "https://yourpixelstore.com/product/yps-vbox-long-range-controller-enclosure-professional-led-display-housing/",
   "entities": [
     {
       "type": "polyline",
