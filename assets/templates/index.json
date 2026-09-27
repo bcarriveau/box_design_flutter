@@ -104,6 +104,22 @@
     "file": "espixelstick_v2_0.json"
   },
   {
+    "id": "ezy_storage_12gal",
+    "file": "ezy_storage_12gal.json"
+  },
+  {
+    "id": "ezy_storage_12gal_dual",
+    "file": "ezy_storage_12gal_dual.json"
+  },
+  {
+    "id": "ezy_storage_5gal",
+    "file": "ezy_storage_5gal.json"
+  },
+  {
+    "id": "ezy_storage_5gal_dual",
+    "file": "ezy_storage_5gal_dual.json"
+  },
+  {
     "id": "falcon_f16v2",
     "file": "falcon_f16v2.json"
   },
@@ -358,6 +374,14 @@
   {
     "id": "meanwell_rs25_top",
     "file": "meanwell_rs25_top.json"
+  },
+  {
+    "id": "noco_battery_box",
+    "file": "noco_battery_box.json"
+  },
+  {
+    "id": "noco_battery_box_dual",
+    "file": "noco_battery_box_dual.json"
   },
   {
     "id": "pb16_diff_expansion",
