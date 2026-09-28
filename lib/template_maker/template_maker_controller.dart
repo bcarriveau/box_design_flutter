@@ -1974,6 +1974,13 @@ class TemplateMakerController extends ChangeNotifier {
         } else if (verts.length > 4 && verts.every((v) => v.bulge == 0)) {
           useCustomOutline = true;
           customOutlinePoints = verts.map((v) => OutlineVertex(v.point)).toList();
+        } else if (verts.length == 4 && verts.every((v) => v.bulge == 0)) {
+          // The plain, sharp-cornered rectangle a cornerSize-0 outline (this
+          // tool's own default) always flattens to -- not a custom outline
+          // at all, so this deliberately falls through to the sharp-corner
+          // defaults already set above instead of into the reconstruction
+          // fallback below, which would otherwise turn every ordinary
+          // rectangle into a spurious 4-point "custom outline".
         } else {
           // Doesn't match any of this tool's own uniform corner-style
           // patterns (e.g. a DXF board outline with a mix of fillet radii,
