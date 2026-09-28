@@ -2035,10 +2035,13 @@ class TemplateMakerController extends ChangeNotifier {
           rotationDeg: math.atan2(p[1].y - p[0].y, p[1].x - p[0].x) * 180 / math.pi,
         ));
       } else if (e is DxfPolyline) {
-        final v0 = e.vertices[0].point;
-        final v1 = e.vertices[1].point;
-        final v2 = e.vertices[2].point;
-        final v3 = e.vertices[3].point;
+        // Rotate the cycle so a semicircle bulge is at index 0 (see
+        // _looksLikeHole: external files may put them at 1 and 3 instead).
+        final s = e.vertices[0].bulge == 0 ? 1 : 0;
+        final v0 = e.vertices[s].point;
+        final v1 = e.vertices[(s + 1) % 4].point;
+        final v2 = e.vertices[(s + 2) % 4].point;
+        final v3 = e.vertices[(s + 3) % 4].point;
         final center = Vec2((v0.x + v1.x + v2.x + v3.x) / 4, (v0.y + v1.y + v2.y + v3.y) / 4);
         final width = _dist(v0, v1);
         final straightSpan = _dist(v1, v2);

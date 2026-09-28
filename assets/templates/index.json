@@ -132,16 +132,20 @@
     "file": "falcon_16v3_controller.json"
   },
   {
-    "id": "falcon_f16v3_expansion",
-    "file": "falcon_f16v3_expansion.json"
-  },
-  {
     "id": "falcon_f16v3_diff_expansion",
     "file": "falcon_f16v3_diff_expansion.json"
   },
   {
+    "id": "falcon_f16v3_expansion",
+    "file": "falcon_f16v3_expansion.json"
+  },
+  {
     "id": "falcon_16v4_controller",
     "file": "falcon_16v4_controller.json"
+  },
+  {
+    "id": "falcon_f16v4_diff_expansion",
+    "file": "falcon_f16v4_diff_expansion.json"
   },
   {
     "id": "falcon_f16v4_expansion",
@@ -256,12 +260,12 @@
     "file": "jboard_port_to_diff.json"
   },
   {
-    "id": "kulp_k16_v2",
-    "file": "kulp_k16_v2.json"
-  },
-  {
     "id": "kulp_k16_v4",
     "file": "kulp_k16_v4.json"
+  },
+  {
+    "id": "kulp_k16_v2",
+    "file": "kulp_k16_v2.json"
   },
   {
     "id": "kulp_k32v1",
@@ -488,8 +492,16 @@
     "file": "yps_large_box.json"
   },
   {
+    "id": "yps_large_box_dual",
+    "file": "yps_large_box_dual.json"
+  },
+  {
     "id": "yps_medium_box",
     "file": "yps_medium_box.json"
+  },
+  {
+    "id": "yps_medium_box_dual",
+    "file": "yps_medium_box_dual.json"
   },
   {
     "id": "yps_small_box",
