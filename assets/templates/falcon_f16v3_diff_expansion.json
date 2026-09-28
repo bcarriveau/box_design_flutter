@@ -36,7 +36,7 @@
         "x": 18.34,
         "y": 83.78
       },
-      "radius": 1.85
+      "radius": 1.6
     },
     {
       "type": "circle",
@@ -44,23 +44,24 @@
         "x": 120.08,
         "y": 83.78
       },
-      "radius": 1.85
+      "radius": 1.6
     },
     {
       "type": "circle",
       "center": {
         "x": 18.34,
-        "y": 32.33
+        "y": 32.2
       },
-      "radius": 1.85
+      "radius": 1.6
     },
     {
       "type": "circle",
       "center": {
         "x": 120.08,
-        "y": 32.33
+        "y": 32.2
       },
-      "radius": 1.85
+      "radius": 1.6
     }
-  ]
+  ],
+  "templateMakerCustomOutline": []
 }

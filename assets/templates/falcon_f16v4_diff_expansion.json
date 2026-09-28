@@ -1,8 +1,8 @@
 {
-  "id": "falcon_srx2_receiver",
-  "name": "Falcon SRx2",
-  "category": "receiver",
-  "url": "https://pixelcontroller.com/store/long-range-expansion/83-srx2.html",
+  "id": "falcon_f16v4_diff_expansion",
+  "name": "Falcon F16v4 Differential Expansion",
+  "category": "controllerAddon",
+  "url": "https://pixelcontroller.com/store/main/73-f16v4differentialexpansion.html",
   "entities": [
     {
       "type": "polyline",
@@ -14,18 +14,18 @@
           "bulge": 0.0
         },
         {
-          "x": 105.72,
+          "x": 125.0,
           "y": 0.0,
           "bulge": 0.0
         },
         {
-          "x": 105.72,
-          "y": 80.0,
+          "x": 125.0,
+          "y": 75.0,
           "bulge": 0.0
         },
         {
           "x": 0.0,
-          "y": 80.0,
+          "y": 75.0,
           "bulge": 0.0
         }
       ]
@@ -33,32 +33,32 @@
     {
       "type": "circle",
       "center": {
-        "x": 12.86,
-        "y": 71.92
+        "x": 12.0,
+        "y": 12.0
       },
       "radius": 1.6
     },
     {
       "type": "circle",
       "center": {
-        "x": 92.86,
-        "y": 71.92
+        "x": 12.0,
+        "y": 63.0
       },
       "radius": 1.6
     },
     {
       "type": "circle",
       "center": {
-        "x": 12.88,
-        "y": 8.45
+        "x": 113.0,
+        "y": 12.0
       },
       "radius": 1.6
     },
     {
       "type": "circle",
       "center": {
-        "x": 92.88,
-        "y": 8.45
+        "x": 113.0,
+        "y": 63.0
       },
       "radius": 1.6
     }

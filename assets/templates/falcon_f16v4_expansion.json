@@ -36,7 +36,7 @@
         "x": 27.0,
         "y": 13.0
       },
-      "radius": 1.85
+      "radius": 1.6
     },
     {
       "type": "circle",
@@ -44,7 +44,7 @@
         "x": 27.0,
         "y": 64.0
       },
-      "radius": 1.85
+      "radius": 1.6
     },
     {
       "type": "circle",
@@ -52,7 +52,7 @@
         "x": 154.0,
         "y": 13.0
       },
-      "radius": 1.85
+      "radius": 1.6
     },
     {
       "type": "circle",
@@ -60,7 +60,7 @@
         "x": 154.0,
         "y": 64.0
       },
-      "radius": 1.85
+      "radius": 1.6
     }
   ],
   "annotations": [
