@@ -165,7 +165,10 @@ class _BoxCanvasState extends State<BoxCanvas> {
                 minScale: 0.25,
                 maxScale: 8,
                 constrained: false,
-                boundaryMargin: const EdgeInsets.all(400),
+                // A finite margin makes InteractiveViewer stop zooming out
+                // once content + margin would no longer fill the viewport,
+                // which for a small box is well above minScale.
+                boundaryMargin: const EdgeInsets.all(double.infinity),
                 child: SizedBox(
                   key: _contentKey,
                   width: contentWidth,
