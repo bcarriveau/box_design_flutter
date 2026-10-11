@@ -1,0 +1,50 @@
+{
+  "id": "hp_server_psu_750w",
+  "name": "HP Server PSU 750W/1200W + Brackets",
+  "category": "powerSupply",
+  "url": "",
+  "additionalHardware": [
+    {
+      "label": "PSU mounting bracket (3D-printed, STL, use 2)",
+      "quantity": 2,
+      "assetPath": "assets/hardware/hp_psu_bracket.stl",
+      "assetFileName": "hp_psu_bracket.stl"
+    }
+  ],
+  "entities": [
+    {
+      "type": "polyline",
+      "closed": true,
+      "vertices": [
+        { "x": 0.0, "y": 0.0, "bulge": 0.0 },
+        { "x": 36.95, "y": 0.0, "bulge": 0.0 },
+        { "x": 36.95, "y": -17.25, "bulge": 0.0 },
+        { "x": 76.95, "y": -17.25, "bulge": 0.0 },
+        { "x": 76.95, "y": 0.0, "bulge": 0.0 },
+        { "x": 150.85, "y": 0.0, "bulge": 0.0 },
+        { "x": 150.85, "y": -17.25, "bulge": 0.0 },
+        { "x": 190.85, "y": -17.25, "bulge": 0.0 },
+        { "x": 190.85, "y": 0.0, "bulge": 0.0 },
+        { "x": 227.8, "y": 0.0, "bulge": 0.0 },
+        { "x": 227.8, "y": 90.2, "bulge": 0.0 },
+        { "x": 190.85, "y": 90.2, "bulge": 0.0 },
+        { "x": 190.85, "y": 107.45, "bulge": 0.0 },
+        { "x": 150.85, "y": 107.45, "bulge": 0.0 },
+        { "x": 150.85, "y": 90.2, "bulge": 0.0 },
+        { "x": 76.95, "y": 90.2, "bulge": 0.0 },
+        { "x": 76.95, "y": 107.45, "bulge": 0.0 },
+        { "x": 36.95, "y": 107.45, "bulge": 0.0 },
+        { "x": 36.95, "y": 90.2, "bulge": 0.0 },
+        { "x": 0.0, "y": 90.2, "bulge": 0.0 }
+      ]
+    },
+    { "type": "circle", "center": { "x": 46.95, "y": -9.65 }, "radius": 2.0 },
+    { "type": "circle", "center": { "x": 46.95, "y": 99.85 }, "radius": 2.0 },
+    { "type": "circle", "center": { "x": 66.95, "y": -9.65 }, "radius": 2.0 },
+    { "type": "circle", "center": { "x": 66.95, "y": 99.85 }, "radius": 2.0 },
+    { "type": "circle", "center": { "x": 160.85, "y": -9.65 }, "radius": 2.0 },
+    { "type": "circle", "center": { "x": 160.85, "y": 99.85 }, "radius": 2.0 },
+    { "type": "circle", "center": { "x": 180.85, "y": -9.65 }, "radius": 2.0 },
+    { "type": "circle", "center": { "x": 180.85, "y": 99.85 }, "radius": 2.0 }
+  ]
+}

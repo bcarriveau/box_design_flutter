@@ -518,5 +518,9 @@
   {
     "id": "yps_vivid8",
     "file": "yps_vivid8.json"
+  },
+  {
+    "id": "hp_server_psu_750w",
+    "file": "hp_server_psu_750w.json"
   }
 ]
