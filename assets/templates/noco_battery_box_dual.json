@@ -5,7 +5,7 @@
   "additionalHardware": [
     {
       "label": "Layer spacer (3D-printed, STL)",
-      "quantity": 4,
+      "quantity": 16,
       "assetPath": "assets/hardware/bolt_spacer.stl",
       "assetFileName": "bolt_spacer.stl"
     },

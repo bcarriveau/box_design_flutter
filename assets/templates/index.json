@@ -36,6 +36,10 @@
     "file": "bud_nbf32016.json"
   },
   {
+    "id": "bud_nbf32016_dual",
+    "file": "bud_nbf32016_dual.json"
+  },
+  {
     "id": "bud_nbf32022",
     "file": "bud_nbf32022.json"
   },
@@ -238,6 +242,10 @@
   {
     "id": "holidaycoro_flex_spi",
     "file": "holidaycoro_flex_spi.json"
+  },
+  {
+    "id": "hp_server_psu_750w",
+    "file": "hp_server_psu_750w.json"
   },
   {
     "id": "jboard_4_port",
@@ -518,9 +526,5 @@
   {
     "id": "yps_vivid8",
     "file": "yps_vivid8.json"
-  },
-  {
-    "id": "hp_server_psu_750w",
-    "file": "hp_server_psu_750w.json"
   }
 ]
